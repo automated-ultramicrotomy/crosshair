@@ -1,0 +1,1 @@
+{"class":"de.embl.cba.bdv.utils.loaders.XmlIoHdf5UnsignedLongImageLoader","values":{"format":"bdv.hdf5.ulong","type":"de.embl.cba.bdv.utils.loaders.Hdf5UnsignedLongImageLoader"}}

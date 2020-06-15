@@ -1,0 +1,305 @@
+package de.embl.cba.bdv.utils.transforms;
+
+import net.imglib2.*;
+import net.imglib2.concatenate.Concatenable;
+import net.imglib2.concatenate.PreConcatenable;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.ClampingNLinearInterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.realtransform.*;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.NumericType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.LinAlgHelpers;
+import net.imglib2.view.Views;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public abstract class Transforms< T extends InvertibleRealTransform & Concatenable< T > & PreConcatenable< T > >
+{
+    public static RealTransform translationAsRealTransform( double[] translation )
+    {
+        if ( translation.length == 1 ) return null;
+
+        if ( translation.length == 2 ) return new Translation2D( translation );
+
+        if ( translation.length == 3 ) return new Translation3D( translation );
+
+        return new Translation( translation );
+    }
+
+
+    public static < T extends InvertibleRealTransform & Concatenable< T > & PreConcatenable< T > >
+    RealTransform createIdentityAffineTransformation( int numDimensions )
+    {
+        if ( numDimensions == 2 )
+        {
+            return (T) new AffineTransform2D();
+        }
+        else if ( numDimensions == 3 )
+        {
+            return (T) new AffineTransform3D();
+        }
+        else
+        {
+            return (T) new AffineTransform( numDimensions );
+        }
+    }
+
+
+    public static < T extends NumericType< T > & NativeType< T > >
+	RandomAccessibleInterval createTransformedView( RandomAccessibleInterval< T > raiXYZCT,
+													InvertibleRealTransform combinedTransform,
+													InterpolatorFactory interpolatorFactory)
+	{
+		final RandomAccessible transformedRA = createTransformedRaView( raiXYZCT, combinedTransform, interpolatorFactory );
+		final FinalInterval transformedInterval = createBoundingIntervalAfterTransformation( raiXYZCT, combinedTransform );
+		final RandomAccessibleInterval< T > transformedIntervalView = Views.interval( transformedRA, transformedInterval );
+
+		return transformedIntervalView;
+
+	}
+
+	public static < T extends NumericType< T > & NativeType< T > >
+	RandomAccessibleInterval createTransformedView( RandomAccessibleInterval< T > raiXYZCT, InvertibleRealTransform transform )
+	{
+		final RandomAccessible transformedRA = createTransformedRaView( raiXYZCT, transform, new ClampingNLinearInterpolatorFactory() );
+		final FinalInterval transformedInterval = createBoundingIntervalAfterTransformation( raiXYZCT, transform );
+		final RandomAccessibleInterval< T > transformedIntervalView = Views.interval( transformedRA, transformedInterval );
+
+		return transformedIntervalView;
+
+	}
+
+	public static < S extends NumericType< S >, T extends NumericType< T > >
+	RandomAccessibleInterval< T > getWithAdjustedOrigin( RandomAccessibleInterval< S > source, RandomAccessibleInterval< T > target )
+	{
+		long[] offset = new long[ source.numDimensions() ];
+		source.min( offset );
+		RandomAccessibleInterval translated = Views.translate( target, offset );
+		return translated;
+	}
+
+	public static < T extends NumericType< T > >
+	RandomAccessible createTransformedRaView( RandomAccessibleInterval< T > raiXYZCT, InvertibleRealTransform combinedTransform, InterpolatorFactory interpolatorFactory )
+	{
+		RealRandomAccessible rra =
+				Views.interpolate( Views.extendZero( raiXYZCT ), interpolatorFactory );
+		rra = RealViews.transform( rra, combinedTransform );
+		return Views.raster( rra );
+	}
+
+
+	public static FinalInterval createBoundingIntervalAfterTransformation( Interval interval, InvertibleRealTransform transform )
+	{
+		List< long[ ] > corners = Corners.corners( interval );
+
+		long[] boundingMin = new long[ interval.numDimensions() ];
+		long[] boundingMax = new long[ interval.numDimensions() ];
+		Arrays.fill( boundingMin, Long.MAX_VALUE );
+		Arrays.fill( boundingMax, Long.MIN_VALUE );
+
+		for ( long[] corner : corners )
+		{
+			double[] transformedCorner = transformedCorner( transform, corner );
+
+			adjustBoundingRange( boundingMin, boundingMax, transformedCorner );
+		}
+
+		return new FinalInterval( boundingMin, boundingMax );
+	}
+
+	private static void adjustBoundingRange( long[] min, long[] max, double[] transformedCorner )
+	{
+		for ( int d = 0; d < transformedCorner.length; ++d )
+		{
+			if ( transformedCorner[ d ] > max[ d ] )
+			{
+				max[ d ] = (long) transformedCorner[ d ];
+			}
+
+			if ( transformedCorner[ d ] < min[ d ] )
+			{
+				min[ d ] = (long) transformedCorner[ d ];
+			}
+		}
+	}
+
+	private static double[] transformedCorner( InvertibleRealTransform transform, long[] corner )
+	{
+		double[] cornerAsDouble = Arrays.stream( corner ).mapToDouble( x -> x ).toArray();
+		double[] transformedCorner = new double[ corner.length ];
+		transform.apply( cornerAsDouble, transformedCorner );
+		return transformedCorner;
+	}
+
+
+	public static FinalInterval createScaledInterval( Interval interval, Scale scale )
+	{
+		int n = interval.numDimensions();
+
+		long[] min = new long[ n ];
+		long[] max = new long[ n ];
+		interval.min( min );
+		interval.max( max );
+
+		for ( int d = 0; d < n; ++d )
+		{
+			min[ d ] *= scale.getScale( d );
+			max[ d ] *= scale.getScale( d );
+		}
+
+		return new FinalInterval( min, max );
+	}
+
+	public static FinalInterval scaleIntervalInXY( Interval interval, Scale scale )
+	{
+		int n = interval.numDimensions();
+
+		long[] min = new long[ n ];
+		long[] max = new long[ n ];
+		interval.min( min );
+		interval.max( max );
+
+		for ( int d = 0; d < 2; ++d )
+		{
+			min[ d ] *= scale.getScale( d );
+			max[ d ] *= scale.getScale( d );
+		}
+
+		return new FinalInterval( min, max );
+	}
+
+	public static FinalInterval getRealIntervalAsIntegerInterval( FinalRealInterval realInterval )
+	{
+		int n = realInterval.numDimensions();
+
+		double[] realMin = new double[ n ];
+		double[] realMax = new double[ n ];
+		realInterval.realMin( realMin );
+		realInterval.realMax( realMax );
+
+		long[] min = new long[ n ];
+		long[] max = new long[ n ];
+
+		for ( int d = 0; d < n; ++d )
+		{
+			min[ d ] = (long) realMin[ d ];
+			max[ d ] = (long) realMax[ d ];
+		}
+
+		return new FinalInterval( min, max );
+	}
+
+	public static AffineTransform3D getTransformToIsotropicRegistrationResolution( double binning, double[] calibration )
+	{
+		double[] downScaling = new double[ 3 ];
+
+		for ( int d = 0; d < 3; ++d )
+		{
+			downScaling[ d ] = calibration[ d ] / binning;
+		}
+
+		final AffineTransform3D scalingTransform = createScalingTransform( downScaling );
+
+		return scalingTransform;
+	}
+
+
+	public static double[] getScalingFactors( double[] calibration, double targetResolution )
+	{
+
+		double[] downScaling = new double[ calibration.length ];
+
+		for ( int d = 0; d < calibration.length; ++d )
+		{
+			downScaling[ d ] = calibration[ d ] / targetResolution;
+		}
+
+		return downScaling;
+	}
+
+	public static AffineTransform3D getScalingTransform( double[] calibration, double targetResolution )
+	{
+
+		AffineTransform3D scaling = new AffineTransform3D();
+
+		for ( int d = 0; d < 3; ++d )
+		{
+			scaling.set( calibration[ d ] / targetResolution, d, d );
+		}
+
+		return scaling;
+	}
+
+
+
+	public static AffineTransform3D createScalingTransform( double[] calibration )
+	{
+		AffineTransform3D scaling = new AffineTransform3D();
+
+		for ( int d = 0; d < 3; ++d )
+		{
+			scaling.set( calibration[ d ], d, d );
+		}
+
+		return scaling;
+	}
+
+	public static <T extends RealType<T> & NativeType< T > >
+	RandomAccessibleInterval< T > transformAllChannels( RandomAccessibleInterval< T > images, AffineTransform3D registrationTransform )
+	{
+		ArrayList< RandomAccessibleInterval< T > > transformedChannels = new ArrayList<>(  );
+
+		long numChannels = images.dimension( 3 );
+
+		for ( int c = 0; c < numChannels; ++c )
+		{
+			final RandomAccessibleInterval< T > channel = Views.hyperSlice( images, 3, c );
+			transformedChannels.add( createTransformedView( channel, registrationTransform ) );
+		}
+
+		return Views.stack( transformedChannels );
+	}
+
+	public static < T extends RealType< T > & NativeType< T > >
+	RandomAccessibleInterval< T > createResampledView( RandomAccessibleInterval< T > input,
+													   double[] scalingFactors )
+	{
+		// Convert to RealRandomAccessible such that we can obtain values at (infinite) non-integer coordinates
+		RealRandomAccessible< T > rra = Views.interpolate( Views.extendBorder( input ), new NLinearInterpolatorFactory<>() );
+
+		// Change scale such that we can sample from integer coordinates (for raster function below)
+		Scale scale = new Scale( scalingFactors );
+		RealRandomAccessible< T > rescaledRRA  = RealViews.transform( rra, scale );
+
+		// Create view sampled at integer coordinates
+		final RandomAccessible< T > rastered = Views.raster( rescaledRRA );
+
+		// Put an interval to make it a finite "normal" image again
+		final RandomAccessibleInterval< T > finiteRastered = Views.interval( rastered, createScaledInterval( input, scale ) );
+
+		return finiteRastered;
+	}
+
+
+	public static double[] getScale( AffineTransform3D sourceTransform )
+	{
+		// https://math.stackexchange.com/questions/237369/given-this-transformation-matrix-how-do-i-decompose-it-into-translation-rotati
+
+		final double[] calibration = new double[ 3 ];
+		for ( int d = 0; d < 3; ++d )
+		{
+			final double[] vector = new double[ 3 ];
+			for ( int i = 0; i < 3 ; i++ )
+			{
+				vector[ i ] = sourceTransform.get( d, i );
+			}
+
+			calibration[ d ] = LinAlgHelpers.length( vector );
+		}
+		return calibration;
+	}
+}

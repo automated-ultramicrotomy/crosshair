@@ -1,0 +1,133 @@
+package de.embl.cba.bdv.utils;
+
+import bdv.tools.boundingbox.BoxSelectionOptions;
+import bdv.tools.boundingbox.TransformedRealBoxSelectionDialog;
+import bdv.util.Bdv;
+import bdv.util.BdvFunctions;
+import bdv.util.BdvHandle;
+import bdv.viewer.Source;
+import de.embl.cba.bdp2.Image;
+import de.embl.cba.bdp2.utils.DimensionOrder;
+import net.imglib2.*;
+import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Intervals;
+
+public class BdvBoundingBoxDialog< R extends RealType< R > & NativeType< R > >
+{
+    private Bdv bdv;
+
+    public static final int X = 0;
+    public static final int Y = 1;
+    public static final int Z = 2;
+    public static final int T = 3;
+    private Interval initialInterval;
+    private Interval rangeInterval;
+    private int[] min;
+    private int[] max;
+
+    public TransformedRealBoxSelectionDialog.Result showCalibratedUnitsBox()
+    {
+        setInitialSelectionAndRange( true );
+
+        final AffineTransform3D boxTransform = new AffineTransform3D();
+
+        final FinalRealInterval initialInterval = BdvUtils.getViewerGlobalBoundingInterval( bdv );
+
+
+        final TransformedRealBoxSelectionDialog.Result result = BdvFunctions.selectRealBox(
+                bdv,
+                boxTransform,
+                initialInterval,
+                initialInterval,
+                BoxSelectionOptions.options()
+                        .title( "Select region" )
+                        .initialTimepointRange( min[ T ], max[ T ] )
+                        .selectTimepointRange( min[ T ], max[ T ] )
+        );
+
+        if ( result.isValid() ) return result;
+        return result;
+    }
+
+    private TransformedRealBoxSelectionDialog.Result showRealBox( Source< ? > source, BdvHandle bdvHandle )
+    {
+        final AffineTransform3D affineTransform3D = new AffineTransform3D();
+        source.getSourceTransform( 0, 0, affineTransform3D );
+        final FinalRealInterval bounds = affineTransform3D.estimateBounds( source.getSource( 0, 0 ) );
+
+        final FinalRealInterval viewerBoundingInterval =
+                BdvUtils.getViewerGlobalBoundingInterval( bdvHandle );
+
+        final AffineTransform3D boxTransform = new AffineTransform3D();
+
+        final int currentTimepoint =
+                bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
+
+        final int numTimepoints =
+                bdvHandle.getViewerPanel().getState().getNumTimepoints();
+
+        return BdvFunctions.selectRealBox(
+                bdvHandle,
+                boxTransform,
+                viewerBoundingInterval,
+                bounds,
+                BoxSelectionOptions.options()
+                        .title( "Select region" )
+                        .initialTimepointRange( currentTimepoint, currentTimepoint )
+                        .selectTimepointRange( 0, numTimepoints )
+        );
+    }
+
+    private void setInitialSelectionAndRange( boolean calibrated )
+    {
+        setRangeInterval( calibrated );
+        getInitialInterval( calibrated );
+    }
+
+    private void getInitialInterval()
+    {
+        final FinalRealInterval viewerBoundingInterval =
+                BdvUtils.getViewerGlobalBoundingInterval( bdv );
+
+
+        initialInterval = Intervals.createMinMax(
+                (long) minBB[X], (long) minBB[Y], (long) minBB[Z],
+                (long) maxBB[X], (long) maxBB[Y], (long) maxBB[Z]);
+    }
+
+    private void setRangeInterval( boolean calibrated )
+    {
+        min = new int[ 4 ];
+        max = new int[ 4 ];
+
+        setRangeXYZ( image, calibrated );
+        setRangeT( image );
+
+        rangeInterval = Intervals.createMinMax(
+                min[X], min[Y], min[Z],
+                max[X], max[Y], max[Z]);
+    }
+
+    private void setRangeT( Image< R > image )
+    {
+        min[T] = (int) image.getRai().min( DimensionOrder.T );
+        max[T] = (int) image.getRai().max( DimensionOrder.T );
+    }
+
+    private void setRangeXYZ( Image< R > image, boolean calibrated )
+    {
+        for (int d = 0; d < 3; d++)
+        {
+            min[ d ] = (int) ( image.getRai().min( d ) );
+            max[ d ] = (int) ( image.getRai().max( d ) );
+
+            if ( calibrated )
+            {
+                min[ d ] *= image.getVoxelSpacing()[ d ];
+                max[ d ] *= image.getVoxelSpacing()[ d ];
+            }
+        }
+    }
+}

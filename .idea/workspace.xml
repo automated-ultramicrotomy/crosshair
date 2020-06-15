@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ad07d2b7-6a33-4c11-b8d6-a3b22a49c81c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/embl/cba/target/Universe3DExplorer.java" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/classes/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="testRunner" value="GRADLE" />
+    <option name="delegatedBuild" value="true" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="526">
+              <caret line="107" column="21" selection-start-line="107" selection-start-column="21" selection-end-line="107" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/target/Universe3DExplorer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="17" column="33" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#413#414#0" expanded="true" />
+                <element signature="e#444#445#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="143">
+              <caret line="627" column="31" selection-start-line="627" selection-start-column="31" selection-end-line="627" selection-end-column="31" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/behaviour/BdvBehaviours.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="152">
+              <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/sc/fiji/bigdataviewer-vistools/1.0.0-beta-11/bigdataviewer-vistools-1.0.0-beta-11-sources.jar!/bdv/util/BdvFunctions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2">
+              <caret line="55" column="13" selection-start-line="55" selection-start-column="13" selection-end-line="55" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/tables/ij3d/UniverseUtils.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="57">
+              <caret line="3" selection-start-line="3" selection-end-line="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/main/java/de/embl/cba/target/Universe3DExplorer.java" />
+        <option value="$PROJECT_DIR$/src/test/java/tests/Test3DView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/embl/cba/tables/ij3d/UniverseUtils.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/behaviour/BdvBehaviours.java" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/targeting3d.iml" />
+        <option value="$PROJECT_DIR$/.idea/misc.xml" />
+        <option value="$PROJECT_DIR$/.idea/compiler.xml" />
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/.idea/encodings.xml" />
+        <option value="$PROJECT_DIR$/.idea/modules.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__cisd_jhdf5_14_12_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_adobe_xmp_xmpcore_5_1_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_beust_jcommander_1_48.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_drewnoakes_metadata_extractor_2_11_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_esotericsoftware_kryo_kryo_2_24_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_esotericsoftware_minlog_minlog_1_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_9_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_9_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_9_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_fifesoft_autocomplete_2_6_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_fifesoft_languagesupport_2_6_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_fifesoft_rsyntaxtextarea_2_6_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_ben_manes_caffeine_caffeine_2_4_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jffi_1_2_16.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jffi_native_1_2_16.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jnr_constants_0_9_9.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jnr_enxio_0_16.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jnr_netdb_1_1_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jnr_posix_3_0_44.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jnr_unixsocket_0_17.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jnr_jnr_x86asm_1_0_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_github_sbridges_object_inspector_object_inspector_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_5.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_guava_21_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_google_http_client_google_http_client_1_20_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_google_http_client_google_http_client_xml_1_20_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_googlecode_efficient_java_matrix_library_ejml_0_24.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_headius_invokebinder_1_10.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_headius_modulator_1_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_headius_options_1_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_headius_unsafe_fences_1_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_jcraft_jsch_0_1_55.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_jcraft_jzlib_1_1_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_jgoodies_jgoodies_common_1_7_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_jgoodies_jgoodies_forms_1_7_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_martiansoftware_nailgun_server_0_9_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_mchange_c3p0_0_9_5_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_mchange_mchange_commons_java_0_2_15.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_miglayout_miglayout_swing_3_7_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_opencsv_opencsv_3_9.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_squareup_okhttp3_okhttp_3_7_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_squareup_okio_okio_1_12_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_codemodel_codemodel_2_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__commons_beanutils_commons_beanutils_1_9_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_11.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__commons_collections_commons_collections_3_2_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__commons_io_commons_io_2_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__commons_lang_commons_lang_2_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__de_erichseifert_vectorgraphics2d_VectorGraphics2D_0_13.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__edu_emory_mathcs_jtransforms_2_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__edu_mines_mines_jtk_20151125.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__edu_ucar_cdm_4_6_13.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__edu_ucar_httpservices_4_6_13.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__edu_ucar_udunits_4_3_18.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__gov_nist_math_jama_1_0_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__io_minio_minio_5_0_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__io_scif_scifio_0_37_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__io_scif_scifio_jai_imageio_1_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__jitk_jitk_tps_3_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__joda_time_joda_time_2_10_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_12.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_17.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__mpicbg_mpicbg_1_2_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_iharder_base64_2_3_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_ij1_patcher_0_12_9.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_ij_1_52o.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_2_0_0_rc_71.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_common_0_28_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_deprecated_0_1_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_legacy_0_35_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_mesh_0_7_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_notebook_0_7_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_ops_0_43_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_plugins_batch_0_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_plugins_commands_0_8_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_plugins_tools_0_3_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_plugins_uploader_ssh_0_3_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_plugins_uploader_webdav_0_2_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_scripting_0_8_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_ui_awt_0_3_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_ui_swing_0_22_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imagej_imagej_updater_0_9_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_5_6_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_algorithm_0_11_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_algorithm_fft_0_2_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_algorithm_gpl_0_2_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_cache_1_0_0_beta_11.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_ij_2_0_0_beta_44.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_realtransform_2_2_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_roi_0_7_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_ui_2_0_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_java_dev_jna_jna_4_5_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_jung_jung_api_2_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_jung_jung_graph_impl_2_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_trove4j_trove4j_3_0_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_sourceforge_collections_collections_generic_4_01.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_sourceforge_jdatepicker_jdatepicker_1_3_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ome_bio_formats_plugins_6_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ome_formats_api_6_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ome_formats_bsd_6_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ome_formats_gpl_6_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ome_jxrlib_all_0_2_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__ome_turbojpeg_6_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_8_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_math3_3_6_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_math_2_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_text_1_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_vfs2_2_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_extras_beanshell_bsh_2_0b6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpclient_4_5_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpmime_4_5_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_ivy_ivy_2_4_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_maven_scm_maven_scm_api_1_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_maven_scm_maven_scm_provider_svn_commons_1_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_maven_scm_maven_scm_provider_svnexe_1_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_bushe_eventbus_1_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_clojure_clojure_1_8_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_gpars_gpars_1_2_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_groovy_groovy_2_4_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_jsr166_mirror_jsr166y_1_7_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_plexus_plexus_utils_1_5_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_javassist_javassist_3_24_0_GA.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jdom_jdom2_2_0_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jfree_jfreechart_1_5_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jhotdraw_jhotdraw_7_6_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jogamp_gluegen_gluegen_rt_2_3_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jogamp_jogl_jogl_all_2_3_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_joml_joml_1_9_12.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jruby_dirgra_0_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jruby_extras_bytelist_1_0_15.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jruby_jcodings_jcodings_1_0_27.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jruby_joni_joni_2_1_15.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jruby_jruby_core_9_1_17_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_jruby_jruby_stdlib_9_1_17_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_json_json_20090211.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_knowm_xchart_xchart_3_5_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_markdownj_markdownj_0_3_0_1_0_2b4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_mozilla_rhino_1_7_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_multiverse_multiverse_core_0_7_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_netlib_blas_0_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_netlib_f2jutil_0_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_netlib_lapack_0_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_netlib_netlib_java_0_9_3_renjin_patched_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_netlib_xerbla_0_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_objenesis_objenesis_2_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_ocpsoft_prettytime_prettytime_4_0_1_Final.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_ojalgo_ojalgo_45_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_metakit_5_3_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_ome_codecs_0_2_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_ome_common_6_0_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_ome_jai_0_1_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_ome_mdbtools_5_3_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_ome_poi_5_3_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_ome_xml_6_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_openmicroscopy_specification_6_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_5_0_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_commons_5_0_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_tree_5_0_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_util_5_0_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_perf4j_perf4j_0_9_16.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_datasets_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_gcc_runtime_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_grDevices_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_graphics_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_methods_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_renjin_appl_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_renjin_core_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_renjin_gnur_runtime_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_renjin_script_engine_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_stats_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_renjin_utils_0_8_1906.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_modules_scala_xml_2_12_1_0_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_scala_compiler_2_12_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_scala_library_2_12_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scala_lang_scala_reflect_2_12_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_batch_processor_0_3_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_j3dcore_1_6_0_scijava_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_j3dutils_1_6_0_scijava_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_jython_shaded_2_7_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_minimaven_2_2_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_native_lib_loader_2_3_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_parsington_1_0_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_common_2_77_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_plugins_commands_0_2_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_plugins_platforms_0_3_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_plugins_text_markdown_0_1_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_plugins_text_plain_0_1_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_search_0_6_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_table_0_4_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_ui_awt_0_1_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_ui_swing_0_12_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_script_editor_0_5_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_beanshell_0_3_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_clojure_0_1_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_groovy_0_2_7.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_java_0_4_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_javascript_0_4_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_jruby_0_3_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_jython_0_4_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_renjin_0_2_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scripting_scala_0_2_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_swing_checkbox_tree_1_0_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_ui_behaviour_1_7_4.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_vecmath_1_6_0_scijava_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_25.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_23.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__regexp_regexp_1_3.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_3D_Viewer_4_0_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_Fiji_Plugins_3_1_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_SPIM_Opener_2_0_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_SPIM_Registration_5_0_19.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_VIB_lib_2_2_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_bigdataviewer_fiji_5_0_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_fiji_lib_2_1_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_legacy_imglib1_1_1_9.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_pal_optimization_2_0_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_spim_data_2_2_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__woolz_JWlz_1_4_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__xerces_xercesImpl_2_8_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__xpp3_xpp3_1_1_4c.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_bigwarp_fiji_4_0_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_miglayout_miglayout_core_5_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__com_miglayout_miglayout_swing_5_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__net_imglib2_imglib2_label_multisets_0_8_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_compress_1_19.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_janelia_saalfeldlab_n5_2_1_6.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_janelia_saalfeldlab_n5_imglib2_3_4_1.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_lz4_lz4_java_1_5_0.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_scijava_scijava_listeners_1_0_0_beta_2.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__org_tukaani_xz_1_8.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_bigdataviewer_core_9_0_5.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/Maven__sc_fiji_bigdataviewer_vistools_1_0_0_beta_21_SNAPSHOT.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="32" />
+    <option name="y" value="23" />
+    <option name="width" value="1611" />
+    <option name="height" value="1015" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="cba" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="cba" type="462c0819:PsiDirectoryNode" />
+              <item name="utils" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="cba" type="462c0819:PsiDirectoryNode" />
+              <item name="tables" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="cba" type="462c0819:PsiDirectoryNode" />
+              <item name="tables" type="462c0819:PsiDirectoryNode" />
+              <item name="ij3d" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="cba" type="462c0819:PsiDirectoryNode" />
+              <item name="utils" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="targeting3d" type="b2602c69:ProjectViewProjectNode" />
+              <item name="targeting_3D" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Universe3DExplorer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="de.embl.cba.target.Universe3DExplorer" />
+      <module name="targeting3d" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Universe3DExplorer" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ad07d2b7-6a33-4c11-b8d6-a3b22a49c81c" name="Default Changelist" comment="" />
+      <created>1592224393987</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1592224393987</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="32" y="23" width="1611" height="1015" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Designer" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3575526" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Messages" visible="true" weight="0.23076923" />
+      <window_info anchor="bottom" id="Terminal" weight="0.03821656" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Maven" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="R Packages" />
+      <window_info anchor="right" id="R Graphics" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/target/Universe3DExplorer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="17" column="33" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#413#414#0" expanded="true" />
+            <element signature="e#444#445#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/tables/classify/RandomForestClassifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/tests/Test3DView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="66" selection-start-line="66" selection-start-column="2" selection-end-line="72" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/tables/ij3d/UniverseUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/sc/fiji/bigdataviewer-vistools/1.0.0-beta-11/bigdataviewer-vistools-1.0.0-beta-11-sources.jar!/bdv/util/BdvFunctions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2">
+          <caret line="55" column="13" selection-start-line="55" selection-start-column="13" selection-end-line="55" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="526">
+          <caret line="107" column="21" selection-start-line="107" selection-start-column="21" selection-end-line="107" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/transforms/utils/LSLFRegistration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-143">
+          <caret line="28" column="13" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/viewer/MultipleImageViewer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="182" column="14" selection-start-line="182" selection-start-column="14" selection-end-line="182" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/viewer/OpenMultipleImagesCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/io/BdvToVoxelGridImageConverter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/command/BdvToVoxelGridImageCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="38">
+          <caret line="2" column="31" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/io/BdvRaiXYZCTExport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1558">
+          <caret line="108" column="33" selection-start-line="108" selection-start-column="33" selection-end-line="108" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/io/BdvRaiVolumeExport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="34" column="13" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/command/BdvWriterCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="31" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="627" column="31" selection-start-line="627" selection-start-column="31" selection-end-line="627" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/TestBdvImagePlus2DWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="31" selection-start-column="31" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/embl/cba/bdv/utils/behaviour/BdvBehaviours.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
