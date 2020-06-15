@@ -362,10 +362,7 @@ public class SegmentsBdvView < T extends ImageSegment >
 			if ( isLabelMaskShownAsBoundaries ) showLabelMaskAsBoundaries();
 		}
 
-		final BdvStackSource bdvStackSource = BdvFunctions.show(
-				source,
-				numTimePoints,
-				bdvOptions );
+		final BdvStackSource bdvStackSource = null;
 
 		bdvStackSource.setActive( true );
 
