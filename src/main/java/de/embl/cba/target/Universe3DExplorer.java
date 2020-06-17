@@ -31,14 +31,14 @@ import java.util.*;
 
 public class Universe3DExplorer
 {
-//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
-	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
+	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
+//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
 	private final Content meshContent;
 
 	public Universe3DExplorer()
 	{
 		final ImagePlus imagePlus = FolderOpener.open( INPUT_FOLDER, "" );
-		imagePlus.show();
+//		imagePlus.show();
 
 		final Image3DUniverse universe = new Image3DUniverse();
 		final Content imageContent = universe.addContent( imagePlus, Content.VOLUME );
@@ -109,27 +109,84 @@ public class Universe3DExplorer
 				for (Vector3d d : intersection_points) {
 					vector_points.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
 				}
-
-				// Alright this works - but it's a bit of a hack. Theoretically intersection of a cuboid and a plane can
-				// have more vertices - I think up to six? So we need our meshes to deal with arbitrary numbers of points
-				// perhaps add an epsilon in, sometimes it's missing points
+				
 				universe.removeContent("planeA");
 				if (intersection_points.size() == 3) {
 					final CustomTriangleMesh new_mesh = new CustomTriangleMesh(vector_points);
 					Content meshContent2 = universe.addCustomMesh(new_mesh, "planeA");
 					meshContent2.setVisible(true);
 					meshContent2.setLocked(true);
-				} else if (intersection_points.size() == 4) {
-					final CustomQuadMesh new_mesh = new CustomQuadMesh(vector_points);
+				} else if (intersection_points.size() > 3) {
+					ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, plane_normal);
+					final CustomTriangleMesh new_mesh = new CustomTriangleMesh(triangles);
 					Content meshContent2 = universe.addCustomMesh(new_mesh, "planeA");
 					meshContent2.setVisible(true);
 					meshContent2.setLocked(true);
+					meshContent2.setTransparency(0.7f);
 				}
 
 			}
 
 		}, "update target plane", "shift T" );
 
+	}
+
+	private ArrayList<Point3f> calculate_triangles_from_points (ArrayList<Vector3d> intersections, Vector3d plane_normal) {
+		Vector3d centroid = new Vector3d(new double[] {0,0,0});
+		for (Vector3d v : intersections) {
+			centroid.add(v);
+		}
+		centroid.setX(centroid.getX()/intersections.size());
+		centroid.setY(centroid.getY()/intersections.size());
+		centroid.setZ(centroid.getZ()/intersections.size());
+
+		Vector3d centroid_to_point = new Vector3d();
+		centroid_to_point.sub(intersections.get(0), centroid);
+
+		Double[] signed_angles = new Double[intersections.size() - 1];
+		for (int i=1; i<intersections.size(); i++) {
+			Vector3d centroid_to_current_point = new Vector3d();
+			centroid_to_current_point.sub(intersections.get(i), centroid);
+			signed_angles[i - 1] = calculate_signed_angle(centroid_to_point, centroid_to_current_point, plane_normal);
+		}
+
+		// convert all intersections to point3f
+		ArrayList<Point3f> intersections_3f = new ArrayList<>();
+		for (Vector3d d : intersections) {
+			intersections_3f.add(vector3d_to_point3f(d));
+		}
+
+		ArrayList<Point3f> intersections_without_root = new ArrayList<>(intersections_3f.subList(1, intersections_3f.size()));
+		// order intersections_without_root with respect ot the signed angles
+		ArrayList<point_angle> points_and_angles = new ArrayList<>();
+		for (int i = 0; i<intersections_without_root.size(); i++) {
+			points_and_angles.add(new point_angle(intersections_without_root.get(i), signed_angles[i]));
+		}
+
+		Collections.sort(points_and_angles, (p1, p2) -> p1.getAngle().compareTo(p2.getAngle()));
+
+		ArrayList<Point3f> triangles = new ArrayList<>();
+		for (int i = 0; i<points_and_angles.size() - 1; i++) {
+			triangles.add(intersections_3f.get(0));
+			triangles.add(points_and_angles.get(i).getPoint());
+			triangles.add(points_and_angles.get(i + 1).getPoint());
+		}
+
+		return triangles;
+	}
+
+	private Point3f vector3d_to_point3f (Vector3d vector) {
+		Point3f new_point = new Point3f((float) vector.getX(), (float) vector.getY(), (float) vector.getZ());
+		return new_point;
+	}
+
+	private double calculate_signed_angle (Vector3d vector1, Vector3d vector2, Vector3d plane_normal) {
+		double unsigned_angle = vector1.angle(vector2);
+		Vector3d cross_vector1_vector2 = new Vector3d();
+		cross_vector1_vector2.cross(vector1, vector2);
+
+		double sign = plane_normal.dot(cross_vector1_vector2);
+		return unsigned_angle*sign;
 	}
 
 	private Vector3d calculate_normal_from_points (ArrayList<double[]> points) {
@@ -254,6 +311,24 @@ public class Universe3DExplorer
 
 		double dot_product = point_to_plane_vector.dot(plane_normal);
 		return dot_product == 0;
+	}
+
+	private class point_angle {
+		private Point3f point;
+		private Double angle;
+
+		public point_angle (Point3f point, Double angle) {
+			this.point = point;
+			this.angle = angle;
+		}
+
+		public Point3f getPoint () {
+			return point;
+		}
+
+		public Double getAngle () {
+			return angle;
+		}
 	}
 
 //	behaviours for 3d window
