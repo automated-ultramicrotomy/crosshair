@@ -109,7 +109,7 @@ public class Universe3DExplorer
 				for (Vector3d d : intersection_points) {
 					vector_points.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
 				}
-				
+
 				universe.removeContent("planeA");
 				if (intersection_points.size() == 3) {
 					final CustomTriangleMesh new_mesh = new CustomTriangleMesh(vector_points);
@@ -143,11 +143,13 @@ public class Universe3DExplorer
 		Vector3d centroid_to_point = new Vector3d();
 		centroid_to_point.sub(intersections.get(0), centroid);
 
-		Double[] signed_angles = new Double[intersections.size() - 1];
+		Double[] signed_angles = new Double[intersections.size()];
+//		angle of point to itself is zero
+		signed_angles[0] = 0.0;
 		for (int i=1; i<intersections.size(); i++) {
 			Vector3d centroid_to_current_point = new Vector3d();
 			centroid_to_current_point.sub(intersections.get(i), centroid);
-			signed_angles[i - 1] = calculate_signed_angle(centroid_to_point, centroid_to_current_point, plane_normal);
+			signed_angles[i] = calculate_signed_angle(centroid_to_point, centroid_to_current_point, plane_normal);
 		}
 
 		// convert all intersections to point3f
@@ -156,18 +158,17 @@ public class Universe3DExplorer
 			intersections_3f.add(vector3d_to_point3f(d));
 		}
 
-		ArrayList<Point3f> intersections_without_root = new ArrayList<>(intersections_3f.subList(1, intersections_3f.size()));
 		// order intersections_without_root with respect ot the signed angles
 		ArrayList<point_angle> points_and_angles = new ArrayList<>();
-		for (int i = 0; i<intersections_without_root.size(); i++) {
-			points_and_angles.add(new point_angle(intersections_without_root.get(i), signed_angles[i]));
+		for (int i = 0; i<intersections_3f.size(); i++) {
+			points_and_angles.add(new point_angle(intersections_3f.get(i), signed_angles[i]));
 		}
 
 		Collections.sort(points_and_angles, (p1, p2) -> p1.getAngle().compareTo(p2.getAngle()));
 
 		ArrayList<Point3f> triangles = new ArrayList<>();
-		for (int i = 0; i<points_and_angles.size() - 1; i++) {
-			triangles.add(intersections_3f.get(0));
+		for (int i = 1; i<points_and_angles.size() - 1; i++) {
+			triangles.add(points_and_angles.get(0).getPoint());
 			triangles.add(points_and_angles.get(i).getPoint());
 			triangles.add(points_and_angles.get(i + 1).getPoint());
 		}
@@ -186,7 +187,11 @@ public class Universe3DExplorer
 		cross_vector1_vector2.cross(vector1, vector2);
 
 		double sign = plane_normal.dot(cross_vector1_vector2);
-		return unsigned_angle*sign;
+		if (sign < 0) {
+			return -unsigned_angle;
+		} else {
+			return unsigned_angle;
+			}
 	}
 
 	private Vector3d calculate_normal_from_points (ArrayList<double[]> points) {
