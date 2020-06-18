@@ -3,10 +3,7 @@ package de.embl.cba.target;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
-import customnode.CustomMesh;
-import customnode.CustomPointMesh;
-import customnode.CustomQuadMesh;
-import customnode.CustomTriangleMesh;
+import customnode.*;
 import de.embl.cba.swing.PopupMenu;
 import ij.ImagePlus;
 import ij.plugin.FolderOpener;
@@ -23,10 +20,7 @@ import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.vecmath.Point3d;
-import org.scijava.vecmath.Point3f;
-import org.scijava.vecmath.Vector3d;
-import org.scijava.vecmath.Vector3f;
+import org.scijava.vecmath.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -132,18 +126,23 @@ public class Universe3DExplorer
 				universe.removeContent(plane_name);
 			}
 
+			Color3f plane_color = null;
+			if (plane_name == "target") {
+				plane_color = new Color3f(0, 1, 0);
+			} else if (plane_name == "block") {
+				plane_color = new Color3f(0, 0, 1);
+			}
+
 			CustomTriangleMesh new_mesh = null;
 			if (intersection_points.size() == 3) {
-				new_mesh = new CustomTriangleMesh(vector_points);
+				new_mesh = new CustomTransparentTriangleMesh(vector_points, plane_color, 0.7f);
 			} else if (intersection_points.size() > 3) {
 				ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, plane_normal);
-				new_mesh = new CustomTriangleMesh(triangles);
+				new_mesh = new CustomTransparentTriangleMesh(triangles, plane_color, 0.7f);
 			}
 			Content meshContent = universe.addCustomMesh(new_mesh, plane_name);
 			meshContent.setVisible(true);
 			meshContent.setLocked(true);
-			meshContent.setTransparency(0.7f);
-
 		}
 	}
 
