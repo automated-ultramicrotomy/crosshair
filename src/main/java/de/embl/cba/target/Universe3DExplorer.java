@@ -7,6 +7,7 @@ import customnode.CustomMesh;
 import customnode.CustomPointMesh;
 import customnode.CustomQuadMesh;
 import customnode.CustomTriangleMesh;
+import de.embl.cba.swing.PopupMenu;
 import ij.ImagePlus;
 import ij.plugin.FolderOpener;
 import ij3d.Content;
@@ -15,8 +16,11 @@ import ij3d.behaviors.InteractiveBehavior;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.ui.TransformListener;
 import org.scijava.java3d.Bounds;
 import org.scijava.ui.behaviour.ClickBehaviour;
+import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.ScrollBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.vecmath.Point3d;
@@ -33,23 +37,19 @@ public class Universe3DExplorer
 {
 	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-	private final Content meshContent;
+	int track_plane = 0;
 
-	public Universe3DExplorer()
-	{
-		final ImagePlus imagePlus = FolderOpener.open( INPUT_FOLDER, "" );
+	public Universe3DExplorer() {
+		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 //		imagePlus.show();
 
 		final Image3DUniverse universe = new Image3DUniverse();
-		final Content imageContent = universe.addContent( imagePlus, Content.VOLUME );
+		final Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
 		universe.addInteractiveBehavior(new CustomBehaviour(universe, imageContent));
 
-		imageContent.setTransparency( 0.7F );
-		imageContent.setLocked( true );
+		imageContent.setTransparency(0.7F);
+		imageContent.setLocked(true);
 		universe.show();
-
-		Bounds image_bounds = imageContent.getBounds();
-		System.out.println(image_bounds.toString());
 
 		Point3d global_min = new Point3d();
 		Point3d global_max = new Point3d();
@@ -58,77 +58,82 @@ public class Universe3DExplorer
 		double[] global_min_d = {global_min.getX(), global_min.getY(), global_min.getZ()};
 		double[] global_max_d = {global_max.getX(), global_max.getY(), global_max.getZ()};
 
-		final ArrayList< Point3f > points = new ArrayList<>();
-		points.add( new Point3f( 16, 64, 134 ) );
-		points.add( new Point3f( 176, 70, 134 ) );
-		points.add( new Point3f( 91, 210, 134 ) );
-		final CustomTriangleMesh mesh = new CustomTriangleMesh( points );
-		meshContent = universe.addCustomMesh( mesh, "planeA" );
-		meshContent.setVisible( true );
-		meshContent.setLocked( true );
-
-		final Img wrap = ImageJFunctions.wrap( imagePlus );
-		final BdvStackSource bdvStackSource = BdvFunctions.show( wrap, "raw" );
-		bdvStackSource.setDisplayRange( 0, 255 );
+		final Img wrap = ImageJFunctions.wrap(imagePlus);
+		final BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw");
+		bdvStackSource.setDisplayRange(0, 255);
 
 
 		final BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
-		final Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
-		behaviours.install( bdvHandle.getTriggerbindings(), "target" );
+		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
+		behaviours.install(bdvHandle.getTriggerbindings(), "target");
+
+		bdvHandle.getViewerPanel().addTransformListener(new TransformListener<AffineTransform3D>() {
+			@Override
+			public void transformChanged(AffineTransform3D affineTransform3D) {
+				if ( track_plane == 1 )
+				{
+					update_target_plane(bdvHandle, universe, affineTransform3D, global_min_d, global_max_d);
+				}
+			}
+		});
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			final AffineTransform3D affineTransform3D = new AffineTransform3D();
-			bdvHandle.getViewerPanel().getState().getViewerTransform( affineTransform3D );
+			if (track_plane == 0) {
+				track_plane = 1;
+			} else if (track_plane == 1) {
+				track_plane = 0;
+			}
+		}, "toggle target plane update", "shift T" );
 
-			final ArrayList< double[] > viewerPoints = new ArrayList<>();
+	}
 
-			viewerPoints.add( new double[]{ 0, 0, 0 });
-			viewerPoints.add( new double[]{ 0, 100, 0 });
-			viewerPoints.add( new double[]{ 100, 0, 0 });
+	private void update_target_plane (BdvHandle bdvHandle, Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max) {
 
-//			final double[] clickPositionInViewerWindow = { x, y, 0 };
+		final ArrayList< double[] > viewerPoints = new ArrayList<>();
 
-			final ArrayList< double[] > globalPoints = new ArrayList<>();
-			for ( int i = 0; i < 3; i++ )
-			{
-				globalPoints.add( new double[ 3 ] );
+		viewerPoints.add( new double[]{ 0, 0, 0 });
+		viewerPoints.add( new double[]{ 0, 100, 0 });
+		viewerPoints.add( new double[]{ 100, 0, 0 });
+
+		final ArrayList< double[] > globalPoints = new ArrayList<>();
+		for ( int i = 0; i < 3; i++ )
+		{
+			globalPoints.add( new double[ 3 ] );
+		}
+
+		for ( int i = 0; i < 3; i++ )
+		{
+			affineTransform3D.inverse().apply( viewerPoints.get( i ), globalPoints.get( i ) );
+		}
+
+		Vector3d plane_normal = calculate_normal_from_points(globalPoints);
+		Vector3d plane_point = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
+		ArrayList<Vector3d> intersection_points = calculate_intersections(global_min, global_max, plane_normal, plane_point);
+
+		if (intersection_points.size() > 0) {
+			System.out.println(intersection_points.size());
+			ArrayList<Point3f> vector_points = new ArrayList<>();
+			for (Vector3d d : intersection_points) {
+				vector_points.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
 			}
 
-			for ( int i = 0; i < 3; i++ )
-			{
-				affineTransform3D.inverse().apply( viewerPoints.get( i ), globalPoints.get( i ) );
-			}
-
-			Vector3d plane_normal = calculate_normal_from_points(globalPoints);
-			Vector3d plane_point = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
-			ArrayList<Vector3d> intersection_points = calculate_intersections(global_min_d, global_max_d, plane_normal, plane_point);
-
-			if (intersection_points.size() > 0) {
-				System.out.println(intersection_points.size());
-				ArrayList<Point3f> vector_points = new ArrayList<>();
-				for (Vector3d d : intersection_points) {
-					vector_points.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
-				}
-
+			if (universe.contains("planeA")) {
 				universe.removeContent("planeA");
-				if (intersection_points.size() == 3) {
-					final CustomTriangleMesh new_mesh = new CustomTriangleMesh(vector_points);
-					Content meshContent2 = universe.addCustomMesh(new_mesh, "planeA");
-					meshContent2.setVisible(true);
-					meshContent2.setLocked(true);
-				} else if (intersection_points.size() > 3) {
-					ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, plane_normal);
-					final CustomTriangleMesh new_mesh = new CustomTriangleMesh(triangles);
-					Content meshContent2 = universe.addCustomMesh(new_mesh, "planeA");
-					meshContent2.setVisible(true);
-					meshContent2.setLocked(true);
-					meshContent2.setTransparency(0.7f);
-				}
-
 			}
 
-		}, "update target plane", "shift T" );
+			CustomTriangleMesh new_mesh = null;
+			if (intersection_points.size() == 3) {
+				new_mesh = new CustomTriangleMesh(vector_points);
+			} else if (intersection_points.size() > 3) {
+				ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, plane_normal);
+				new_mesh = new CustomTriangleMesh(triangles);
+			}
+			Content meshContent = universe.addCustomMesh(new_mesh, "planeA");
+			meshContent.setVisible(true);
+			meshContent.setLocked(true);
+			meshContent.setTransparency(0.7f);
 
+		}
 	}
 
 	private ArrayList<Point3f> calculate_triangles_from_points (ArrayList<Vector3d> intersections, Vector3d plane_normal) {
