@@ -72,7 +72,9 @@ public class Universe3DExplorer
 			public void transformChanged(AffineTransform3D affineTransform3D) {
 				if ( track_plane == 1 )
 				{
-					update_target_plane(bdvHandle, universe, affineTransform3D, global_min_d, global_max_d);
+					update_plane(universe, affineTransform3D, global_min_d, global_max_d, "target");
+				} else if (track_plane == 2) {
+					update_plane(universe, affineTransform3D, global_min_d, global_max_d, "block");
 				}
 			}
 		});
@@ -85,9 +87,18 @@ public class Universe3DExplorer
 			}
 		}, "toggle target plane update", "shift T" );
 
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+			if (track_plane == 0) {
+				track_plane = 2;
+			} else if (track_plane == 2) {
+				track_plane = 0;
+			}
+		}, "toggle block plane update", "shift F" );
+
 	}
 
-	private void update_target_plane (BdvHandle bdvHandle, Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max) {
+	private void update_plane (Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
+										String plane_name) {
 
 		final ArrayList< double[] > viewerPoints = new ArrayList<>();
 
@@ -117,8 +128,8 @@ public class Universe3DExplorer
 				vector_points.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
 			}
 
-			if (universe.contains("planeA")) {
-				universe.removeContent("planeA");
+			if (universe.contains(plane_name)) {
+				universe.removeContent(plane_name);
 			}
 
 			CustomTriangleMesh new_mesh = null;
@@ -128,7 +139,7 @@ public class Universe3DExplorer
 				ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, plane_normal);
 				new_mesh = new CustomTriangleMesh(triangles);
 			}
-			Content meshContent = universe.addCustomMesh(new_mesh, "planeA");
+			Content meshContent = universe.addCustomMesh(new_mesh, plane_name);
 			meshContent.setVisible(true);
 			meshContent.setLocked(true);
 			meshContent.setTransparency(0.7f);
