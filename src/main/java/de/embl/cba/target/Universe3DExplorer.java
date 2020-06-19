@@ -1,8 +1,6 @@
 package de.embl.cba.target;
 
-import bdv.util.BdvFunctions;
-import bdv.util.BdvHandle;
-import bdv.util.BdvStackSource;
+import bdv.util.*;
 import customnode.*;
 import de.embl.cba.swing.PopupMenu;
 import ij.ImagePlus;
@@ -10,6 +8,9 @@ import ij.plugin.FolderOpener;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import ij3d.behaviors.InteractiveBehavior;
+import net.imagej.overlay.PointOverlay;
+import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -22,20 +23,25 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.vecmath.*;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 public class Universe3DExplorer
 {
-	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
+//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
+	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
 	int track_plane = 0;
 
 	public Universe3DExplorer() {
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 //		imagePlus.show();
+
+		final ArrayList<RealPoint> points = new ArrayList<>();
 
 		final Image3DUniverse universe = new Image3DUniverse();
 		final Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
@@ -43,6 +49,7 @@ public class Universe3DExplorer
 
 		imageContent.setTransparency(0.7F);
 		imageContent.setLocked(true);
+		imageContent.showPointList(true);
 		universe.show();
 
 		Point3d global_min = new Point3d();
@@ -89,6 +96,82 @@ public class Universe3DExplorer
 			}
 		}, "toggle block plane update", "shift F" );
 
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+//			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
+			RealPoint point = new RealPoint(3);
+			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
+			points.add(point);
+			bdvHandle.getViewerPanel().requestRepaint();
+
+			//TODO - check properly that these positions match between two viewers
+			double [] position = new double[3];
+			point.localize(position);
+			imageContent.getPointList().add("", position[0],position[1],position[2]);
+		}, "add point", "P" );
+
+
+		PointsOverlaySizeChange point_overlay = new PointsOverlaySizeChange();
+		point_overlay.setPoints(points);
+		BdvFunctions.showOverlay(point_overlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
+	}
+
+	// same as https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/PointsOverlay.java
+	// but sets size to zero after certain distance
+	// could make it nicer like in teh bdv workshop, where they make the size taper off in a sphere
+	public class PointsOverlaySizeChange extends BdvOverlay
+	{
+		private List< ? extends RealLocalizable> points;
+
+		private Color col;
+
+		public < T extends RealLocalizable > void setPoints( final List< T > points )
+		{
+			this.points = points;
+		}
+
+		@Override
+		protected void draw( final Graphics2D graphics )
+		{
+			if ( points == null )
+				return;
+
+			col = new Color( info.getColor().get() );
+
+			final AffineTransform3D transform = new AffineTransform3D();
+			getCurrentTransform3D( transform );
+			final double[] lPos = new double[ 3 ];
+			final double[] gPos = new double[ 3 ];
+			for ( final RealLocalizable p : points )
+			{
+				p.localize( lPos );
+				transform.apply( lPos, gPos );
+				final double size = getPointSize( gPos );
+				final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
+				final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
+				final int w = ( int ) size;
+				graphics.setColor( getColor( gPos ) );
+				graphics.fillOval( x, y, w, w );
+			}
+		}
+
+		/** screen pixels [x,y,z] **/
+		private Color getColor( final double[] gPos )
+		{
+			int alpha = 255 - ( int ) Math.round( Math.abs( gPos[ 2 ] ) );
+
+			if ( alpha < 64 )
+				alpha = 64;
+
+			return new Color( col.getRed(), col.getGreen(), col.getBlue(), alpha );
+		}
+
+		private double getPointSize (final double[] gPos)
+		{
+			if ( Math.abs( gPos[ 2 ] ) < 3 )
+				return 5.0;
+			else
+				return 0.0;
+		}
 	}
 
 	private void update_plane (Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
