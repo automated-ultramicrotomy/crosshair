@@ -2,6 +2,7 @@ package de.embl.cba.target;
 
 import bdv.util.*;
 import customnode.*;
+import de.embl.cba.bdv.utils.BdvUtils;
 import de.embl.cba.swing.PopupMenu;
 import ij.ImagePlus;
 import ij.plugin.FolderOpener;
@@ -36,6 +37,8 @@ public class Universe3DExplorer
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
 	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
 	int track_plane = 0;
+	public AffineTransform3D current_target_plane_view = null;
+	public AffineTransform3D current_block_plane_view = null;
 
 	public Universe3DExplorer() {
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
@@ -73,8 +76,12 @@ public class Universe3DExplorer
 			public void transformChanged(AffineTransform3D affineTransform3D) {
 				if ( track_plane == 1 )
 				{
+					// TODO - move these updates of the view transform to the toggle click behavoiur - then can
+					// just happen once and not slow down the interacitvity of the scrolling and rotation
+					current_target_plane_view = affineTransform3D.copy();
 					update_plane(universe, affineTransform3D, global_min_d, global_max_d, "target");
 				} else if (track_plane == 2) {
+					current_block_plane_view = affineTransform3D.copy();
 					update_plane(universe, affineTransform3D, global_min_d, global_max_d, "block");
 				}
 			}
@@ -95,6 +102,20 @@ public class Universe3DExplorer
 				track_plane = 0;
 			}
 		}, "toggle block plane update", "shift F" );
+
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+			if (track_plane == 0) {
+//				System.out.println(current_target_plane_view.toString());
+				BdvUtils.changeBdvViewerTransform(bdvStackSource, current_target_plane_view, 1500);
+			}
+		}, "zoom to target plane", "ctrl T" );
+
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+			if (track_plane == 0) {
+//				System.out.println(current_target_plane_view.toString());
+				BdvUtils.changeBdvViewerTransform(bdvStackSource, current_block_plane_view, 1500);
+			}
+		}, "zoom to block plane", "ctrl F" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 //			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
