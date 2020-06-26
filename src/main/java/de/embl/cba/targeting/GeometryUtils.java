@@ -1,6 +1,9 @@
 package de.embl.cba.targeting;
 
 import net.imglib2.RealPoint;
+import net.imglib2.ops.parse.token.Real;
+import org.apache.commons.math3.geometry.Vector;
+import org.apache.commons.math3.linear.*;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3d;
 
@@ -10,8 +13,68 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class GeometryUtils {
-    public static void fit_plane_to_points (ArrayList<RealPoint> points) {
+    public static ArrayList<Vector3d> fit_plane_to_points (ArrayList<RealPoint> points) {
         // Fit plane - get normal and point on plane, then usual update plane jazz
+//        convert to a real matrix
+        double [] [] point_array = new double [points.size()][3];
+        for (int i=0; i<points.size(); i++) {
+            double[] position = new double[3];
+            points.get(i).localize(position);
+
+            point_array[i] = position;
+        }
+        System.out.println(point_array.toString());
+
+
+
+//        Convert to real matrix as here: http://commons.apache.org/proper/commons-math/userguide/linear.html
+        RealMatrix point_matrix = MatrixUtils.createRealMatrix(point_array);
+
+        //        Calculate centroid
+        RealVector centroid = new ArrayRealVector(new double[] {0,0,0});
+        for (int i=0; i<points.size(); i++) {
+            centroid = centroid.add(point_matrix.getRowVector(i));
+        }
+        centroid.mapDivideToSelf(points.size());
+
+        //subtract centroid from every row
+        for (int i=0; i<points.size(); i++) {
+            RealVector row = point_matrix.getRowVector(i);
+            point_matrix.setRowVector(i, row.subtract(centroid));
+        }
+
+        RealMatrix transposed_matrix = point_matrix.transpose();
+        SingularValueDecomposition svd = new SingularValueDecomposition(transposed_matrix);
+        double[] singular_values = svd.getSingularValues();
+
+        // get index of minimum singular value
+        Double min_value = null;
+        int index = 0;
+        for (int i=0; i<singular_values.length; i++) {
+            if (min_value == null) {
+                min_value = singular_values[i];
+                index = i;
+            } else {
+                if (singular_values[i] < min_value) {
+                    min_value = singular_values[i];
+                    index = i;
+                }
+            }
+        }
+
+        // get corresponding left singular vector
+        RealVector plane_normal = svd.getU().getColumnVector(index);
+
+        // return plane normal and centroid as vector 3d
+        Vector3d final_plane_normal = new Vector3d(plane_normal.toArray());
+        // normalie just in case
+        final_plane_normal.normalize();
+        Vector3d final_plane_point = new Vector3d(centroid.toArray());
+        ArrayList<Vector3d> result = new ArrayList<>();
+        result.add(final_plane_normal);
+        result.add(final_plane_point);
+
+        return result;
 
     }
 

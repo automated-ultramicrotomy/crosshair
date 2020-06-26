@@ -72,10 +72,10 @@ public class Universe3DExplorer
 					// TODO - move these updates of the view transform to the toggle click behavoiur - then can
 					// just happen once and not slow down the interacitvity of the scrolling and rotation
 					current_target_plane_view = affineTransform3D.copy();
-					update_plane(universe, affineTransform3D, global_min_d, global_max_d, "target");
+					update_plane_on_transform_change(universe, affineTransform3D, global_min_d, global_max_d, "target");
 				} else if (track_plane == 2) {
 					current_block_plane_view = affineTransform3D.copy();
-					update_plane(universe, affineTransform3D, global_min_d, global_max_d, "block");
+					update_plane_on_transform_change(universe, affineTransform3D, global_min_d, global_max_d, "block");
 				}
 			}
 		});
@@ -123,14 +123,20 @@ public class Universe3DExplorer
 			imageContent.getPointList().add("", position[0],position[1],position[2]);
 		}, "add point", "P" );
 
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+			ArrayList<Vector3d> plane_definition = fit_plane_to_points(points);
+			update_plane(universe, plane_definition.get(0), plane_definition.get(1), global_min_d, global_max_d, "block");
+			//TODO - somehow need to save a current block plane view from this - so we can zoom to it later
+		}, "fit to points", "K" );
+
 
 		PointsOverlaySizeChange point_overlay = new PointsOverlaySizeChange();
 		point_overlay.setPoints(points);
 		BdvFunctions.showOverlay(point_overlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
 	}
 
-	private void update_plane (Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
-										String plane_name) {
+	private void update_plane_on_transform_change(Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
+												  String plane_name) {
 
 		final ArrayList< double[] > viewerPoints = new ArrayList<>();
 
@@ -151,6 +157,14 @@ public class Universe3DExplorer
 
 		Vector3d plane_normal = calculate_normal_from_points(globalPoints);
 		Vector3d plane_point = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
+
+		update_plane(universe, plane_normal, plane_point, global_min, global_max, plane_name);
+
+	}
+
+	private void update_plane (Image3DUniverse universe, Vector3d plane_normal, Vector3d plane_point, double[] global_min, double[] global_max,
+							   String plane_name) {
+
 		ArrayList<Vector3d> intersection_points = calculate_intersections(global_min, global_max, plane_normal, plane_point);
 
 		if (intersection_points.size() > 0) {
@@ -182,6 +196,7 @@ public class Universe3DExplorer
 			meshContent.setVisible(true);
 			meshContent.setLocked(true);
 		}
+
 	}
 
 
