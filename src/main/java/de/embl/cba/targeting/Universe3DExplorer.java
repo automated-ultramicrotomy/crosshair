@@ -13,6 +13,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
+import org.scijava.java3d.Transform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -54,6 +55,24 @@ public class Universe3DExplorer
 		universe.getGlobalMaxPoint(global_max);
 		double[] global_min_d = {global_min.getX(), global_min.getY(), global_min.getZ()};
 		double[] global_max_d = {global_max.getX(), global_max.getY(), global_max.getZ()};
+
+		final Image3DUniverse microtome_universe = new Image3DUniverse();
+		File stl_directory = new File("C:\\Users\\meechan\\Documents\\microtome_stl_parts");
+		File[] stl_files = stl_directory.listFiles();
+		for (File file : stl_files) {
+		Map<String, CustomMesh> mesh_stl = MeshLoader.loadSTL(file.getAbsolutePath());
+			for (String key : mesh_stl.keySet()) {
+				System.out.println(key);
+				// TODO - set as locked - should probably set my other custom meshes to be locked too?
+				microtome_universe.addCustomMesh(mesh_stl.get(key), key);
+			}
+		}
+		microtome_universe.show();
+		ui user = new ui(microtome_universe);
+
+
+		// make a little swing slider for three microtome moves
+
 
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
 		final BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw");

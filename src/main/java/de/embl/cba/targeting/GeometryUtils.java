@@ -14,7 +14,8 @@ import java.util.Set;
 
 public final class GeometryUtils {
     public static ArrayList<Vector3d> fit_plane_to_points (ArrayList<RealPoint> points) {
-        // Fit plane - get normal and point on plane, then usual update plane jazz
+        // Solution as here: https://math.stackexchange.com/questions/99299/best-fitting-plane-given-a-set-of-points
+        // good explanation of svds: https://en.wikipedia.org/wiki/Singular_value_decomposition
 //        convert to a real matrix
         double [] [] point_array = new double [points.size()][3];
         for (int i=0; i<points.size(); i++) {
