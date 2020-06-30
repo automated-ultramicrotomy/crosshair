@@ -33,6 +33,9 @@ public class Universe3DExplorer
 	int track_plane = 0;
 	public AffineTransform3D current_target_plane_view = null;
 	public AffineTransform3D current_block_plane_view = null;
+	Map<String, Vector3d> plane_normals = new HashMap<>();
+	Map<String, Vector3d> plane_points = new HashMap<>();
+	Map<String, Vector3d> plane_centroids = new HashMap<>();
 
 	public Universe3DExplorer() {
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
@@ -72,9 +75,6 @@ public class Universe3DExplorer
 		ui user = new ui(microtome_universe);
 
 
-		// make a little swing slider for three microtome moves
-
-
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
 		final BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw");
 		bdvStackSource.setDisplayRange(0, 255);
@@ -89,12 +89,8 @@ public class Universe3DExplorer
 			public void transformChanged(AffineTransform3D affineTransform3D) {
 				if ( track_plane == 1 )
 				{
-					// TODO - move these updates of the view transform to the toggle click behavoiur - then can
-					// just happen once and not slow down the interacitvity of the scrolling and rotation
-					current_target_plane_view = affineTransform3D.copy();
 					update_plane_on_transform_change(universe, affineTransform3D, global_min_d, global_max_d, "target");
 				} else if (track_plane == 2) {
-					current_block_plane_view = affineTransform3D.copy();
 					update_plane_on_transform_change(universe, affineTransform3D, global_min_d, global_max_d, "block");
 				}
 			}
@@ -118,15 +114,27 @@ public class Universe3DExplorer
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (track_plane == 0) {
-//				System.out.println(current_target_plane_view.toString());
-				BdvUtils.changeBdvViewerTransform(bdvStackSource, current_target_plane_view, 1500);
+				double[] target_normal = new double[3];
+				plane_normals.get("target").get(target_normal);
+
+				double[] target_centroid = new double[3];
+				plane_centroids.get("target").get(target_centroid);
+
+				moveToPosition(bdvStackSource, target_centroid, 0);
+				levelCurrentView(bdvStackSource, target_normal);
 			}
 		}, "zoom to targeting plane", "ctrl T" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (track_plane == 0) {
-//				System.out.println(current_target_plane_view.toString());
-				BdvUtils.changeBdvViewerTransform(bdvStackSource, current_block_plane_view, 1500);
+				double[] block_normal = new double[3];
+				plane_normals.get("block").get(block_normal);
+
+				double[] block_centroid = new double[3];
+				plane_centroids.get("block").get(block_centroid);
+
+				moveToPosition(bdvStackSource, block_centroid, 0);
+				levelCurrentView(bdvStackSource, block_normal);
 			}
 		}, "zoom to block plane", "ctrl F" );
 
@@ -146,7 +154,6 @@ public class Universe3DExplorer
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			ArrayList<Vector3d> plane_definition = fit_plane_to_points(points);
 			update_plane(universe, plane_definition.get(0), plane_definition.get(1), global_min_d, global_max_d, "block");
-			//TODO - somehow need to save a current block plane view from this - so we can zoom to it later
 		}, "fit to points", "K" );
 
 
@@ -188,6 +195,10 @@ public class Universe3DExplorer
 		ArrayList<Vector3d> intersection_points = calculate_intersections(global_min, global_max, plane_normal, plane_point);
 
 		if (intersection_points.size() > 0) {
+			plane_normals.put(plane_name, plane_normal);
+			plane_points.put(plane_name, plane_point);
+			plane_centroids.put(plane_name, get_centroid(intersection_points));
+
 			System.out.println(intersection_points.size());
 			ArrayList<Point3f> vector_points = new ArrayList<>();
 			for (Vector3d d : intersection_points) {
