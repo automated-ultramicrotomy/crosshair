@@ -65,6 +65,7 @@ public class Universe3DExplorer
 				System.out.println(key);
 				// TODO - set as locked - should probably set my other custom meshes to be locked too?
 				microtome_universe.addCustomMesh(mesh_stl.get(key), key);
+				microtome_universe.getContent(key).setLocked(true);
 			}
 		}
 		microtome_universe.show();
