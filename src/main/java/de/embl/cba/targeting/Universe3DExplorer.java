@@ -21,6 +21,9 @@ import org.scijava.vecmath.*;
 
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
@@ -60,15 +63,21 @@ public class Universe3DExplorer
 		double[] global_max_d = {global_max.getX(), global_max.getY(), global_max.getZ()};
 
 		final Image3DUniverse microtome_universe = new Image3DUniverse();
-		File stl_directory = new File("C:\\Users\\meechan\\Documents\\microtome_stl_parts");
-		File[] stl_files = stl_directory.listFiles();
-		for (File file : stl_files) {
-		Map<String, CustomMesh> mesh_stl = MeshLoader.loadSTL(file.getAbsolutePath());
-			for (String key : mesh_stl.keySet()) {
-				System.out.println(key);
-				// TODO - set as locked - should probably set my other custom meshes to be locked too?
-				microtome_universe.addCustomMesh(mesh_stl.get(key), key);
-				microtome_universe.getContent(key).setLocked(true);
+		String[] stl_files = {"/arc.stl", "/holder_back.stl", "/holder_front.stl", "/knife.stl"};
+		for (String file: stl_files) {
+			try {
+				URL resource = Universe3DExplorer.class.getResource(file);
+				String resource_file = Paths.get(resource.toURI()).toFile().getAbsolutePath();
+				Map<String, CustomMesh> mesh_stl = MeshLoader.loadSTL(resource_file);
+				for (String key : mesh_stl.keySet()) {
+					System.out.println(key);
+					// TODO - set as locked - should probably set my other custom meshes to be locked too?
+					microtome_universe.addCustomMesh(mesh_stl.get(key), key);
+					microtome_universe.getContent(key).setLocked(true);
+				}
+			} catch (URISyntaxException e) {
+			System.out.println("Error reading from resource");
+			e.printStackTrace();
 			}
 		}
 		microtome_universe.show();
