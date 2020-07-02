@@ -34,7 +34,10 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             final double[] gPos = new double[ 3 ];
             for ( final RealLocalizable p : points )
             {
+                // get point position (in microns etc)
                 p.localize( lPos );
+                // get point position in viewer (I guess in pixel units?), so gpos[2] is the distance in pixels
+                // from the current view plane
                 transform.apply( lPos, gPos );
                 final double size = getPointSize( gPos );
                 final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );

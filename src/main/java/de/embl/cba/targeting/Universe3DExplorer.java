@@ -3,11 +3,13 @@ package de.embl.cba.targeting;
 import bdv.util.*;
 import customnode.*;
 import de.embl.cba.bdv.utils.BdvUtils;
+import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
 import ij.ImagePlus;
 import ij.plugin.FolderOpener;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import ij3d.behaviors.InteractiveBehavior;
+import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -27,12 +29,13 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
+import static java.lang.Math.sqrt;
 
 public class Universe3DExplorer
 {
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
-//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
+	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
+//	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
 	int track_plane = 0;
 	public AffineTransform3D current_target_plane_view = null;
 	public AffineTransform3D current_block_plane_view = null;
@@ -45,6 +48,7 @@ public class Universe3DExplorer
 //		imagePlus.show();
 
 		final ArrayList<RealPoint> points = new ArrayList<>();
+		final ArrayList<RealPoint> block_vertices = new ArrayList<>();
 
 		final Image3DUniverse universe = new Image3DUniverse();
 		final Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
@@ -151,24 +155,97 @@ public class Universe3DExplorer
 //			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
 			RealPoint point = new RealPoint(3);
 			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
-			points.add(point);
-			bdvHandle.getViewerPanel().requestRepaint();
 
-			//TODO - check properly that these positions match between two viewers
-			double [] position = new double[3];
-			point.localize(position);
-			imageContent.getPointList().add("", position[0],position[1],position[2]);
+
+			//TODO - if already over point delete it, otherwise add a point
+			// look at point overlay code and properly understand what it's doing - can
+			// then set distance checks to match teh point size
+			// size in viewer units < 5
+			final AffineTransform3D transform = new AffineTransform3D();
+			bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+			double[] point_viewer_coords = convert_to_viewer_coordinates(point, transform);
+
+			boolean distance_match = false;
+			for ( int i = 0; i < points.size(); i++ )
+			{
+				double[] current_point_viewer_coords = convert_to_viewer_coordinates(points.get(i), transform);
+				double distance = distance_between_points(point_viewer_coords, current_point_viewer_coords);
+				//TODO - maybe change distance to 3? At the moment the z distance when it disappears is 3 so by setting
+				// to 5 you can delete stuff in a different z plane that you can't see
+				if (distance < 5) {
+					points.remove(i);
+					bdvHandle.getViewerPanel().requestRepaint();
+					distance_match = true;
+					break;
+					//TODO - also remove from 3d viewer
+				}
+
+			}
+
+			if (!distance_match) {
+				points.add(point);
+				bdvHandle.getViewerPanel().requestRepaint();
+
+				//TODO - check properly that these positions match between two viewers
+				double[] position = new double[3];
+				point.localize(position);
+				imageContent.getPointList().add("", position[0], position[1], position[2]);
+			}
 		}, "add point", "P" );
+
+
+
+		//TODO - interactive point removal
+		// bigwarp point hovering - https://github.com/saalfeldlab/bigwarp/blob/5e615bda9479275b7d54f0dbb2abffb51d21810c/src/main/java/bigwarp/BigWarp.java
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			ArrayList<Vector3d> plane_definition = fit_plane_to_points(points);
 			update_plane(universe, plane_definition.get(0), plane_definition.get(1), global_min_d, global_max_d, "block");
 		}, "fit to points", "K" );
 
+//		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+////			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
+//			RealPoint point = new RealPoint(3);
+//			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
+//			block_vertices.add(point);
+//			bdvHandle.getViewerPanel().requestRepaint();
+//
+//			//TODO - check properly that these positions match between two viewers
+//			double [] position = new double[3];
+//			point.localize(position);
+//			imageContent.getPointList().add("TL", position[0],position[1],position[2]);
+//		}, "add add block vertex", "V" );
+
 
 		PointsOverlaySizeChange point_overlay = new PointsOverlaySizeChange();
 		point_overlay.setPoints(points);
 		BdvFunctions.showOverlay(point_overlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
+
+//		PointsOverlaySizeChange vertex_overlay = new PointsOverlaySizeChange();
+//		point_overlay.setPoints(block_vertices);
+//		BdvFunctions.showOverlay(vertex_overlay, "vertex_overlay", Bdv.options().addTo(bdvStackSource));
+	}
+
+	private double[] convert_to_viewer_coordinates (RealPoint point, AffineTransform3D transform) {
+		final double[] lPos = new double[ 3 ];
+		final double[] gPos = new double[ 3 ];
+		// get point position (in microns etc)
+		point.localize(lPos);
+		// get point position in viewer (I guess in pixel units?), so gpos[2] is the distance in pixels
+		// from the current view plane
+		transform.apply(lPos, gPos);
+
+		return gPos;
+	}
+
+	private double distance_between_points (double[] point1, double[] point2) {
+		double sum = 0;
+		for ( int j = 0; j < 3; j++ )
+		{
+			double diff =  point1[j] - point2[j];
+			sum += diff*diff;
+		}
+		return sqrt(sum);
 	}
 
 	private void update_plane_on_transform_change(Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
