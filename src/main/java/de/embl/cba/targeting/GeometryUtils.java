@@ -4,19 +4,21 @@ import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.animate.SimilarityTransformAnimator;
 import de.embl.cba.bdv.utils.BdvUtils;
+import ij3d.Content;
+import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
 import net.imglib2.ops.parse.token.Real;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import org.apache.commons.math3.geometry.Vector;
 import org.apache.commons.math3.linear.*;
+import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3d;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3d;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.DoubleStream;
 
 import static de.embl.cba.bdv.utils.BdvUtils.*;
@@ -199,6 +201,7 @@ public final class GeometryUtils {
     }
 
     public static ArrayList<Point3f> calculate_triangles_from_points (ArrayList<Vector3d> intersections, Vector3d plane_normal) {
+        // TODO -maybe calculate plane normal directly from points? Avoids any issues with transformations...
         Vector3d centroid = get_centroid(intersections);
         Vector3d centroid_to_point = new Vector3d();
         centroid_to_point.sub(intersections.get(0), centroid);
@@ -274,7 +277,7 @@ public final class GeometryUtils {
         return normal;
     }
 
-    public static ArrayList<Vector3d> calculate_intersections (double[] global_min, double[] global_max, Vector3d plane_normal, Vector3d plane_point) {
+    public static ArrayList<Vector3d> calculate_intersections (double[] global_min, double[] global_max, Vector3d plane_normal, Vector3d plane_point, Content imageContent, Image3DUniverse universe) {
         ArrayList<Vector3d> bounding_box_points = new ArrayList<>();
         bounding_box_points.add(new Vector3d (global_min[0], global_min[1], global_min[2]));
         bounding_box_points.add(new Vector3d (global_min[0], global_min[1], global_max[2]));
@@ -284,6 +287,25 @@ public final class GeometryUtils {
         bounding_box_points.add(new Vector3d (global_max[0], global_min[1], global_max[2]));
         bounding_box_points.add(new Vector3d (global_max[0], global_max[1], global_min[2]));
         bounding_box_points.add(new Vector3d (global_max[0], global_max[1], global_max[2]));
+
+//        //TODO -remove - checks where bounding box is predicted to be
+//        // plot these for testing
+//        List<Point3f> transformed_points = new ArrayList<>();
+//        Transform3D translate = new Transform3D();
+//        Transform3D rotate = new Transform3D();
+//        imageContent.getLocalTranslate(translate);
+//        imageContent.getLocalRotate(rotate);
+//        for (Vector3d b_point : bounding_box_points) {
+//            Point3d pp = new Point3d();
+//            b_point.get(pp);
+////            Vector3d b_point_copy = new Vector3d(b_point.getX(), b_point.getY(), b_point.getZ());
+//            rotate.transform(pp);
+//            translate.transform(pp);
+//            Point3f poi = new Point3f((float) pp.getX(), (float) pp.getY(), (float) pp.getZ());
+//            transformed_points.add(poi);
+//        }
+//        universe.removeContent("yo");
+//        universe.addPointMesh(transformed_points, new Color3f(0, 1, 0), "yo");
 
         //enumerate all combos of two points on edges
         ArrayList<Vector3d[]> bounding_box_edges = new ArrayList<>();

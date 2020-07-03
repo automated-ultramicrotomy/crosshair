@@ -37,8 +37,8 @@ public class Universe3DExplorer
 {
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-//	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
-	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
+	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
+//	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
 	int track_plane = 0;
 	public AffineTransform3D current_target_plane_view = null;
 	public AffineTransform3D current_block_plane_view = null;
@@ -69,6 +69,8 @@ public class Universe3DExplorer
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
 		universe.show();
+
+
 
 		Point3d global_min = new Point3d();
 		Point3d global_max = new Point3d();
@@ -112,9 +114,9 @@ public class Universe3DExplorer
 			public void transformChanged(AffineTransform3D affineTransform3D) {
 				if ( track_plane == 1 )
 				{
-					update_plane_on_transform_change(universe, affineTransform3D, global_min_d, global_max_d, "target");
+					update_plane_on_transform_change(universe, imageContent, affineTransform3D, global_min_d, global_max_d, "target");
 				} else if (track_plane == 2) {
-					update_plane_on_transform_change(universe, affineTransform3D, global_min_d, global_max_d, "block");
+					update_plane_on_transform_change(universe, imageContent, affineTransform3D, global_min_d, global_max_d, "block");
 				}
 			}
 		});
@@ -214,7 +216,7 @@ public class Universe3DExplorer
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			ArrayList<Vector3d> plane_definition = fit_plane_to_points(points);
-			update_plane(universe, plane_definition.get(0), plane_definition.get(1), global_min_d, global_max_d, "block");
+			update_plane(universe, imageContent, plane_definition.get(0), plane_definition.get(1), global_min_d, global_max_d, "block");
 		}, "fit to points", "K" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
@@ -228,6 +230,31 @@ public class Universe3DExplorer
 			double [] position = new double[3];
 			point.localize(position);
 			imageContent.getPointList().add("", position[0],position[1],position[2]);
+
+			//TODO - remove
+			Point3d min = new Point3d();
+			Point3d max = new Point3d();
+			imageContent.getMax(max);
+			imageContent.getMin(min);
+			System.out.println(max.toString());
+			System.out.println(min.toString());
+			Transform3D translate = new Transform3D();
+			Transform3D rotate = new Transform3D();
+			imageContent.getLocalTranslate(translate);
+			imageContent.getLocalRotate(rotate);
+			System.out.println(translate.toString());
+			System.out.println(rotate.toString());
+			rotate.transform(min);
+			rotate.transform(max);
+			translate.transform(min);
+			translate.transform(max);
+			List<Point3f> transformed_points = new ArrayList<>();
+			Point3f poi = new Point3f((float) min.getX(), (float) min.getY(), (float) min.getZ());
+			transformed_points.add(poi);
+			Point3f poi2 = new Point3f((float) max.getX(), (float) max.getY(), (float) max.getZ());
+			transformed_points.add(poi2);
+			universe.removeContent("yo");
+			universe.addPointMesh(transformed_points, new Color3f(0, 1, 0), "yo");
 		}, "add block vertex", "V" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
@@ -282,7 +309,7 @@ public class Universe3DExplorer
 		return sqrt(sum);
 	}
 
-	private void update_plane_on_transform_change(Image3DUniverse universe, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
+	private void update_plane_on_transform_change(Image3DUniverse universe, Content imageContent, AffineTransform3D affineTransform3D, double[] global_min, double[] global_max,
 												  String plane_name) {
 
 		final ArrayList< double[] > viewerPoints = new ArrayList<>();
@@ -305,19 +332,53 @@ public class Universe3DExplorer
 		Vector3d plane_normal = calculate_normal_from_points(globalPoints);
 		Vector3d plane_point = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
 
-		update_plane(universe, plane_normal, plane_point, global_min, global_max, plane_name);
+		update_plane(universe, imageContent, plane_normal, plane_point, global_min, global_max, plane_name);
 
 	}
 
-	private void update_plane (Image3DUniverse universe, Vector3d plane_normal, Vector3d plane_point, double[] global_min, double[] global_max,
+	private void update_plane (Image3DUniverse universe, Content imageContent, Vector3d plane_normal, Vector3d plane_point, double[] global_min, double[] global_max,
 							   String plane_name) {
 
-		ArrayList<Vector3d> intersection_points = calculate_intersections(global_min, global_max, plane_normal, plane_point);
+		//TODO - shift to use bounding box of image itself
+// Get bounding box of image, account for any transformation of teh image
+		Point3d min = new Point3d();
+		Point3d max = new Point3d();
+		imageContent.getMax(max);
+		imageContent.getMin(min);
+		System.out.println(max.toString());
+		double[] min_coord = new double[3];
+		double[] max_coord = new double[3];
+		min.get(min_coord);
+		max.get(max_coord);
+		System.out.println(max.toString());
+
+//		TODO - remvoe image content
+		ArrayList<Vector3d> intersection_points = calculate_intersections(min_coord, max_coord, plane_normal, plane_point, imageContent,universe);
 
 		if (intersection_points.size() > 0) {
 			plane_normals.put(plane_name, plane_normal);
 			plane_points.put(plane_name, plane_point);
 			plane_centroids.put(plane_name, get_centroid(intersection_points));
+
+			// intersections were in local space, we want to display in the global so must account for any transformations
+			// of the image
+			Transform3D translate = new Transform3D();
+			Transform3D rotate = new Transform3D();
+			imageContent.getLocalTranslate(translate);
+			imageContent.getLocalRotate(rotate);
+
+			for (Vector3d point : intersection_points) {
+				// convert to point > transfrom affects vectors differently
+				Point3d intersect = new Point3d(point.getX(), point.getY(), point.getZ());
+				rotate.transform(intersect);
+				translate.transform(intersect);
+				point.setX(intersect.getX());
+				point.setY(intersect.getY());
+				point.setZ(intersect.getZ());
+			}
+
+			Vector3d transformed_normal = new Vector3d(plane_normal.getX(), plane_normal.getY(), plane_normal.getZ());
+			rotate.transform(transformed_normal);
 
 			System.out.println(intersection_points.size());
 			ArrayList<Point3f> vector_points = new ArrayList<>();
@@ -340,7 +401,7 @@ public class Universe3DExplorer
 			if (intersection_points.size() == 3) {
 				new_mesh = new CustomTransparentTriangleMesh(vector_points, plane_color, 0.7f);
 			} else if (intersection_points.size() > 3) {
-				ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, plane_normal);
+				ArrayList<Point3f> triangles = calculate_triangles_from_points(intersection_points, transformed_normal);
 				new_mesh = new CustomTransparentTriangleMesh(triangles, plane_color, 0.7f);
 			}
 			Content meshContent = universe.addCustomMesh(new_mesh, plane_name);
