@@ -61,7 +61,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
 
         private double getPointSize (final double[] gPos)
         {
-            if ( Math.abs( gPos[ 2 ] ) < 3 )
+            if ( Math.abs( gPos[ 2 ] ) < 5 )
                 return 5.0;
             else
                 return 0.0;

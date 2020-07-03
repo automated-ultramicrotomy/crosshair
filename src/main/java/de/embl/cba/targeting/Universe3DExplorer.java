@@ -20,6 +20,8 @@ import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.vecmath.*;
+import vib.BenesNamedPoint;
+import vib.PointList;
 
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -34,8 +36,9 @@ import static java.lang.Math.sqrt;
 public class Universe3DExplorer
 {
 //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
-	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
+//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
 //	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
+	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
 	int track_plane = 0;
 	public AffineTransform3D current_target_plane_view = null;
 	public AffineTransform3D current_block_plane_view = null;
@@ -156,11 +159,6 @@ public class Universe3DExplorer
 			RealPoint point = new RealPoint(3);
 			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
 
-
-			//TODO - if already over point delete it, otherwise add a point
-			// look at point overlay code and properly understand what it's doing - can
-			// then set distance checks to match teh point size
-			// size in viewer units < 5
 			final AffineTransform3D transform = new AffineTransform3D();
 			bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
 			double[] point_viewer_coords = convert_to_viewer_coordinates(point, transform);
@@ -170,14 +168,28 @@ public class Universe3DExplorer
 			{
 				double[] current_point_viewer_coords = convert_to_viewer_coordinates(points.get(i), transform);
 				double distance = distance_between_points(point_viewer_coords, current_point_viewer_coords);
-				//TODO - maybe change distance to 3? At the moment the z distance when it disappears is 3 so by setting
-				// to 5 you can delete stuff in a different z plane that you can't see
 				if (distance < 5) {
+					double[] chosen_point_coord = new double[3];
+					points.get(i).localize(chosen_point_coord);
+					int point_index = imageContent.getPointList().indexOfPointAt(chosen_point_coord[0], chosen_point_coord[1], chosen_point_coord[2], imageContent.getLandmarkPointSize());
+					imageContent.getPointList().remove(point_index);
+
+//					There's a bug in how the 3D viewer displays points after one is removed. Currently, it just stops
+//					displaying the first point added (rather than the one you actually removed).
+//					Therefore here I remove all points and re-add them, to get the viewer to reset how it draws
+//					the points. Perhaps there's a more efficient way to get around this?
+					PointList current_point_list = imageContent.getPointList().duplicate();
+					imageContent.getPointList().clear();
+					for (Iterator<BenesNamedPoint> it = current_point_list.iterator(); it.hasNext(); ) {
+						BenesNamedPoint p = it.next();
+						imageContent.getPointList().add(p);
+					}
+
 					points.remove(i);
 					bdvHandle.getViewerPanel().requestRepaint();
+
 					distance_match = true;
 					break;
-					//TODO - also remove from 3d viewer
 				}
 
 			}
