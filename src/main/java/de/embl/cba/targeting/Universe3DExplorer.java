@@ -49,6 +49,11 @@ public class Universe3DExplorer
 
 
 	public Universe3DExplorer() {
+		//TODO - click remvoe of vertex points
+		//TODO - make sure removal also removes from named_vertices
+		//TODO - can deselect point
+		//TODO - make it so assigning top left etc, checks if thw point is assigned to any other label, then removes this
+		// stops ability to have multilple assignments on each point in bdv
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 //		imagePlus.show();
 
@@ -91,8 +96,6 @@ public class Universe3DExplorer
 			}
 		}
 		microtome_universe.show();
-		ui user = new ui(microtome_universe);
-
 
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
 		final BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw");
@@ -100,6 +103,7 @@ public class Universe3DExplorer
 
 
 		final BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
+		ui user = new ui(microtome_universe, selected_vertex, named_vertices, bdvHandle, imageContent);
 		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
 		behaviours.install(bdvHandle.getTriggerbindings(), "target");
 
@@ -224,7 +228,7 @@ public class Universe3DExplorer
 			double [] position = new double[3];
 			point.localize(position);
 			imageContent.getPointList().add("", position[0],position[1],position[2]);
-		}, "add add block vertex", "V" );
+		}, "add block vertex", "V" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 //			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
@@ -252,7 +256,7 @@ public class Universe3DExplorer
 
 
 		PointsOverlaySizeChange point_overlay = new PointsOverlaySizeChange();
-		point_overlay.setPoints(points, block_vertices, selected_vertex);
+		point_overlay.setPoints(points, block_vertices, selected_vertex, named_vertices);
 		BdvFunctions.showOverlay(point_overlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
 	}
 

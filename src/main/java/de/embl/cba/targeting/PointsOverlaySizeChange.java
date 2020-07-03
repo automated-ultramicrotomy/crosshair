@@ -2,12 +2,14 @@ package de.embl.cba.targeting;
 
 import bdv.util.BdvOverlay;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.ops.parse.token.Real;
 import net.imglib2.realtransform.AffineTransform3D;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class PointsOverlaySizeChange extends BdvOverlay {
     // same as https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/PointsOverlay.java
@@ -16,17 +18,20 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         private List< ? extends RealLocalizable> points;
         private List<? extends RealLocalizable> vertex_points;
         private RealLocalizable selected_point;
+        private Map<String, RealPoint> point_map;
 
-        private Color col_point;
+private Color col_point;
         private Color col_vertex;
         private Color col_selected;
 
         public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertex_points,
-                                                            final RealLocalizable selected_point)
+                                                            final RealLocalizable selected_point,
+                                                            final Map<String, RealPoint> point_map)
         {
             this.points = points;
             this.vertex_points = vertex_points;
             this.selected_point = selected_point;
+            this.point_map = point_map;
         }
 
         @Override
@@ -78,7 +83,22 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                     graphics.setColor(getColor(gPos, col_vertex));
                 }
                 graphics.fillOval( x, y, w, w );
+
             }
+
+            // go through pointmap - add text labels
+            for (String key : point_map.keySet()) {
+                RealPoint key_point = point_map.get(key);
+                key_point.localize(lPos);
+                transform.apply( lPos, gPos );
+                graphics.setColor(getColor(gPos, col_vertex));
+                if (Math.abs(gPos[2]) < 5) {
+                    graphics.drawString(key, (int) gPos[0], (int) gPos[1]);
+                }
+            }
+
+
+
         }
 
         /** screen pixels [x,y,z] **/
