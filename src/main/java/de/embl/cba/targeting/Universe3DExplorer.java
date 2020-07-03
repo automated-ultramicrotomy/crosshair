@@ -45,6 +45,8 @@ public class Universe3DExplorer
 	Map<String, Vector3d> plane_normals = new HashMap<>();
 	Map<String, Vector3d> plane_points = new HashMap<>();
 	Map<String, Vector3d> plane_centroids = new HashMap<>();
+	Map<String, RealPoint> named_vertices = new HashMap<>();
+
 
 	public Universe3DExplorer() {
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
@@ -52,6 +54,7 @@ public class Universe3DExplorer
 
 		final ArrayList<RealPoint> points = new ArrayList<>();
 		final ArrayList<RealPoint> block_vertices = new ArrayList<>();
+		final RealPoint selected_vertex = new RealPoint(3);
 
 		final Image3DUniverse universe = new Image3DUniverse();
 		final Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
@@ -205,37 +208,52 @@ public class Universe3DExplorer
 			}
 		}, "add point", "P" );
 
-
-
-		//TODO - interactive point removal
-		// bigwarp point hovering - https://github.com/saalfeldlab/bigwarp/blob/5e615bda9479275b7d54f0dbb2abffb51d21810c/src/main/java/bigwarp/BigWarp.java
-
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			ArrayList<Vector3d> plane_definition = fit_plane_to_points(points);
 			update_plane(universe, plane_definition.get(0), plane_definition.get(1), global_min_d, global_max_d, "block");
 		}, "fit to points", "K" );
 
-//		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-////			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
-//			RealPoint point = new RealPoint(3);
-//			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
-//			block_vertices.add(point);
-//			bdvHandle.getViewerPanel().requestRepaint();
-//
-//			//TODO - check properly that these positions match between two viewers
-//			double [] position = new double[3];
-//			point.localize(position);
-//			imageContent.getPointList().add("TL", position[0],position[1],position[2]);
-//		}, "add add block vertex", "V" );
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+//			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
+			RealPoint point = new RealPoint(3);
+			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
+			block_vertices.add(point);
+			bdvHandle.getViewerPanel().requestRepaint();
+
+			//TODO - check properly that these positions match between two viewers
+			double [] position = new double[3];
+			point.localize(position);
+			imageContent.getPointList().add("", position[0],position[1],position[2]);
+		}, "add add block vertex", "V" );
+
+		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+//			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
+			RealPoint point = new RealPoint(3);
+			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
+
+			final AffineTransform3D transform = new AffineTransform3D();
+			bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+			double[] point_viewer_coords = convert_to_viewer_coordinates(point, transform);
+
+			for ( int i = 0; i < block_vertices.size(); i++ ) {
+				double[] current_point_viewer_coords = convert_to_viewer_coordinates(block_vertices.get(i), transform);
+				double distance = distance_between_points(point_viewer_coords, current_point_viewer_coords);
+				if (distance < 5) {
+					selected_vertex.setPosition(block_vertices.get(i));
+					double[] test = new double[3];
+					selected_vertex.localize(test);
+					bdvHandle.getViewerPanel().requestRepaint();
+					break;
+				}
+			}
+
+		}, "select point", "ctrl L" );
+
 
 
 		PointsOverlaySizeChange point_overlay = new PointsOverlaySizeChange();
-		point_overlay.setPoints(points);
+		point_overlay.setPoints(points, block_vertices, selected_vertex);
 		BdvFunctions.showOverlay(point_overlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
-
-//		PointsOverlaySizeChange vertex_overlay = new PointsOverlaySizeChange();
-//		point_overlay.setPoints(block_vertices);
-//		BdvFunctions.showOverlay(vertex_overlay, "vertex_overlay", Bdv.options().addTo(bdvStackSource));
 	}
 
 	private double[] convert_to_viewer_coordinates (RealPoint point, AffineTransform3D transform) {
