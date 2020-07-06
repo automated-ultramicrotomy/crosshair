@@ -54,6 +54,9 @@ public class Universe3DExplorer
 		//TODO - can deselect point
 		//TODO - make it so assigning top left etc, checks if thw point is assigned to any other label, then removes this
 		// stops ability to have multilple assignments on each point in bdv
+		//TODO - add in checks for e.g. right number of points, one of each assignment, target and block normals etc
+		//TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
+		//check points are on block plane
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 //		imagePlus.show();
 
@@ -105,7 +108,7 @@ public class Universe3DExplorer
 
 
 		final BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
-		ui user = new ui(microtome_universe, selected_vertex, named_vertices, bdvHandle, imageContent);
+		ui user = new ui(microtome_universe, universe, selected_vertex, named_vertices, bdvHandle, imageContent);
 		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
 		behaviours.install(bdvHandle.getTriggerbindings(), "target");
 

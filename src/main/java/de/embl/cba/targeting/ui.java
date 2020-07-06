@@ -4,21 +4,23 @@ import bdv.util.BdvHandle;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.AxisAngle4f;
-import org.scijava.vecmath.Matrix4f;
-import org.scijava.vecmath.Vector3f;
+import org.scijava.vecmath.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ui extends JPanel {
     private BdvHandle bdvHandle;
     Image3DUniverse microtome_universe;
+    Image3DUniverse universe;
     Content imageContent;
     private double knife_tilt;
     private double tilt;
@@ -30,13 +32,14 @@ public class ui extends JPanel {
     Map<String, RealPoint> pointmap;
 
 
-    public ui (Image3DUniverse microtome_universe, RealPoint selected_point, Map<String, RealPoint> pointmap,
+    public ui (Image3DUniverse microtome_universe, Image3DUniverse universe, RealPoint selected_point, Map<String, RealPoint> pointmap,
                BdvHandle bdvHandle, Content imageContent) {
         this.microtome_universe = microtome_universe;
         this.selected_point = selected_point;
         this.pointmap = pointmap;
         this.bdvHandle = bdvHandle;
         this.imageContent = imageContent;
+        this.universe = universe;
         rotation_axis = new Vector3f(new float[] {0, 1, 0});
         tilt_axis = new Vector3f(new float[] {1, 0, 0});
         arc_centre = new Vector3f(new float[] {0,1,0});
@@ -61,6 +64,12 @@ public class ui extends JPanel {
         bottom_right.setActionCommand("bottom_right");
         bottom_right.addActionListener(vertex_listener);
         p.add(bottom_right);
+
+        ActionListener block_listener = new block_listener();
+        JButton initialise_block = new JButton("Initialise block");
+        initialise_block.setActionCommand("initialise_block");
+        initialise_block.addActionListener(block_listener);
+        p.add(initialise_block);
 
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
@@ -122,6 +131,109 @@ public class ui extends JPanel {
         }
     }
 
+    class block_listener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if ("initialise_block".equals(e.getActionCommand())) {
+                setup_block_orientation(imageContent, universe, pointmap);
+                // TODO - update planes
+            }
+        }
+    }
+
+    private void setup_block_orientation (Content imageContent, Image3DUniverse universe,
+                                          Map<String, RealPoint> named_vertices) {
+            //reset translation / rotation in case it has been modified
+        imageContent.setTransform(new Transform3D());
+        // calc centroid
+        double[] centre = calculate_centre(imageContent);
+//        imageContent.setTranslation((float) -centre[0], (float) -centre[1], (float) -centre[2]);
+
+        // check in right orientation, coming out of block surface
+        double[] top_left = new double[3];
+        double[] bottom_left = new double[3];
+        double[] bottom_right = new double[3];
+        named_vertices.get("top_left").localize(top_left);
+        named_vertices.get("bottom_left").localize(bottom_left);
+        named_vertices.get("bottom_right").localize(bottom_right);
+
+        Vector3d bottom_edge_vector = new Vector3d();
+        bottom_edge_vector.sub(new Vector3d(bottom_right), new Vector3d(bottom_left));
+
+        double length_edge = bottom_edge_vector.length();
+        System.out.println(length_edge);
+
+        Vector3d up_left_side_vector = new Vector3d();
+        up_left_side_vector.sub(new Vector3d(top_left), new Vector3d(bottom_left));
+
+        Vector3d block_normal = new Vector3d();
+        block_normal.cross(bottom_edge_vector, up_left_side_vector);
+        block_normal.normalize();
+
+        Vector3d end_block_normal = new Vector3d(0, -1, 0);
+        Vector3d end_edge_vector = new Vector3d(1, 0, 0);
+        //TODO - currently hard code knife angle, make user parameter
+        AxisAngle4d initial_knife_offset = new AxisAngle4d(new Vector3d(0, 0, 1), 20 * Math.PI / 180);
+        Matrix4d matrix_initial_knife_offset = new Matrix4d();
+        matrix_initial_knife_offset.set(initial_knife_offset);
+        Transform3D initial_knife_transform = new Transform3D(matrix_initial_knife_offset);
+
+        initial_knife_transform.transform(end_block_normal);
+        end_block_normal.normalize();
+        initial_knife_transform.transform(end_edge_vector);
+        end_edge_vector.normalize();
+
+        // normalise just in case
+        bottom_edge_vector.normalize();
+        System.out.println(length_edge);
+
+        // what is transform to bring block normal to be end block normal & end edge vector to be end edge vector?
+        //TODO - maybe translate so centre of edge vector == centre of knife location
+        Rotation end_rotation = new Rotation(new Vector3D(block_normal.getX(), block_normal.getY(), block_normal.getZ()),
+                new Vector3D(bottom_edge_vector.getX(), bottom_edge_vector.getY(), bottom_edge_vector.getZ()),
+                new Vector3D(end_block_normal.getX(), end_block_normal.getY(), end_block_normal.getZ()),
+                new Vector3D(end_edge_vector.getX(), end_edge_vector.getY(), end_edge_vector.getZ()));
+
+
+        // convert back to scijava conventions
+        double[][] end_rot_matrix = end_rotation.getMatrix();
+        Matrix3d scijava_form_matrix = new Matrix3d(end_rot_matrix[0][0], end_rot_matrix[0][1], end_rot_matrix[0][2],
+                end_rot_matrix[1][0],end_rot_matrix[1][1],end_rot_matrix[1][2],
+                end_rot_matrix[2][0],end_rot_matrix[2][1],end_rot_matrix[2][2]);
+
+        // initial position of bottom edge centre
+        Vector3d bottom_edge_centre = new Vector3d(bottom_left);
+        bottom_edge_centre.add(new Vector3d(bottom_edge_vector.getX() * 0.5 * length_edge,
+                bottom_edge_vector.getY() * 0.5 * length_edge,
+                bottom_edge_vector.getZ() * 0.5 * length_edge));
+        Vector3d end_bottom_edge_centre = new Vector3d(0, 0, 0);
+        end_bottom_edge_centre.sub(bottom_edge_centre);
+
+        //final transform
+        Transform3D final_setup_transform = new Transform3D(scijava_form_matrix, new Vector3d (end_bottom_edge_centre.getX(), end_bottom_edge_centre.getY(), end_bottom_edge_centre.getZ()), 1);
+//        Transform3D final_setup_transform = new Transform3D(scijava_form_matrix, new Vector3d (-centre[0], -centre[1], -centre[2]), 1);
+//        imageContent.setTransform(final_setup_transform);
+        imageContent.setTranslation((float) end_bottom_edge_centre.getX(), (float) end_bottom_edge_centre.getY(), (float) end_bottom_edge_centre.getZ());
+        // change so view rotates about (0,0,0)
+        universe.centerAt(new Point3d());
+    }
+
+        //as here for recalculate global min max
+        // https://github.com/fiji/3D_Viewer/blob/c1cba02d475a05c94aebe322c2d5d76790907d6b/src/main/java/ij3d/Image3DUniverse.java
+    private double[] calculate_centre (Content imageContent) {
+        final Point3d cmin = new Point3d();
+        imageContent.getMin(cmin);
+        final Point3d cmax = new Point3d();
+        imageContent.getMax(cmax);
+
+        double[] centre = new double[3];
+
+        centre[0] = cmin.getX() + (cmax.getX() - cmin.getX()) / 2;
+        centre[1] = cmin.getY() + (cmax.getY() - cmin.getY()) / 2;
+        centre[2] = cmin.getZ() + (cmax.getZ() - cmin.getZ()) / 2;
+
+        return centre;
+    }
+
     private void rename_point_3D (Content content, RealPoint point, String name) {
         double[] point_coord = new double[3];
         point.localize(point_coord);
@@ -139,6 +251,13 @@ public class ui extends JPanel {
         return m;
     }
 
+    private Matrix4d make_matrix (double angle_degrees, Vector3d axis, Vector3d rotation_centre, Vector3d translation) {
+        double angle_rad = angle_degrees * Math.PI / 180;
+        Matrix4d m = new Matrix4d();
+        compose(new AxisAngle4d(axis, angle_rad), rotation_centre, translation, m);
+        return m;
+    }
+
 
     public static void compose(final AxisAngle4f rot, final Vector3f origin,
                                final Vector3f translation, final Matrix4f ret)
@@ -152,6 +271,21 @@ public class ui extends JPanel {
 
         ret.setTranslation(trans);
     }
+
+    public static void compose(final AxisAngle4d rot, final Vector3d origin,
+                               final Vector3d translation, final Matrix4d ret)
+    {
+        ret.set(rot);
+        final Vector3d trans = new Vector3d(origin);
+        trans.scale(-1);
+        ret.transform(trans);
+        trans.add(translation);
+        trans.add(origin);
+
+        ret.setTranslation(trans);
+    }
+
+
 
     class KnifeListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
