@@ -56,6 +56,7 @@ public class Universe3DExplorer
 		// stops ability to have multilple assignments on each point in bdv
 		//TODO - add in checks for e.g. right number of points, one of each assignment, target and block normals etc
 		//TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
+		//TODO - does ctrl+f fail if you are already there?
 		//check points are on block plane
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 //		imagePlus.show();
