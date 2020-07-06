@@ -1,6 +1,7 @@
 package de.embl.cba.targeting;
 
 import bdv.util.BdvHandle;
+import customnode.CustomMesh;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
@@ -14,8 +15,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Math.abs;
 
 public class ui extends JPanel {
     private BdvHandle bdvHandle;
@@ -29,10 +34,14 @@ public class ui extends JPanel {
     Vector3f tilt_axis;
     Vector3f arc_centre;
     RealPoint selected_point;
+    Vector3f knife_centre;
     Map<String, RealPoint> pointmap;
     Map<String, Vector3d> plane_normals;
     Map<String, Vector3d> plane_points;
     Map<String, Vector3d> plane_centroids;
+    Map<String, CustomMesh> mesh_stl;
+    Matrix4d arc_components_initial_transform;
+    Matrix4d knife_initial_transform;
 
     //TODO - add all sliders up here?
     //TODO - get sliders to handle doubles!! Also have a box to type value if don't want to use slider - more precise
@@ -49,7 +58,7 @@ public class ui extends JPanel {
 
     public ui (Image3DUniverse microtome_universe, Image3DUniverse universe, RealPoint selected_point, Map<String, RealPoint> pointmap,
                BdvHandle bdvHandle, Content imageContent, Map<String, Vector3d> plane_normals,
-               Map<String, Vector3d> plane_points, Map<String, Vector3d> plane_centroids) {
+               Map<String, Vector3d> plane_points, Map<String, Vector3d> plane_centroids,  Map<String, CustomMesh> mesh_stl) {
         this.microtome_universe = microtome_universe;
         this.selected_point = selected_point;
         this.pointmap = pointmap;
@@ -59,9 +68,11 @@ public class ui extends JPanel {
         this.plane_normals = plane_normals;
         this.plane_points = plane_points;
         this.plane_centroids = plane_centroids;
+        this.mesh_stl = mesh_stl;
         rotation_axis = new Vector3f(new float[] {0, 1, 0});
         tilt_axis = new Vector3f(new float[] {1, 0, 0});
         arc_centre = new Vector3f(new float[] {0,1,0});
+        knife_centre = new Vector3f(new float[] {0,-2,0});
 
         JFrame microtome_panel = new JFrame("frame");
         JPanel p = new JPanel();
@@ -168,13 +179,105 @@ public class ui extends JPanel {
 
     class block_listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            //TODO - setup so doesn't reload scale if just change inital values
+            for (String key : mesh_stl.keySet()) {
+                System.out.println(key);
+                // TODO - set as locked - should probably set my other custom meshes to be locked too?
+                if (!universe.contains(key)) {
+                    universe.addCustomMesh(mesh_stl.get(key), key);
+                    universe.getContent(key).setLocked(true);
+                }
+            }
+
+            // scale meshes / position them
+            Point3d min_arc = new Point3d();
+            Point3d max_arc = new Point3d();
+            universe.getContent("arc.stl").getMax(max_arc);
+            universe.getContent("arc.stl").getMin(min_arc);
+            double height_arc = abs(max_arc.getZ() - min_arc.getZ());
+
+            Point3d min_image = new Point3d();
+            Point3d max_image = new Point3d();
+            imageContent.getMax(max_image);
+            imageContent.getMin(min_image);
+            ArrayList<Double> dims = new ArrayList<>();
+            dims.add(abs(max_image.getX() - min_image.getX()));
+            dims.add(abs(max_image.getY() - min_image.getY()));
+            dims.add(abs(max_image.getZ() - min_image.getZ()));
+            double end_height = Collections.max(dims);
+
+            double scale_factor = end_height / height_arc;
+
+            Matrix4d scale_matrix = new Matrix4d(scale_factor, 0, 0, 0,
+                    0, scale_factor, 0, 0,
+                    0, 0, scale_factor, 0,
+                    0, 0, 0, 1);
+
+            Transform3D trans = new Transform3D(scale_matrix);
+
+            Vector3d max_image_vector = new Vector3d();
+            max_image_vector.sub(new Vector3d(max_image.getX(), max_image.getY(), max_image.getZ()),
+                                    new Vector3d(min_image.getX(), min_image.getY(), min_image.getZ()));
+            double max_image_distance = max_image_vector.length();
+
+            // translate so front of holder one max image distance away from 0,0,0
+            // location of min holder front is approximate from original blender file
+            Point3d min_holder_front = new Point3d(0, 3,0);
+//            universe.getContent("holder_front.stl").getMin(min_arc);
+
+            // hodler front after scaling
+            Point3d holder_front_after = new Point3d(min_holder_front.getX(), min_holder_front.getY(), min_holder_front.getZ());
+            trans.transform(holder_front_after);
+            double y_holder_front = holder_front_after.getY();
+
+            // arc centre after scaling
+            Point3d arc_c = new Point3d(arc_centre.getX(), arc_centre.getY(), arc_centre.getZ());
+            trans.transform(arc_c);
+
+            double translate_y = max_image_distance - y_holder_front;
+
+            Matrix4d translate_arc_components = new Matrix4d(1, 0, 0, 0,
+                    0, 1, 0, translate_y,
+                    0,0,1,0,
+                    0,0,0,1);
+
+            translate_arc_components.mul(scale_matrix);
+            Transform3D arc_components_transform = new Transform3D(translate_arc_components);
+            String[] arc_components = new String[] {"arc.stl", "holder_front.stl", "holder_back.stl"};
+            for (String key : arc_components) {
+                universe.getContent(key).setTransform(arc_components_transform);
+            }
+            arc_components_initial_transform = translate_arc_components;
+
+            //TODO - set arc centre and knife centre to value after scaling and translation
+
+            // Set knife to same distance
+            // hodler front after scaling
+            Point3d knife_centre_after = new Point3d(knife_centre.getX(), knife_centre.getY(), knife_centre.getZ());
+            trans.transform(knife_centre_after);
+            double y_knife = knife_centre_after.getY();
+            System.out.println("yknife");
+            System.out.println(y_knife);
+
+            double translate_k = -max_image_distance - y_knife;
+
+            Matrix4d translate_knife = new Matrix4d(1, 0, 0, 0,
+                    0, 1, 0, translate_k,
+                    0,0,1,0,
+                    0,0,0,1);
+
+            translate_knife.mul(scale_matrix);
+            Transform3D knife_transform = new Transform3D(translate_knife);
+            universe.getContent("knife.stl").setTransform(knife_transform);
+            knife_initial_transform = translate_knife;
+
             initial_block_transform = setup_block_orientation(imageContent, universe, pointmap, initial_knife_angle.getValue());
             knife_rotation.setValue(initial_knife_angle.getValue());
             arc_rotation.setValue(initial_tilt_angle.getValue());
             holder_rotation.setValue(0);
             plane_update_utils.update_planes_in_place(universe, imageContent, plane_normals, plane_points, plane_centroids);
 
-            }
+        }
     }
 
     private Matrix4d setup_block_orientation (Content imageContent, Image3DUniverse universe,
@@ -340,11 +443,14 @@ public class ui extends JPanel {
             JSlider source = (JSlider) e.getSource();
             knife_tilt = (double) source.getValue();
             Vector3f axis = new Vector3f(new float[] {0, 0, 1});
-            Vector3f knife_centre = new Vector3f(new float[] {0,-2,0});
+
             Vector3f translation = new Vector3f(new float[] {0,0,0});
 
             Matrix4f full_transform = make_matrix(knife_tilt, axis, knife_centre, translation);
-            microtome_universe.getContent("knife.stl").setTransform(new Transform3D(full_transform));
+
+            Matrix4f initial_transform_for_knife = new Matrix4f(knife_initial_transform);
+            full_transform.mul(initial_transform_for_knife);
+            universe.getContent("knife.stl").setTransform(new Transform3D(full_transform));
              }
     }
 
@@ -355,11 +461,17 @@ public class ui extends JPanel {
         public void update_tilt (double tilt, double rotation, Vector3f tilt_axis, Vector3f rotation_axis, Vector3f arc_centre) {
             Vector3f translation = new Vector3f(new float[] {0,0,0});
 
+            Matrix4f initial_transform_for_arc = new Matrix4f(arc_components_initial_transform);
+
             Matrix4f tilt_transform = make_matrix(tilt, tilt_axis, arc_centre, translation);
             Matrix4f rotation_transform = make_matrix(rotation, rotation_axis, arc_centre, translation);
-            microtome_universe.getContent("holder_back.stl").setTransform(new Transform3D(tilt_transform));
+            // account for scaling
+            Matrix4f holder_back_transform = new Matrix4f(tilt_transform);
+            holder_back_transform.mul(initial_transform_for_arc);
+            universe.getContent("holder_back.stl").setTransform(new Transform3D(holder_back_transform));
             tilt_transform.mul(rotation_transform);
-            microtome_universe.getContent("holder_front.stl").setTransform(new Transform3D(tilt_transform));
+            tilt_transform.mul(initial_transform_for_arc);
+            universe.getContent("holder_front.stl").setTransform(new Transform3D(tilt_transform));
 
             // transform for block > must account for initial tilt
             Matrix4f block_tilt_transform = make_matrix(tilt - initial_tilt_angle.getValue(), tilt_axis, arc_centre, translation);

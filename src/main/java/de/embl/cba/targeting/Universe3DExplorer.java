@@ -48,6 +48,7 @@ public class Universe3DExplorer
 	Map<String, Vector3d> plane_points = new HashMap<>();
 	Map<String, Vector3d> plane_centroids = new HashMap<>();
 	Map<String, RealPoint> named_vertices = new HashMap<>();
+	Map<String, CustomMesh> mesh_stl = new HashMap<>();
 
 
 	public Universe3DExplorer() {
@@ -61,6 +62,7 @@ public class Universe3DExplorer
 		//TODO - does ctrl+f fail if you are already there?
 		//TODO - more sensible placement of varibles / structure
 		//TODO - plaen updates a bit redundant, compartmentalise more
+		//TODO - check min /max of image content, doesn't seem to exactly align to global axes? Is this an issue, it will throw off all my intersections right?
 		//Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 		//check points are on block plane
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
@@ -94,12 +96,11 @@ public class Universe3DExplorer
 			try {
 				URL resource = Universe3DExplorer.class.getResource(file);
 				String resource_file = Paths.get(resource.toURI()).toFile().getAbsolutePath();
-				Map<String, CustomMesh> mesh_stl = MeshLoader.loadSTL(resource_file);
-				for (String key : mesh_stl.keySet()) {
-					System.out.println(key);
-					// TODO - set as locked - should probably set my other custom meshes to be locked too?
-					microtome_universe.addCustomMesh(mesh_stl.get(key), key);
-					microtome_universe.getContent(key).setLocked(true);
+
+				Map<String, CustomMesh> current_stl = MeshLoader.loadSTL(resource_file);
+				// in case there are multiple objects in single stl file
+				for (String key : current_stl.keySet()) {
+					mesh_stl.put(key, current_stl.get(key));
 				}
 			} catch (URISyntaxException e) {
 			System.out.println("Error reading from resource");
@@ -114,7 +115,7 @@ public class Universe3DExplorer
 
 
 		final BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
-		ui user = new ui(microtome_universe, universe, selected_vertex, named_vertices, bdvHandle, imageContent, plane_normals, plane_points, plane_centroids);
+		ui user = new ui(microtome_universe, universe, selected_vertex, named_vertices, bdvHandle, imageContent, plane_normals, plane_points, plane_centroids, mesh_stl);
 		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
 		behaviours.install(bdvHandle.getTriggerbindings(), "target");
 
