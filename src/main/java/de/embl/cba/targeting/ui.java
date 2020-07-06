@@ -30,16 +30,26 @@ public class ui extends JPanel {
     Vector3f arc_centre;
     RealPoint selected_point;
     Map<String, RealPoint> pointmap;
+    Map<String, Vector3d> plane_normals;
+    Map<String, Vector3d> plane_points;
+    Map<String, Vector3d> plane_centroids;
+
+    //TODO - add all sliders up here?
+    private JSlider initial_knife_angle;
 
 
     public ui (Image3DUniverse microtome_universe, Image3DUniverse universe, RealPoint selected_point, Map<String, RealPoint> pointmap,
-               BdvHandle bdvHandle, Content imageContent) {
+               BdvHandle bdvHandle, Content imageContent, Map<String, Vector3d> plane_normals,
+               Map<String, Vector3d> plane_points, Map<String, Vector3d> plane_centroids) {
         this.microtome_universe = microtome_universe;
         this.selected_point = selected_point;
         this.pointmap = pointmap;
         this.bdvHandle = bdvHandle;
         this.imageContent = imageContent;
         this.universe = universe;
+        this.plane_normals = plane_normals;
+        this.plane_points = plane_points;
+        this.plane_centroids = plane_centroids;
         rotation_axis = new Vector3f(new float[] {0, 1, 0});
         tilt_axis = new Vector3f(new float[] {1, 0, 0});
         arc_centre = new Vector3f(new float[] {0,1,0});
@@ -70,6 +80,14 @@ public class ui extends JPanel {
         initialise_block.setActionCommand("initialise_block");
         initialise_block.addActionListener(block_listener);
         p.add(initialise_block);
+
+        // Initial knife angle
+        initial_knife_angle = new JSlider(JSlider.HORIZONTAL, -30, 30, 0);
+        initial_knife_angle.setMajorTickSpacing(10);
+        initial_knife_angle.setMinorTickSpacing(1);
+        initial_knife_angle.setPaintTicks(true);
+        initial_knife_angle.setPaintLabels(true);
+        p.add(initial_knife_angle);
 
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
@@ -133,15 +151,15 @@ public class ui extends JPanel {
 
     class block_listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if ("initialise_block".equals(e.getActionCommand())) {
-                setup_block_orientation(imageContent, universe, pointmap);
+                setup_block_orientation(imageContent, universe, pointmap, initial_knife_angle.getValue());
                 // TODO - update planes
+            plane_update_utils.update_planes_in_place(universe, imageContent, plane_normals, plane_points, plane_centroids);
+
             }
-        }
     }
 
     private void setup_block_orientation (Content imageContent, Image3DUniverse universe,
-                                          Map<String, RealPoint> named_vertices) {
+                                          Map<String, RealPoint> named_vertices, double initial_knife_angle) {
         //reset translation / rotation in case it has been modified
         imageContent.setTransform(new Transform3D());
 
@@ -169,7 +187,7 @@ public class ui extends JPanel {
         Vector3d end_block_normal = new Vector3d(0, -1, 0);
         Vector3d end_edge_vector = new Vector3d(1, 0, 0);
         //TODO - currently hard code knife angle, make user parameter
-        AxisAngle4d initial_knife_offset = new AxisAngle4d(new Vector3d(0, 0, 1), 20 * Math.PI / 180);
+        AxisAngle4d initial_knife_offset = new AxisAngle4d(new Vector3d(0, 0, 1), initial_knife_angle * Math.PI / 180);
         Matrix4d matrix_initial_knife_offset = new Matrix4d();
         matrix_initial_knife_offset.set(initial_knife_offset);
         Transform3D initial_knife_transform = new Transform3D(matrix_initial_knife_offset);
