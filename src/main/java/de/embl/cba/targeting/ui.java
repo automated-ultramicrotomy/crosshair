@@ -35,7 +35,16 @@ public class ui extends JPanel {
     Map<String, Vector3d> plane_centroids;
 
     //TODO - add all sliders up here?
+    //TODO - get sliders to handle doubles!! Also have a box to type value if don't want to use slider - more precise
+    //TODO - some variable for block has been initialised at least once before can control it with sliders
+    //TODO - save initial tilt / knife values when initialise clicked, so don't change with those sliders anymore
     private JSlider initial_knife_angle;
+    private JSlider initial_tilt_angle;
+    private JSlider knife_rotation;
+    private JSlider arc_rotation;
+    private JSlider holder_rotation;
+
+    Matrix4d initial_block_transform;
 
 
     public ui (Image3DUniverse microtome_universe, Image3DUniverse universe, RealPoint selected_point, Map<String, RealPoint> pointmap,
@@ -89,9 +98,17 @@ public class ui extends JPanel {
         initial_knife_angle.setPaintLabels(true);
         p.add(initial_knife_angle);
 
+        // Initial tilt angle
+        initial_tilt_angle = new JSlider(JSlider.HORIZONTAL, -20, 20, 0);
+        initial_tilt_angle.setMajorTickSpacing(10);
+        initial_tilt_angle.setMinorTickSpacing(1);
+        initial_tilt_angle.setPaintTicks(true);
+        initial_tilt_angle.setPaintLabels(true);
+        p.add(initial_tilt_angle);
+
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
-        JSlider knife_rotation = new JSlider(JSlider.HORIZONTAL, -30, 30, 0);
+        knife_rotation = new JSlider(JSlider.HORIZONTAL, -30, 30, 0);
         knife_rotation.addChangeListener(new KnifeListener());
         knife_rotation.setMajorTickSpacing(10);
         knife_rotation.setMinorTickSpacing(1);
@@ -99,7 +116,7 @@ public class ui extends JPanel {
         knife_rotation.setPaintLabels(true);
         p.add(knife_rotation);
 
-        JSlider arc_rotation = new JSlider(JSlider.HORIZONTAL, -20, 20, 0);
+        arc_rotation = new JSlider(JSlider.HORIZONTAL, -20, 20, 0);
         arc_rotation.addChangeListener(new HolderBackListener());
         arc_rotation.setMajorTickSpacing(10);
         arc_rotation.setMinorTickSpacing(1);
@@ -107,7 +124,7 @@ public class ui extends JPanel {
         arc_rotation.setPaintLabels(true);
         p.add(arc_rotation);
 
-        JSlider holder_rotation = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
+        holder_rotation = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
         holder_rotation.addChangeListener(new HolderFrontListener());
         holder_rotation.setMajorTickSpacing(60);
         holder_rotation.setMinorTickSpacing(1);
@@ -151,14 +168,16 @@ public class ui extends JPanel {
 
     class block_listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-                setup_block_orientation(imageContent, universe, pointmap, initial_knife_angle.getValue());
-                // TODO - update planes
+            initial_block_transform = setup_block_orientation(imageContent, universe, pointmap, initial_knife_angle.getValue());
+            knife_rotation.setValue(initial_knife_angle.getValue());
+            arc_rotation.setValue(initial_tilt_angle.getValue());
+            holder_rotation.setValue(0);
             plane_update_utils.update_planes_in_place(universe, imageContent, plane_normals, plane_points, plane_centroids);
 
             }
     }
 
-    private void setup_block_orientation (Content imageContent, Image3DUniverse universe,
+    private Matrix4d setup_block_orientation (Content imageContent, Image3DUniverse universe,
                                           Map<String, RealPoint> named_vertices, double initial_knife_angle) {
         //reset translation / rotation in case it has been modified
         imageContent.setTransform(new Transform3D());
@@ -231,6 +250,8 @@ public class ui extends JPanel {
         imageContent.setTransform(new Transform3D(final_setup_transform));
         // change so view rotates about (0,0,0)
         universe.centerAt(new Point3d());
+
+        return final_setup_transform;
     }
 
         //as here for recalculate global min max
@@ -339,6 +360,15 @@ public class ui extends JPanel {
             microtome_universe.getContent("holder_back.stl").setTransform(new Transform3D(tilt_transform));
             tilt_transform.mul(rotation_transform);
             microtome_universe.getContent("holder_front.stl").setTransform(new Transform3D(tilt_transform));
+
+            // transform for block > must account for initial tilt
+            Matrix4f block_tilt_transform = make_matrix(tilt - initial_tilt_angle.getValue(), tilt_axis, arc_centre, translation);
+            block_tilt_transform.mul(rotation_transform);
+            Matrix4f init_transform = new Matrix4f(initial_block_transform);
+            block_tilt_transform.mul(init_transform);
+
+            imageContent.setTransform(new Transform3D(block_tilt_transform));
+
         }
     }
 

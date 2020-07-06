@@ -61,6 +61,7 @@ public class Universe3DExplorer
 		//TODO - does ctrl+f fail if you are already there?
 		//TODO - more sensible placement of varibles / structure
 		//TODO - plaen updates a bit redundant, compartmentalise more
+		//Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 		//check points are on block plane
 		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 //		imagePlus.show();
