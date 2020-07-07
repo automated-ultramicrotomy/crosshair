@@ -490,6 +490,7 @@ public class ui extends JPanel {
             block_tilt_transform.mul(init_transform);
 
             imageContent.setTransform(new Transform3D(block_tilt_transform));
+            plane_update_utils.update_planes_in_place(universe, imageContent, plane_normals, plane_points, plane_centroids);
 
         }
     }
