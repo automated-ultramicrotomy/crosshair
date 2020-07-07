@@ -32,9 +32,11 @@ public class ui extends JPanel {
     private double rotation;
     Vector3f rotation_axis;
     Vector3f tilt_axis;
-    Vector3f arc_centre;
+    Vector3f initial_arc_centre;
     RealPoint selected_point;
-    Vector3f knife_centre;
+    Vector3f initial_knife_centre;
+    Vector3f current_knife_centre;
+    Vector3f current_arc_centre;
     Map<String, RealPoint> pointmap;
     Map<String, Vector3d> plane_normals;
     Map<String, Vector3d> plane_points;
@@ -71,8 +73,8 @@ public class ui extends JPanel {
         this.mesh_stl = mesh_stl;
         rotation_axis = new Vector3f(new float[] {0, 1, 0});
         tilt_axis = new Vector3f(new float[] {1, 0, 0});
-        arc_centre = new Vector3f(new float[] {0,1,0});
-        knife_centre = new Vector3f(new float[] {0,-2,0});
+        initial_arc_centre = new Vector3f(new float[] {0,1,0});
+        initial_knife_centre = new Vector3f(new float[] {0,-2,0});
 
         JFrame microtome_panel = new JFrame("frame");
         JPanel p = new JPanel();
@@ -230,9 +232,7 @@ public class ui extends JPanel {
             trans.transform(holder_front_after);
             double y_holder_front = holder_front_after.getY();
 
-            // arc centre after scaling
-            Point3d arc_c = new Point3d(arc_centre.getX(), arc_centre.getY(), arc_centre.getZ());
-            trans.transform(arc_c);
+
 
             double translate_y = max_image_distance - y_holder_front;
 
@@ -249,11 +249,16 @@ public class ui extends JPanel {
             }
             arc_components_initial_transform = translate_arc_components;
 
+            // arc centre after scaling
+            Point3d arc_c = new Point3d(initial_arc_centre.getX(), initial_arc_centre.getY(), initial_arc_centre.getZ());
+            arc_components_transform.transform(arc_c);
+            current_arc_centre = new Vector3f((float) arc_c.getX(), (float) arc_c.getY(), (float) arc_c.getZ());
+
             //TODO - set arc centre and knife centre to value after scaling and translation
 
             // Set knife to same distance
             // hodler front after scaling
-            Point3d knife_centre_after = new Point3d(knife_centre.getX(), knife_centre.getY(), knife_centre.getZ());
+            Point3d knife_centre_after = new Point3d(initial_knife_centre.getX(), initial_knife_centre.getY(), initial_knife_centre.getZ());
             trans.transform(knife_centre_after);
             double y_knife = knife_centre_after.getY();
             System.out.println("yknife");
@@ -270,6 +275,11 @@ public class ui extends JPanel {
             Transform3D knife_transform = new Transform3D(translate_knife);
             universe.getContent("knife.stl").setTransform(knife_transform);
             knife_initial_transform = translate_knife;
+
+            // knife centre after scaling
+            Point3d knife_c = new Point3d(initial_knife_centre.getX(), initial_knife_centre.getY(), initial_knife_centre.getZ());
+            knife_transform.transform(knife_c);
+            current_knife_centre = new Vector3f((float) knife_c.getX(), (float) knife_c.getY(), (float) knife_c.getZ());
 
             initial_block_transform = setup_block_orientation(imageContent, universe, pointmap, initial_knife_angle.getValue());
             knife_rotation.setValue(initial_knife_angle.getValue());
@@ -446,7 +456,7 @@ public class ui extends JPanel {
 
             Vector3f translation = new Vector3f(new float[] {0,0,0});
 
-            Matrix4f full_transform = make_matrix(knife_tilt, axis, knife_centre, translation);
+            Matrix4f full_transform = make_matrix(knife_tilt, axis, current_knife_centre, translation);
 
             Matrix4f initial_transform_for_knife = new Matrix4f(knife_initial_transform);
             full_transform.mul(initial_transform_for_knife);
@@ -488,7 +498,7 @@ public class ui extends JPanel {
         public void stateChanged(ChangeEvent e) {
             JSlider source = (JSlider) e.getSource();
             tilt = (double) source.getValue();
-            update_tilt(tilt, rotation, tilt_axis, rotation_axis, arc_centre);
+            update_tilt(tilt, rotation, tilt_axis, rotation_axis, current_arc_centre);
         }
     }
 
@@ -496,7 +506,7 @@ public class ui extends JPanel {
         public void stateChanged(ChangeEvent e) {
             JSlider source = (JSlider) e.getSource();
             rotation = (double) source.getValue();
-            update_tilt(tilt, rotation, tilt_axis, rotation_axis, arc_centre);
+            update_tilt(tilt, rotation, tilt_axis, rotation_axis, current_arc_centre);
         }
     }
 
