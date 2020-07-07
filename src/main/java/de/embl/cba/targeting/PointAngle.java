@@ -2,11 +2,11 @@ package de.embl.cba.targeting;
 
 import org.scijava.vecmath.Point3f;
 
-public class point_angle {
+public class PointAngle {
     private Point3f point;
     private Double angle;
 
-    point_angle(Point3f point, Double angle) {
+    PointAngle(Point3f point, Double angle) {
         this.point = point;
         this.angle = angle;
     }

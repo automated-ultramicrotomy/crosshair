@@ -2,6 +2,7 @@
 **/.project
 **/.settings
 **/target
+**/META-INF
 .DS_Store
 .classpath
 .project

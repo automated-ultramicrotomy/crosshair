@@ -3,7 +3,6 @@ package de.embl.cba.targeting;
 import bdv.util.BdvOverlay;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.ops.parse.token.Real;
 import net.imglib2.realtransform.AffineTransform3D;
 
 import java.awt.*;
@@ -16,33 +15,33 @@ public class PointsOverlaySizeChange extends BdvOverlay {
     // but sets size to zero after certain distance
     // could make it nicer like in teh bdv workshop, where they make the size taper off in a sphere
         private List< ? extends RealLocalizable> points;
-        private List<? extends RealLocalizable> vertex_points;
-        private RealLocalizable selected_point;
-        private Map<String, RealPoint> point_map;
+        private List<? extends RealLocalizable> vertexPoints;
+        private RealLocalizable selectedPoint;
+        private Map<String, RealPoint> pointMap;
 
-private Color col_point;
-        private Color col_vertex;
-        private Color col_selected;
+private Color colPoint;
+        private Color colVertex;
+        private Color colSelected;
 
-        public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertex_points,
-                                                            final RealLocalizable selected_point,
-                                                            final Map<String, RealPoint> point_map)
+        public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertexPoints,
+                                                            final RealLocalizable selectedPoint,
+                                                            final Map<String, RealPoint> pointMap)
         {
             this.points = points;
-            this.vertex_points = vertex_points;
-            this.selected_point = selected_point;
-            this.point_map = point_map;
+            this.vertexPoints = vertexPoints;
+            this.selectedPoint = selectedPoint;
+            this.pointMap = pointMap;
         }
 
         @Override
         protected void draw( final Graphics2D graphics )
         {
-            if ( points == null & vertex_points == null)
+            if ( points == null & vertexPoints == null)
                 return;
 
-            col_point = new Color( 51, 255, 51);
-            col_vertex = new Color(0, 255, 255);
-            col_selected = new Color(153, 0, 76);
+            colPoint = new Color( 51, 255, 51);
+            colVertex = new Color(0, 255, 255);
+            colSelected = new Color(153, 0, 76);
 
             final AffineTransform3D transform = new AffineTransform3D();
             getCurrentTransform3D( transform );
@@ -59,14 +58,14 @@ private Color col_point;
                 final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
                 final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
                 final int w = ( int ) size;
-                graphics.setColor( getColor( gPos, col_point) );
+                graphics.setColor( getColor( gPos, colPoint) );
                 graphics.fillOval( x, y, w, w );
             }
 
-            double[] lPos_selected = new double[3];
-            selected_point.localize(lPos_selected);
+            double[] lposSelected = new double[3];
+            selectedPoint.localize(lposSelected);
 
-            for ( final RealLocalizable p : vertex_points )
+            for ( final RealLocalizable p : vertexPoints)
             {
                 // get point position (in microns etc)
                 p.localize( lPos );
@@ -77,21 +76,21 @@ private Color col_point;
                 final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
                 final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
                 final int w = ( int ) size;
-                if (Arrays.equals(lPos, lPos_selected)) {
-                    graphics.setColor(getColor(gPos, col_selected));
+                if (Arrays.equals(lPos, lposSelected)) {
+                    graphics.setColor(getColor(gPos, colSelected));
                 } else {
-                    graphics.setColor(getColor(gPos, col_vertex));
+                    graphics.setColor(getColor(gPos, colVertex));
                 }
                 graphics.fillOval( x, y, w, w );
 
             }
 
             // go through pointmap - add text labels
-            for (String key : point_map.keySet()) {
-                RealPoint key_point = point_map.get(key);
-                key_point.localize(lPos);
+            for (String key : pointMap.keySet()) {
+                RealPoint keyPoint = pointMap.get(key);
+                keyPoint.localize(lPos);
                 transform.apply( lPos, gPos );
-                graphics.setColor(getColor(gPos, col_vertex));
+                graphics.setColor(getColor(gPos, colVertex));
                 if (Math.abs(gPos[2]) < 5) {
                     graphics.drawString(key, (int) gPos[0], (int) gPos[1]);
                 }
