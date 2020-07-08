@@ -1,6 +1,7 @@
 package de.embl.cba.targeting;
 
 import bdv.util.BdvHandle;
+import bdv.util.BdvStackSource;
 import customnode.CustomTransparentTriangleMesh;
 import customnode.CustomTriangleMesh;
 import ij3d.Content;
@@ -12,9 +13,12 @@ import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3d;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3d;
+import vib.BenesNamedPoint;
+import vib.PointList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
@@ -31,19 +35,22 @@ public class PlaneManager {
     private final RealPoint selectedVertex;
 
     private final BdvHandle bdvHandle;
+    private final BdvStackSource bdvStackSource;
     private final Image3DUniverse universe;
     private final Content imageContent;
 
 
-    public PlaneManager(BdvHandle bdvHandle, Image3DUniverse universe, Content imageContent) {
+    public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
         planeNormals = new HashMap<>();
         planePoints = new HashMap<>();
         planeCentroids = new HashMap<>();
+
         namedVertices = new HashMap<>();
         points = new ArrayList<>();
         blockVertices = new ArrayList<>();
         selectedVertex = new RealPoint(3);
-        this.bdvHandle = bdvHandle;
+        this.bdvStackSource = bdvStackSource;
+        this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
         this.imageContent = imageContent;
     }
@@ -52,11 +59,20 @@ public class PlaneManager {
         return selectedVertex;
     }
 
+    public Map<String, Vector3d> getPlaneNormals { return planeNormals; }
+
+    public Map<String, Vector3d> getPlanePoints { return planePoints; }
+
+    public Map<String, Vector3d> getPlaneCentroids { return planeCentroids; }
+
     public Map<String, RealPoint> getNamedVertices() {
         return namedVertices;
     }
 
-    public Map<String, RealPoint> nameVertex (String name) {
+    public ArrayList<RealPoint> getPoints() {return points;}
+    public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
+
+    public void nameVertex (String name) {
 
         //TODO - figure a way to sort this - what's an empty value I can set to? Would need this also to
         // deselect points
@@ -127,7 +143,7 @@ public class PlaneManager {
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {
 
         //TODO - shift to use bounding box of image itself
-    // Get bounding box of image, account for any transformation of teh image
+        // Get bounding box of image, account for any transformation of teh image
         Point3d min = new Point3d();
         Point3d max = new Point3d();
         imageContent.getMax(max);
@@ -195,6 +211,119 @@ public class PlaneManager {
             meshContent.setVisible(true);
             meshContent.setLocked(true);
         }
+    }
 
+        public void moveViewToNamedPlane (String name) {
+            double[] targetNormal = new double[3];
+            planeNormals.get(name).get(targetNormal);
+
+            double[] targetCentroid = new double[3];
+            planeCentroids.get(name).get(targetCentroid);
+
+            moveToPosition(bdvStackSource, targetCentroid, 0);
+            levelCurrentView(bdvStackSource, targetNormal);
+        }
+
+        public void addRemoveCurrentPositionPoints () {
+            addRemoveCurrentPositionFromPointList(points);
+        }
+
+        public void addRemoveCurrentPositionBlockVertices () {
+            addRemoveCurrentPositionFromPointList(blockVertices);
+        }
+
+        private void addRemoveCurrentPositionFromPointList (ArrayList<RealPoint> points) {
+        // remove point if already present, otherwise add point
+            RealPoint point = getCurrentPosition();
+            double[] pointViewerCoords = convertToViewerCoordinates(point);
+
+            boolean distanceMatch = false;
+            for ( int i = 0; i < points.size(); i++ )
+            {
+                RealPoint currentPoint = points.get(i);
+                double[] currentPointViewerCoords = convertToViewerCoordinates(currentPoint);
+                double distance = distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
+                if (distance < 5) {
+                    removePointFrom3DViewer(currentPoint);
+                    points.remove(i);
+                    bdvHandle.getViewerPanel().requestRepaint();
+
+                    distanceMatch = true;
+                    break;
+                }
+
+            }
+
+            if (!distanceMatch) {
+                points.add(point);
+                bdvHandle.getViewerPanel().requestRepaint();
+
+                //TODO - check properly that these positions match between two viewers
+                double[] position = new double[3];
+                point.localize(position);
+                imageContent.getPointList().add("", position[0], position[1], position[2]);
+            }
+
+        }
+
+    private void removePointFrom3DViewer (RealPoint point) {
+        // remove from 3D view and bdv
+        double[] chosenPointCoord = new double[3];
+        point.localize(chosenPointCoord);
+
+        int pointIndex = imageContent.getPointList().indexOfPointAt(chosenPointCoord[0], chosenPointCoord[1], chosenPointCoord[2], imageContent.getLandmarkPointSize());
+        imageContent.getPointList().remove(pointIndex);
+
+//					There's a bug in how the 3D viewer displays points after one is removed. Currently, it just stops
+//					displaying the first point added (rather than the one you actually removed).
+//					Therefore here I remove all points and re-add them, to get the viewer to reset how it draws
+//					the points. Perhaps there's a more efficient way to get around this?
+        PointList currentPointList = imageContent.getPointList().duplicate();
+        imageContent.getPointList().clear();
+        for (Iterator<BenesNamedPoint> it = currentPointList.iterator(); it.hasNext(); ) {
+            BenesNamedPoint p = it.next();
+            imageContent.getPointList().add(p);
+        }
+    }
+
+    private RealPoint getCurrentPosition () {
+        RealPoint point = new RealPoint(3);
+        bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
+        return point;
+    }
+
+    private double[] getCurrentPositionViewerCoordinates () {
+        RealPoint point = getCurrentPosition();
+        double[] pointViewerCoords = convertToViewerCoordinates(point);
+        return pointViewerCoords;
+    }
+
+
+    private double[] convertToViewerCoordinates (RealPoint point) {
+        final AffineTransform3D transform = new AffineTransform3D();
+        bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+
+        final double[] lPos = new double[ 3 ];
+        final double[] gPos = new double[ 3 ];
+        // get point position (in microns etc)
+        point.localize(lPos);
+        // get point position in viewer (I guess in pixel units?), so gpos[2] is the distance in pixels
+        // from the current view plane
+        transform.apply(lPos, gPos);
+
+        return gPos;
+    }
+
+    public void setSelectedVertexCurrentPosition () {
+        double[] pointViewerCoords = getCurrentPositionViewerCoordinates();
+        for ( int i = 0; i < blockVertices.size(); i++ ) {
+            double[] currentPointViewerCoords = convertToViewerCoordinates(blockVertices.get(i));
+            double distance = distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
+            if (distance < 5) {
+                selectedVertex.setPosition(blockVertices.get(i));
+                bdvHandle.getViewerPanel().requestRepaint();
+                break;
+            }
+        }
     }
 }

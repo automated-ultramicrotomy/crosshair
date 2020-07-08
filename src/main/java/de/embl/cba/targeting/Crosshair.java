@@ -50,6 +50,7 @@ public class Crosshair
 	private final PlaneManager planeManager;
 	private final MicrotomeManager microtomeManager;
 	private final BdvHandle bdvHandle;
+	private final BdvStackSource bdvStackSource;
 
 	public Crosshair (String imageLocation) {
 
@@ -64,17 +65,17 @@ public class Crosshair
 		universe.show();
 
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
-		final BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw");
+		bdvStackSource = BdvFunctions.show(wrap, "raw");
 		bdvStackSource.setDisplayRange(0, 255);
 		bdvHandle = bdvStackSource.getBdvHandle();
 
-		this.planeManager = new PlaneManager( bdvHandle, universe, imageContent );
+		this.planeManager = new PlaneManager( bdvStackSource, universe, imageContent );
 		this.microtomeManager = new MicrotomeManager( planeManager, universe, imageContent );
 
-		installBehaviours(points, blockVertices, selectedVertex, bdvStackSource);
+		installBehaviours();
 	}
 
-	private void installBehaviours(ArrayList<RealPoint> points, ArrayList<RealPoint> blockVertices, RealPoint selectedVertex, BdvStackSource bdvStackSource) {
+	private void installBehaviours() {
 		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
 		behaviours.install(bdvHandle.getTriggerbindings(), "target");
 
@@ -108,165 +109,38 @@ public class Crosshair
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (trackPlane == 0) {
-				double[] target_normal = new double[3];
-				plane_normals.get("target").get(target_normal);
-
-				double[] target_centroid = new double[3];
-				plane_centroids.get("target").get(target_centroid);
-
-				moveToPosition(bdvStackSource, target_centroid, 0);
-				levelCurrentView(bdvStackSource, target_normal);
+				planeManager.moveViewToNamedPlane("target");
 			}
 		}, "zoom to targeting plane", "ctrl T" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (trackPlane == 0) {
-				double[] block_normal = new double[3];
-				plane_normals.get("block").get(block_normal);
-
-				double[] block_centroid = new double[3];
-				plane_centroids.get("block").get(block_centroid);
-
-				moveToPosition(bdvStackSource, block_centroid, 0);
-				levelCurrentView(bdvStackSource, block_normal);
+				planeManager.moveViewToNamedPlane("block");
 			}
 		}, "zoom to block plane", "ctrl F" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-//			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
-			RealPoint point = new RealPoint(3);
-			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
-
-			final AffineTransform3D transform = new AffineTransform3D();
-			bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
-			double[] pointViewerCoords = convertToViewerCoordinates(point, transform);
-
-			boolean distanceMatch = false;
-			for ( int i = 0; i < points.size(); i++ )
-			{
-				double[] currentPointViewerCoords = convertToViewerCoordinates(points.get(i), transform);
-				double distance = distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
-				if (distance < 5) {
-					double[] chosenPointCoord = new double[3];
-					points.get(i).localize(chosenPointCoord);
-					int pointIndex = imageContent.getPointList().indexOfPointAt(chosenPointCoord[0], chosenPointCoord[1], chosenPointCoord[2], imageContent.getLandmarkPointSize());
-					imageContent.getPointList().remove(pointIndex);
-
-//					There's a bug in how the 3D viewer displays points after one is removed. Currently, it just stops
-//					displaying the first point added (rather than the one you actually removed).
-//					Therefore here I remove all points and re-add them, to get the viewer to reset how it draws
-//					the points. Perhaps there's a more efficient way to get around this?
-					PointList currentPointList = imageContent.getPointList().duplicate();
-					imageContent.getPointList().clear();
-					for (Iterator<BenesNamedPoint> it = currentPointList.iterator(); it.hasNext(); ) {
-						BenesNamedPoint p = it.next();
-						imageContent.getPointList().add(p);
-					}
-
-					points.remove(i);
-					bdvHandle.getViewerPanel().requestRepaint();
-
-					distanceMatch = true;
-					break;
-				}
-
-			}
-
-			if (!distanceMatch) {
-				points.add(point);
-				bdvHandle.getViewerPanel().requestRepaint();
-
-				//TODO - check properly that these positions match between two viewers
-				double[] position = new double[3];
-				point.localize(position);
-				imageContent.getPointList().add("", position[0], position[1], position[2]);
-			}
+			planeManager.addRemoveCurrentPositionPoints();
 		}, "add point", "P" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(points);
+			ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
 			planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
 		}, "fit to points", "K" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-//			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
-			RealPoint point = new RealPoint(3);
-			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
-			blockVertices.add(point);
-			bdvHandle.getViewerPanel().requestRepaint();
-
-			//TODO - check properly that these positions match between two viewers
-			double [] position = new double[3];
-			point.localize(position);
-			imageContent.getPointList().add("", position[0],position[1],position[2]);
-
-			//TODO - remove
-			Point3d min = new Point3d();
-			Point3d max = new Point3d();
-			imageContent.getMax(max);
-			imageContent.getMin(min);
-			System.out.println(max.toString());
-			System.out.println(min.toString());
-			Transform3D translate = new Transform3D();
-			Transform3D rotate = new Transform3D();
-			imageContent.getLocalTranslate(translate);
-			imageContent.getLocalRotate(rotate);
-			System.out.println(translate.toString());
-			System.out.println(rotate.toString());
-			rotate.transform(min);
-			rotate.transform(max);
-			translate.transform(min);
-			translate.transform(max);
-			List<Point3f> transformedPoints = new ArrayList<>();
-			Point3f poi = new Point3f((float) min.getX(), (float) min.getY(), (float) min.getZ());
-			transformedPoints.add(poi);
-			Point3f poi2 = new Point3f((float) max.getX(), (float) max.getY(), (float) max.getZ());
-			transformedPoints.add(poi2);
-			universe.removeContent("yo");
-			universe.addPointMesh(transformedPoints, new Color3f(0, 1, 0), "yo");
+			planeManager.addRemoveCurrentPositionBlockVertices();
 		}, "add block vertex", "V" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-//			Could we just do this with the xy coordinate - here I'm following the bdv viewer workshop example
-			RealPoint point = new RealPoint(3);
-			bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
-
-			final AffineTransform3D transform = new AffineTransform3D();
-			bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
-			double[] pointViewerCoords = convertToViewerCoordinates(point, transform);
-
-			for ( int i = 0; i < blockVertices.size(); i++ ) {
-				double[] currentPointViewerCoords = convertToViewerCoordinates(blockVertices.get(i), transform);
-				double distance = distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
-				if (distance < 5) {
-					selectedVertex.setPosition(blockVertices.get(i));
-					double[] test = new double[3];
-					selectedVertex.localize(test);
-					bdvHandle.getViewerPanel().requestRepaint();
-					break;
-				}
-			}
-
+			planeManager.setSelectedVertexCurrentPosition();
 		}, "select point", "ctrl L" );
 
 
 		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
-		pointOverlay.setPoints(points, blockVertices, selectedVertex, named_vertices);
+		pointOverlay.setPoints(planeManager.getPoints(), planeManager.getBlockVertices(),
+				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
 		BdvFunctions.showOverlay(pointOverlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
-	}
-
-
-
-	private double[] convertToViewerCoordinates(RealPoint point, AffineTransform3D transform) {
-		final double[] lPos = new double[ 3 ];
-		final double[] gPos = new double[ 3 ];
-		// get point position (in microns etc)
-		point.localize(lPos);
-		// get point position in viewer (I guess in pixel units?), so gpos[2] is the distance in pixels
-		// from the current view plane
-		transform.apply(lPos, gPos);
-
-		return gPos;
 	}
 
 //	behaviours for 3d window

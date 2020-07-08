@@ -17,20 +17,20 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         private List< ? extends RealLocalizable> points;
         private List<? extends RealLocalizable> vertexPoints;
         private RealLocalizable selectedPoint;
-        private Map<String, RealPoint> pointMap;
+        private Map<String, RealPoint> namedVertices;
 
-private Color colPoint;
+        private Color colPoint;
         private Color colVertex;
         private Color colSelected;
 
         public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertexPoints,
                                                             final RealLocalizable selectedPoint,
-                                                            final Map<String, RealPoint> pointMap)
+                                                            final Map<String, RealPoint> namedVertices)
         {
             this.points = points;
             this.vertexPoints = vertexPoints;
             this.selectedPoint = selectedPoint;
-            this.pointMap = pointMap;
+            this.namedVertices = namedVertices;
         }
 
         @Override
@@ -86,8 +86,8 @@ private Color colPoint;
             }
 
             // go through pointmap - add text labels
-            for (String key : pointMap.keySet()) {
-                RealPoint keyPoint = pointMap.get(key);
+            for (String key : namedVertices.keySet()) {
+                RealPoint keyPoint = namedVertices.get(key);
                 keyPoint.localize(lPos);
                 transform.apply( lPos, gPos );
                 graphics.setColor(getColor(gPos, colVertex));
