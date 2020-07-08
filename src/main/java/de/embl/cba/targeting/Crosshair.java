@@ -19,6 +19,8 @@ import org.scijava.vecmath.*;
 import vib.BenesNamedPoint;
 import vib.PointList;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
@@ -73,6 +75,14 @@ public class Crosshair
 		this.microtomeManager = new MicrotomeManager( planeManager, universe, imageContent );
 
 		installBehaviours();
+
+		JFrame jFrame = new JFrame( "Crosshair");
+		jFrame.setPreferredSize(new Dimension( 600, 800 ));
+		jFrame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+
+		PlanePanel planePanel = new PlanePanel(planeManager);
+		jFrame.add(planePanel);
+		jFrame.setVisible( true );
 	}
 
 	private void installBehaviours() {

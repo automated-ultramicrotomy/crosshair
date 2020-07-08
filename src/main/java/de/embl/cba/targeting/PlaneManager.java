@@ -16,6 +16,7 @@ import org.scijava.vecmath.Vector3d;
 import vib.BenesNamedPoint;
 import vib.PointList;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,6 +40,12 @@ public class PlaneManager {
     private final Image3DUniverse universe;
     private final Content imageContent;
 
+    private Color3f targetPlaneColour;
+    private Color3f blockPlaneColour;
+
+    private float targetTransparency;
+    private float blockTransparency;
+
 
     public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
         planeNormals = new HashMap<>();
@@ -53,17 +60,22 @@ public class PlaneManager {
         this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
         this.imageContent = imageContent;
+
+        targetPlaneColour = new Color3f(0, 1, 0);
+        blockPlaneColour = new Color3f(0, 0, 1);
+        targetTransparency = 0.7f;
+        blockTransparency = 0.7f;
     }
 
     public RealPoint getSelectedVertex() {
         return selectedVertex;
     }
 
-    public Map<String, Vector3d> getPlaneNormals { return planeNormals; }
+    public Map<String, Vector3d> getPlaneNormals() { return planeNormals; }
 
-    public Map<String, Vector3d> getPlanePoints { return planePoints; }
+    public Map<String, Vector3d> getPlanePoints() { return planePoints; }
 
-    public Map<String, Vector3d> getPlaneCentroids { return planeCentroids; }
+    public Map<String, Vector3d> getPlaneCentroids() { return planeCentroids; }
 
     public Map<String, RealPoint> getNamedVertices() {
         return namedVertices;
@@ -71,6 +83,8 @@ public class PlaneManager {
 
     public ArrayList<RealPoint> getPoints() {return points;}
     public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
+    public float getTargetTransparency() {return targetTransparency;}
+    public float getBlockTransparency() {return blockTransparency;}
 
     public void nameVertex (String name) {
 
@@ -194,18 +208,22 @@ public class PlaneManager {
             }
 
             Color3f planeColor = null;
+            float transparency = 0.7f;
             if (planeName.equals("target")) {
-                planeColor = new Color3f(0, 1, 0);
+                planeColor = targetPlaneColour;
+                transparency = targetTransparency;
+
             } else if (planeName.equals("block")) {
-                planeColor = new Color3f(0, 0, 1);
+                planeColor = blockPlaneColour;
+                transparency = blockTransparency;
             }
 
             CustomTriangleMesh newMesh = null;
             if (intersectionPoints.size() == 3) {
-                newMesh = new CustomTransparentTriangleMesh(vectorPoints, planeColor, 0.7f);
+                newMesh = new CustomTransparentTriangleMesh(vectorPoints, planeColor, transparency);
             } else if (intersectionPoints.size() > 3) {
                 ArrayList<Point3f> triangles = calculateTrianglesFromPoints(intersectionPoints, transformedNormal);
-                newMesh = new CustomTransparentTriangleMesh(triangles, planeColor, 0.7f);
+                newMesh = new CustomTransparentTriangleMesh(triangles, planeColor, transparency);
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
             meshContent.setVisible(true);
@@ -325,5 +343,29 @@ public class PlaneManager {
                 break;
             }
         }
+    }
+
+    public void setTargetPlaneColour (Color colour) {
+        targetPlaneColour.set(colour);
+//        inefficent - just update colour as is
+        updatePlanesInPlace();
+    }
+
+    public void setBlockPlaneColour (Color colour) {
+        blockPlaneColour.set(colour);
+//        inefficent - just update colour as is
+        updatePlanesInPlace();
+    }
+
+    public void setTargetTransparency (float transparency) {
+        targetTransparency = transparency;
+//        inefficent - just update transparency
+        updatePlanesInPlace();
+    }
+
+    public void setBlockTransparency (float transparency) {
+        blockTransparency = transparency;
+//        inefficent - just update colour as is
+        updatePlanesInPlace();
     }
 }
