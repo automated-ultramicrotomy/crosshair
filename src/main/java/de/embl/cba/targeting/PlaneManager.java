@@ -132,7 +132,20 @@ public class PlaneManager {
     }
 
     public void updatePlaneOnTransformChange(AffineTransform3D affineTransform3D, String planeName) {
+        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionFromViewTransform(affineTransform3D);
+        updatePlane(planeDefinition.get(0), planeDefinition.get(1), planeName);
+    }
 
+    private ArrayList<Vector3d> getPlaneDefinitionOfCurrentView () {
+        final AffineTransform3D transform = new AffineTransform3D();
+        bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+
+        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionFromViewTransform(transform);
+
+        return planeDefinition;
+    }
+
+    private ArrayList<Vector3d> getPlaneDefinitionFromViewTransform(AffineTransform3D affineTransform3D) {
         final ArrayList< double[] > viewerPoints = new ArrayList<>();
 
         viewerPoints.add( new double[]{ 0, 0, 0 });
@@ -150,11 +163,14 @@ public class PlaneManager {
             affineTransform3D.inverse().apply( viewerPoints.get( i ), globalPoints.get( i ) );
         }
 
+        ArrayList<Vector3d> planeDefinition = new ArrayList<>();
+
         Vector3d planeNormal = calculateNormalFromPoints(globalPoints);
         Vector3d planePoint = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
+        planeDefinition.add(planeNormal);
+        planeDefinition.add(planePoint);
 
-        updatePlane(planeNormal, planePoint, planeName);
-
+        return planeDefinition;
     }
 
     // update planes on transform of the imagecontent, retain teh existing plane normals and points
@@ -242,14 +258,23 @@ public class PlaneManager {
     }
 
         public void moveViewToNamedPlane (String name) {
-            double[] targetNormal = new double[3];
-            planeNormals.get(name).get(targetNormal);
+            // check if you're already at the plane
+            ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
+            Vector3d currentPlaneNormal = planeDefinition.get(0);
+            Vector3d currentPlanePoint = planeDefinition.get(1);
 
-            double[] targetCentroid = new double[3];
-            planeCentroids.get(name).get(targetCentroid);
+            if (checkVectorsParallel(planeNormals.get(name), currentPlaneNormal) &
+            checkPointLiesInPlane(currentPlanePoint, planeNormals.get(name), planePoints.get(name))) {
+                System.out.println("Already at that plane");
+            } else {
+                double[] targetNormal = new double[3];
+                planeNormals.get(name).get(targetNormal);
 
-            moveToPosition(bdvStackSource, targetCentroid, 0);
-            levelCurrentView(bdvStackSource, targetNormal);
+                double[] targetCentroid = new double[3];
+                planeCentroids.get(name).get(targetCentroid);
+                moveToPosition(bdvStackSource, targetCentroid, 0);
+                levelCurrentView(bdvStackSource, targetNormal);
+            }
         }
 
         public void addRemoveCurrentPositionPoints () {

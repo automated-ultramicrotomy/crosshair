@@ -46,6 +46,7 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 // displayed - could be confusing
 //TODO removing vertex point doesn't remove its labels, need to make this a set or something it's a pain in teh arse
 //TODO - add enter / exit microtome mode (and have it gray out options you can no longer use
+//TODO - zoom to plane is very close but off by around 1E-14, check T's code is there anything we can improve here precision wise
 
 
 public class Crosshair

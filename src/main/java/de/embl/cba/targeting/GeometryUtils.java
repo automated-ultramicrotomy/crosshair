@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.stream.DoubleStream;
 
 import static de.embl.cba.bdv.utils.BdvUtils.*;
+import static java.lang.Math.PI;
 import static java.lang.Math.sqrt;
 
 public final class GeometryUtils {
@@ -369,6 +370,36 @@ public final class GeometryUtils {
         pointToPoint.setZ(pointToPoint.getZ()*factor);
         result.add(point1, pointToPoint);
         return result;
+    }
+
+    public static boolean checkVectorsParallel (Vector3d vector1, Vector3d vector2) {
+        double unsignedAngle = vector1.angle(vector2);
+        if (unsignedAngle == 0 | unsignedAngle == PI) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean checkPointLiesInPlane (Vector3d point, Vector3d planeNormal, Vector3d planePoint) {
+        Vector3d planeNormalCopy = new Vector3d(planeNormal);
+        planeNormalCopy.normalize();
+
+        // point-normal form of a plane
+        double planeEquation = (planeNormalCopy.getX()*(point.getX() - planePoint.getX())) +
+                (planeNormalCopy.getY()*(point.getY() - planePoint.getY())) +
+                (planeNormalCopy.getZ()*(point.getZ() - planePoint.getZ()));
+        System.out.println(planeEquation);
+
+        // ideally this should be 0 to lie on plane, I set to a very small epsilon here to give wriggle room
+        // for precision errors in the doubles
+        //TODO - make more accurate, sometimes you can scroll very slightly and it will still count as bieng on the plane
+        if (planeEquation < 1E-13) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public static boolean checkVectorLiesInPlane(Vector3d point1, Vector3d point2, Vector3d planeNormal, Vector3d planePoint) {
