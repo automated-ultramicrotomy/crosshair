@@ -42,6 +42,8 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //check points are on block plane
 //TODO need extra requiremnt that that they the out of block normal points towards knife
 //TODO - no plane updates when they aren't visible
+//TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
+// displayed - could be confusing
 
 
 public class Crosshair

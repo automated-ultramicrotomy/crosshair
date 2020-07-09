@@ -99,7 +99,7 @@ public class MicrotomeManager extends JPanel {
         }
     }
 
-    public void initialiseMicrotome (int initialKnifeAngle, int initialTiltAngle) {
+    public void initialiseMicrotome (double initialKnifeAngle, double initialTiltAngle) {
         //TODO - setup so doesn't reload scale if just change inital values
         for (String key : microtomeSTLs.keySet()) {
             System.out.println(key);
@@ -200,9 +200,9 @@ public class MicrotomeManager extends JPanel {
         initialBlockTransform = setupBlockOrientation(initialKnifeAngle);
         this.initialKnifeAngle = initialKnifeAngle;
         this.initialTiltAngle = initialTiltAngle;
-        microtomePanel.getKnifeAngle().setValue((int) initialKnifeAngle);
-        microtomePanel.getTiltAngle().setValue((int) initialTiltAngle);
-        microtomePanel.getRotationAngle().setValue(0);
+        microtomePanel.getKnifeAngle().setCurrentValue(initialKnifeAngle);
+        microtomePanel.getTiltAngle().setCurrentValue(initialTiltAngle);
+        microtomePanel.getRotationAngle().setCurrentValue(0);
     }
 
 
@@ -386,16 +386,19 @@ public class MicrotomeManager extends JPanel {
     }
 
     public void setRotation(double rotation) {
+//        System.out.println(rotation);
         this.rotation = rotation;
         updateTiltRotationBlock();
     }
 
     public void setTilt(double tilt) {
+//        System.out.println(tilt);
         this.tilt = tilt;
         updateTiltRotationBlock();
     }
 
     public void setKnifeAngle(double knifeTilt) {
+//        System.out.println(knifeTilt);
         this.knifeTilt = knifeTilt;
         Vector3f axis = new Vector3f(new float[] {0, 0, 1});
         Vector3f translation = new Vector3f(new float[] {0,0,0});

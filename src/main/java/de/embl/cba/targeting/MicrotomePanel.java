@@ -49,11 +49,11 @@ import java.util.List;
 public class MicrotomePanel extends JPanel {
 
     private final MicrotomeManager microtomeManager;
-    private final JSlider initialKnifeAngle;
-    private final JSlider initialTiltAngle;
-    private final JSlider knifeAngle;
-    private final JSlider tiltAngle;
-    private final JSlider rotationAngle;
+    private final BoundedValueDouble initialKnifeAngle;
+    private final BoundedValueDouble initialTiltAngle;
+    private final BoundedValueDouble knifeAngle;
+    private final BoundedValueDouble tiltAngle;
+    private final BoundedValueDouble rotationAngle;
 
     public MicrotomePanel(MicrotomeManager microtomeManager) {
         this.microtomeManager = microtomeManager;
@@ -72,66 +72,77 @@ public class MicrotomePanel extends JPanel {
 
         // Initial knife angle
         initialKnifeAngle =
-                addSliderToPanel(this, "Initial Knife Angle", -30, 30, 0, 10, 1);
+                addSliderToPanel(this, "Initial Knife Angle", -30, 30, 0);
 
         // Initial tilt angle
         initialTiltAngle =
-                addSliderToPanel(this, "Initial tilt angle", -20, 20, 0, 10, 1);
+                addSliderToPanel(this, "Initial tilt angle", -20, 20, 0);
 
         // Knife Rotation
-        ChangeListener knifeListener = new KnifeListener();
-        knifeAngle = addSliderToPanel(this, "Knife Rotation",  -30, 30, 0, 10,
-                1, knifeListener);
+        MicrotomeListener knifeListener = new KnifeListener();
+        knifeAngle = addSliderToPanel(this, "Knife Rotation",  -30, 30, 0, knifeListener);
 
         // Arc Tilt
-        ChangeListener holderBackListener = new HolderBackListener();
+        MicrotomeListener holderBackListener = new HolderBackListener();
         tiltAngle =
-                addSliderToPanel(this, "Arc Tilt", -20, 20, 0, 10, 1, holderBackListener);
+                addSliderToPanel(this, "Arc Tilt", -20, 20, 0, holderBackListener);
 
         // Holder Rotation
-        ChangeListener holderFrontListener = new HolderFrontListener();
+        MicrotomeListener holderFrontListener = new HolderFrontListener();
         rotationAngle =
-                addSliderToPanel(this, "Holder rotation", -180, 180, 0, 60, 1, holderFrontListener);
+                addSliderToPanel(this, "Holder rotation", -180, 180, 0, holderFrontListener);
 
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
     }
 
-    public JSlider getKnifeAngle() {
+    public BoundedValueDouble getKnifeAngle() {
         return knifeAngle;
     }
 
-    public JSlider getTiltAngle() {
+    public BoundedValueDouble getTiltAngle() {
         return tiltAngle;
     }
 
-    public JSlider getRotationAngle() {
+    public BoundedValueDouble getRotationAngle() {
         return rotationAngle;
     }
 
-    private JSlider addSliderToPanel(JPanel panel, String sliderName, int min, int max, int currentValue, int majorTickSpacing,
-                                     int minorTickSpacing, ChangeListener changeListener) {
+    private BoundedValueDouble addSliderToPanel(JPanel panel, String sliderName, double min, double max, double currentValue,
+                                     MicrotomeListener updateListener) {
 
-        panel.add( new JLabel(sliderName));
-        JSlider s = new JSlider(JSlider.HORIZONTAL, min, max, currentValue);
-        s.addChangeListener(changeListener);
-        s.setMajorTickSpacing(majorTickSpacing);
-        s.setMinorTickSpacing(minorTickSpacing);
-        s.setPaintTicks(true);
-        s.setPaintLabels(true);
-        panel.add(s);
-        refreshGui();
-        return s;
+        final BoundedValueDouble sliderValue =
+                new BoundedValueDouble(
+                        min,
+                        max,
+                        currentValue);
+        SliderPanelDouble slider = createSlider(panel, sliderName, sliderValue);
+        updateListener.setValues(sliderValue, slider);
+        sliderValue.setUpdateListener(updateListener);
+        return sliderValue;
     }
 
-    private JSlider addSliderToPanel(JPanel panel, String sliderName, int min, int max, int currentValue, int majorTickSpacing,
-                                  int minorTickSpacing) {
-        panel.add( new JLabel(sliderName));
-        JSlider s = new JSlider(JSlider.HORIZONTAL, min, max, currentValue);
-        s.setMajorTickSpacing(majorTickSpacing);
-        s.setMinorTickSpacing(minorTickSpacing);
-        s.setPaintTicks(true);
-        s.setPaintLabels(true);
+    private BoundedValueDouble addSliderToPanel(JPanel panel, String sliderName, double min, double max, double currentValue) {
+
+//                as here https://github.com/tischi/imagej-utils/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
+        final BoundedValueDouble sliderValue =
+                new BoundedValueDouble(
+                        min,
+                        max,
+                        currentValue);
+        createSlider(panel, sliderName, sliderValue);
+        return sliderValue;
+    }
+
+    private SliderPanelDouble createSlider (JPanel panel, String sliderName, BoundedValueDouble sliderValue) {
+        double spinnerStepSize = 1;
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.add( new JLabel(sliderName));
+        sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.PAGE_AXIS));
+        final SliderPanelDouble s = new SliderPanelDouble(sliderName, sliderValue, spinnerStepSize);
+        s.setNumColummns(7);
+        s.setDecimalFormat("####.####");
+
         panel.add(s);
         refreshGui();
         return s;
@@ -145,31 +156,68 @@ public class MicrotomePanel extends JPanel {
 
     class blockListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            microtomeManager.initialiseMicrotome(initialKnifeAngle.getValue(), initialTiltAngle.getValue());
+            microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
         }
     }
 
-    class KnifeListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            JSlider source = (JSlider) e.getSource();
-            double knifeTilt = (double) source.getValue();
-            microtomeManager.setKnifeAngle(knifeTilt);
+    abstract class MicrotomeListener implements BoundedValueDouble.UpdateListener {
+        public void setValues(BoundedValueDouble value, SliderPanelDouble slider) {}
+    }
+
+    class KnifeListener extends MicrotomeListener {
+
+        private BoundedValueDouble knifeAngle;
+        private SliderPanelDouble knifeSlider;
+
+        public KnifeListener() {}
+
+        public void setValues(BoundedValueDouble knifeAngle, SliderPanelDouble knifeSlider) {
+            this.knifeAngle = knifeAngle;
+            this.knifeSlider = knifeSlider;
+        }
+
+        @Override
+        public void update() {
+            knifeSlider.update();
+            microtomeManager.setKnifeAngle(knifeAngle.getCurrentValue());
         }
     }
 
-    class HolderBackListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            JSlider source = (JSlider) e.getSource();
-            double tilt = (double) source.getValue();
-            microtomeManager.setTilt(tilt);
+    class HolderBackListener extends MicrotomeListener {
+
+        private BoundedValueDouble tiltAngle;
+        private SliderPanelDouble tiltSlider;
+
+        public HolderBackListener() {}
+
+        public void setValues(BoundedValueDouble tiltAngle, SliderPanelDouble tiltSlider) {
+            this.tiltAngle = tiltAngle;
+            this.tiltSlider = tiltSlider;
+        }
+
+        @Override
+        public void update() {
+            tiltSlider.update();
+            microtomeManager.setTilt(tiltAngle.getCurrentValue());
         }
     }
 
-    class HolderFrontListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            JSlider source = (JSlider) e.getSource();
-            double rotation = (double) source.getValue();
-            microtomeManager.setRotation(rotation);
+    class HolderFrontListener extends MicrotomeListener {
+
+        private BoundedValueDouble rotationAngle;
+        private SliderPanelDouble rotationSlider;
+
+        public HolderFrontListener() {}
+
+        public void setValues(BoundedValueDouble rotationAngle, SliderPanelDouble rotationSlider) {
+            this.rotationAngle = rotationAngle;
+            this.rotationSlider = rotationSlider;
+        }
+
+        @Override
+        public void update() {
+            rotationSlider.update();
+            microtomeManager.setRotation(rotationAngle.getCurrentValue());
         }
     }
 
