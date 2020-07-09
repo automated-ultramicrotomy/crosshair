@@ -41,6 +41,7 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //check points are on block plane
 //TODO need extra requiremnt that that they the out of block normal points towards knife
+//TODO - no plane updates when they aren't visible
 
 
 public class Crosshair
@@ -80,10 +81,28 @@ public class Crosshair
 		jFrame.setPreferredSize(new Dimension( 600, 800 ));
 		jFrame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 
+		// main panel
+		JPanel mainPane = new JPanel();
+		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
+		mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		mainPane.setOpaque(true);
+		jFrame.setContentPane(mainPane);
+
+
 		PlanePanel planePanel = new PlanePanel(planeManager);
-		jFrame.add(planePanel);
+		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
+		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager);
+		microtomeManager.setMicrotomePanel(microtomePanel);
+		mainPane.add(planePanel);
+		mainPane.add(vertexAssignmentPanel);
+		mainPane.add(microtomePanel);
+		//TODO - add a point panel - change visiblity of both sets of points, and their colour in bdv
+//		jFrame.add(new JSeparator());
+//		jFrame.add(new JSeparator());
 		jFrame.setVisible( true );
 	}
+
+	// GUI - try like https://stackoverflow.com/questions/16067894/how-to-arrange-multiple-panels-in-jframe
 
 	private void installBehaviours() {
 		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());

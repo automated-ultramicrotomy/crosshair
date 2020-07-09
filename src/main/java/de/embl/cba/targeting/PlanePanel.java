@@ -40,12 +40,20 @@ import java.net.URI;
 import java.util.*;
 import java.util.List;
 
+// similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
+
     public class PlanePanel extends JPanel {
 
         private final PlaneManager planeManager;
 
         public PlanePanel(PlaneManager planeManager) {
             this.planeManager = planeManager;
+
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder("Planes"),
+                    BorderFactory.createEmptyBorder(5,5,5,5)));
+
+            setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             addPlaneToPanel("target");
             addPlaneToPanel("block");
         }
@@ -89,6 +97,23 @@ import java.util.List;
             panel.add(goToButton);
         }
 
+        private void addVisibilityButton (JPanel panel, int[] buttonDimensions, String planeName) {
+            JButton visbilityButton;
+            visbilityButton = new JButton("V");
+
+            visbilityButton.setPreferredSize(
+                    new Dimension(buttonDimensions[0], buttonDimensions[1]));
+
+            visbilityButton.addActionListener(e -> {
+                if (planeName == "target") {
+                    planeManager.toggleTargetVisbility();
+                } else if (planeName == "block") {
+                    planeManager.toggleBlockVisbility();
+                }
+            });
+
+            panel.add(visbilityButton);
+        }
 
         private void addPlaneToPanel(String planeName) {
 
@@ -101,29 +126,13 @@ import java.util.List;
             sourceNameLabel.setHorizontalAlignment(SwingUtilities.CENTER);
 
             int[] buttonDimensions = new int[]{50, 30};
-            int[] viewSelectionDimensions = new int[]{50, 30};
 
             panel.add(sourceNameLabel);
 
             addColorButton(panel, buttonDimensions, planeName);
             addTransparencyButton(panel, buttonDimensions, planeName);
+            addVisibilityButton(panel, buttonDimensions, planeName);
             addGOTOButton(panel, buttonDimensions, planeName);
-
-
-
-//            final JButton removeButton =
-//                    createRemoveButton( sam, buttonDimensions );
-//
-//            final JCheckBox volumeVisibilityCheckbox =
-//                    SourcesDisplayUI.createVolumeViewVisibilityCheckbox(
-//                            this,
-//                            viewSelectionDimensions,
-//                            sam,
-//                            sam.metadata().showImageIn3d || sam.metadata().showSelectedSegmentsIn3d );
-//
-//            panel.add( brightnessButton );
-//            panel.add( removeButton );
-//            panel.add( volumeVisibilityCheckbox );
 
             add(panel);
             refreshGui();

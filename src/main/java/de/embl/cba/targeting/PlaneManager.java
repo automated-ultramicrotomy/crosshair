@@ -46,6 +46,9 @@ public class PlaneManager {
     private float targetTransparency;
     private float blockTransparency;
 
+    private boolean targetVisible;
+    private boolean blockVisible;
+
 
     public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
         planeNormals = new HashMap<>();
@@ -65,6 +68,9 @@ public class PlaneManager {
         blockPlaneColour = new Color3f(0, 0, 1);
         targetTransparency = 0.7f;
         blockTransparency = 0.7f;
+
+        targetVisible = true;
+        blockVisible = true;
     }
 
     public RealPoint getSelectedVertex() {
@@ -95,19 +101,19 @@ public class PlaneManager {
 //        }
 
         RealPoint selectedPointCopy = new RealPoint(selectedVertex);
-        if (name.equals("top_left")) {
+        if (name.equals("Top Left")) {
             renamePoint3D(imageContent, selectedVertex, "TL");
             namedVertices.put("top_left", selectedPointCopy);
             bdvHandle.getViewerPanel().requestRepaint();
-        } else if (name.equals("top_right")) {
+        } else if (name.equals("Top Right")) {
             renamePoint3D(imageContent, selectedVertex, "TR");
             namedVertices.put("top_right", selectedPointCopy);
             bdvHandle.getViewerPanel().requestRepaint();
-        } else if (name.equals("bottom_left")) {
+        } else if (name.equals("Bottom Left")) {
             renamePoint3D(imageContent, selectedVertex, "BL");
             namedVertices.put("bottom_left", selectedPointCopy);
             bdvHandle.getViewerPanel().requestRepaint();
-        } else if (name.equals("bottom_right")) {
+        } else if (name.equals("Bottom Right")) {
             renamePoint3D(imageContent, selectedVertex, "BR");
             namedVertices.put("bottom_right", selectedPointCopy);
             bdvHandle.getViewerPanel().requestRepaint();
@@ -367,5 +373,25 @@ public class PlaneManager {
         blockTransparency = transparency;
 //        inefficent - just update colour as is
         updatePlanesInPlace();
+    }
+
+    public void toggleTargetVisbility () {
+        if (targetVisible) {
+            universe.getContent("target").setVisible(false);
+            targetVisible = false;
+        } else {
+            universe.getContent("target").setVisible(true);
+            targetVisible = true;
+        }
+    }
+
+    public void toggleBlockVisbility () {
+        if (blockVisible) {
+            universe.getContent("block").setVisible(false);
+            blockVisible = false;
+        } else {
+            universe.getContent("block").setVisible(true);
+            blockVisible = true;
+        }
     }
 }
