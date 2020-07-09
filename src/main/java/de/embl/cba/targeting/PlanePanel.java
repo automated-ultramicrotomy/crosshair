@@ -67,14 +67,18 @@ import java.util.List;
                     new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
             colorButton.addActionListener(e -> {
-                Color colour = JColorChooser.showDialog(null, "", null);
+                if (planeManager.getTrackPlane() == 0) {
+                    Color colour = JColorChooser.showDialog(null, "", null);
 
-                if (colour == null) return;
+                    if (colour == null) return;
 
-                if (planeName == "target") {
-                    planeManager.setTargetPlaneColour(colour);
-                } else if (planeName == "block") {
-                    planeManager.setBlockPlaneColour(colour);
+                    if (planeName == "target") {
+                        planeManager.setTargetPlaneColour(colour);
+                    } else if (planeName == "block") {
+                        planeManager.setBlockPlaneColour(colour);
+                    }
+                } else {
+                    System.out.println("Can only change colour, when not tracking a plane");
                 }
 
             });
@@ -89,9 +93,12 @@ import java.util.List;
             goToButton.setPreferredSize(
                     new Dimension(2*buttonDimensions[0], buttonDimensions[1]));
 
-            //TODO - check for target plane variable
             goToButton.addActionListener(e -> {
-                planeManager.moveViewToNamedPlane(planeName);
+                if (planeManager.getTrackPlane() == 0) {
+                    planeManager.moveViewToNamedPlane(planeName);
+                } else {
+                    System.out.println("Can only go to plane, when not tracking a plane");
+                }
             });
 
             panel.add(goToButton);
@@ -105,10 +112,14 @@ import java.util.List;
                     new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
             visbilityButton.addActionListener(e -> {
-                if (planeName == "target") {
-                    planeManager.toggleTargetVisbility();
-                } else if (planeName == "block") {
-                    planeManager.toggleBlockVisbility();
+                if (planeManager.getTrackPlane() == 0) {
+                    if (planeName == "target") {
+                        planeManager.toggleTargetVisbility();
+                    } else if (planeName == "block") {
+                        planeManager.toggleBlockVisbility();
+                    }
+                } else {
+                    System.out.println("Can only toggle visiblity, when not tracking a plane");
                 }
             });
 
@@ -152,43 +163,47 @@ import java.util.List;
 
             button.addActionListener(e ->
             {
-                JFrame frame = new JFrame("Transparency");
-                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                if (planeManager.getTrackPlane() == 0) {
+                    JFrame frame = new JFrame("Transparency");
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-                float currentTransparency = 0.7f;
-                if (planeName.equals("target")) {
-                    currentTransparency = planeManager.getTargetTransparency();
-                } else if (planeName.equals("block")) {
-                    currentTransparency = planeManager.getBlockTransparency();
-                }
+                    float currentTransparency = 0.7f;
+                    if (planeName.equals("target")) {
+                        currentTransparency = planeManager.getTargetTransparency();
+                    } else if (planeName.equals("block")) {
+                        currentTransparency = planeManager.getBlockTransparency();
+                    }
 
 //                as here https://github.com/tischi/imagej-utils/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
-                final BoundedValueDouble transparencyValue =
-                        new BoundedValueDouble(
-                                0,
-                                1,
-                                currentTransparency);
+                    final BoundedValueDouble transparencyValue =
+                            new BoundedValueDouble(
+                                    0,
+                                    1,
+                                    currentTransparency);
 
-                double spinnerStepSize = 0.1;
+                    double spinnerStepSize = 0.1;
 
-                JPanel transparencyPanel = new JPanel();
-                transparencyPanel.setLayout(new BoxLayout(transparencyPanel, BoxLayout.PAGE_AXIS));
-                final SliderPanelDouble transparencySlider = new SliderPanelDouble("Transparency", transparencyValue, spinnerStepSize);
-                transparencySlider.setNumColummns(7);
-                transparencySlider.setDecimalFormat("####E0");
-                transparencyValue.setUpdateListener(new TransparencyUpdateListener(transparencyValue,
-                        transparencySlider, planeName, planeManager));
+                    JPanel transparencyPanel = new JPanel();
+                    transparencyPanel.setLayout(new BoxLayout(transparencyPanel, BoxLayout.PAGE_AXIS));
+                    final SliderPanelDouble transparencySlider = new SliderPanelDouble("Transparency", transparencyValue, spinnerStepSize);
+                    transparencySlider.setNumColummns(7);
+                    transparencySlider.setDecimalFormat("####E0");
+                    transparencyValue.setUpdateListener(new TransparencyUpdateListener(transparencyValue,
+                            transparencySlider, planeName, planeManager));
 
-                transparencyPanel.add(transparencySlider);
-                frame.setContentPane(transparencyPanel);
+                    transparencyPanel.add(transparencySlider);
+                    frame.setContentPane(transparencyPanel);
 
-                //Display the window.
-                frame.setBounds(MouseInfo.getPointerInfo().getLocation().x,
-                        MouseInfo.getPointerInfo().getLocation().y,
-                        120, 10);
-                frame.setResizable(false);
-                frame.pack();
-                frame.setVisible(true);
+                    //Display the window.
+                    frame.setBounds(MouseInfo.getPointerInfo().getLocation().x,
+                            MouseInfo.getPointerInfo().getLocation().y,
+                            120, 10);
+                    frame.setResizable(false);
+                    frame.pack();
+                    frame.setVisible(true);
+                } else {
+                    System.out.println("Can only change transparency of plane, when not tracking a plane");
+                }
             });
 
             panel.add(button);

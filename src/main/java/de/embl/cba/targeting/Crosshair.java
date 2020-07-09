@@ -34,7 +34,7 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 // stops ability to have multilple assignments on each point in bdv
 //TODO - add in checks for e.g. right number of points, one of each assignment, target and block normals etc
 //TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
-//TODO - does ctrl+f fail if you are already there?
+//TODO - does ctrl+f fail if you are already there? Ya it fails
 //TODO - more sensible placement of varibles / structure
 //TODO - plaen updates a bit redundant, compartmentalise more
 //TODO - check min /max of image content, doesn't seem to exactly align to global axes? Is this an issue, it will throw off all my intersections right?
@@ -44,12 +44,12 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
+//TODO removing vertex point doesn't remove its labels, need to make this a set or something it's a pain in teh arse
+//TODO - add enter / exit microtome mode (and have it gray out options you can no longer use
 
 
 public class Crosshair
 {
-
-	private int trackPlane = 0;
 	private final Image3DUniverse universe;
 	private final Content imageContent;
 	private final PlaneManager planeManager;
@@ -80,7 +80,6 @@ public class Crosshair
 		installBehaviours();
 
 		JFrame jFrame = new JFrame( "Crosshair");
-		jFrame.setPreferredSize(new Dimension( 600, 800 ));
 		jFrame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 
 		// main panel
@@ -101,6 +100,7 @@ public class Crosshair
 		//TODO - add a point panel - change visiblity of both sets of points, and their colour in bdv
 //		jFrame.add(new JSeparator());
 //		jFrame.add(new JSeparator());
+		jFrame.pack();
 		jFrame.setVisible( true );
 	}
 
@@ -113,50 +113,48 @@ public class Crosshair
 		bdvHandle.getViewerPanel().addTransformListener(new TransformListener<AffineTransform3D>() {
 			@Override
 			public void transformChanged(AffineTransform3D affineTransform3D) {
-				if ( trackPlane == 1 )
+				if ( planeManager.getTrackPlane() == 1 )
 				{
 					planeManager.updatePlaneOnTransformChange(affineTransform3D, "target");
-				} else if (trackPlane == 2) {
+				} else if (planeManager.getTrackPlane() == 2) {
 					planeManager.updatePlaneOnTransformChange(affineTransform3D, "block");
 				}
 			}
 		});
 
 		behaviours.behaviour( (ClickBehaviour) (x, y ) -> {
-			if (trackPlane == 0) {
-				trackPlane = 1;
-			} else if (trackPlane == 1) {
-				trackPlane = 0;
+			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target")) {
+				planeManager.setTrackPlane(1);
+				// TODO - update plane here
+			} else if (planeManager.getTrackPlane() == 0 & !planeManager.getVisiblityNamedPlane("target")) {
+				System.out.println("Plane must be visible to track it");
+			} else if (planeManager.getTrackPlane() == 1) {
+				planeManager.setTrackPlane(0);
 			}
 		}, "toggle targeting plane update", "shift T" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (trackPlane == 0) {
-				trackPlane = 2;
-			} else if (trackPlane == 2) {
-				trackPlane = 0;
+			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block")) {
+				planeManager.setTrackPlane(2);
+				//TODO - update plane here
+			} else if (planeManager.getTrackPlane() == 0 & !planeManager.getVisiblityNamedPlane("block")) {
+				System.out.println("Plane must be visible to track it");
+			} else if (planeManager.getTrackPlane() == 2) {
+				planeManager.setTrackPlane(0);
 			}
 		}, "toggle block plane update", "shift F" );
-
-		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (trackPlane == 0) {
-				planeManager.moveViewToNamedPlane("target");
-			}
-		}, "zoom to targeting plane", "ctrl T" );
-
-		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (trackPlane == 0) {
-				planeManager.moveViewToNamedPlane("block");
-			}
-		}, "zoom to block plane", "ctrl F" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			planeManager.addRemoveCurrentPositionPoints();
 		}, "add point", "P" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
-			planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+			if (planeManager.getTrackPlane() == 0) {
+				ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
+				planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+			} else {
+				System.out.println("Can only fit to points, when not tracking a plane");
+			}
 		}, "fit to points", "K" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
@@ -165,13 +163,13 @@ public class Crosshair
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			planeManager.setSelectedVertexCurrentPosition();
-		}, "select point", "ctrl L" );
+		}, "select point", "button1" );
 
 
 		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
 		pointOverlay.setPoints(planeManager.getPoints(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
-		BdvFunctions.showOverlay(pointOverlay, "point_overlay", Bdv.options().addTo(bdvStackSource));
+		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 	}
 
 //	behaviours for 3d window

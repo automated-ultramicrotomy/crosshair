@@ -27,6 +27,8 @@ import static de.embl.cba.targeting.GeometryUtils.calculateTrianglesFromPoints;
 
 public class PlaneManager {
 
+    private int trackPlane = 0;
+
     private final Map<String, Vector3d> planeNormals;
     private final Map<String, Vector3d> planePoints;
     private final Map<String, Vector3d> planeCentroids;
@@ -91,6 +93,8 @@ public class PlaneManager {
     public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
     public float getTargetTransparency() {return targetTransparency;}
     public float getBlockTransparency() {return blockTransparency;}
+    public int getTrackPlane() {return trackPlane;}
+    public void setTrackPlane(int track) {trackPlane = track;}
 
     public void nameVertex (String name) {
 
@@ -392,6 +396,16 @@ public class PlaneManager {
         } else {
             universe.getContent("block").setVisible(true);
             blockVisible = true;
+        }
+    }
+
+    public Boolean getVisiblityNamedPlane (String name) {
+        if (name.equals("target")) {
+            return targetVisible;
+        } else if (name.equals("block")) {
+            return blockVisible;
+        } else {
+            return null;
         }
     }
 }
