@@ -111,7 +111,7 @@ public class MicrotomeManager extends JPanel {
     }
 
     public void initialiseMicrotome (double initialKnifeAngle, double initialTiltAngle) {
-        if (planeManager.checkAllPlanesPointsDefined()) {
+        if (planeManager.checkAllPlanesPointsDefined() & planeManager.getTrackPlane() == 0) {
             microtomeModeActive = true;
 
             int microtomePiecesAdded = 0;
@@ -145,7 +145,7 @@ public class MicrotomeManager extends JPanel {
             // inactivate buttons for vertex assignemnt
             vertexAssignmentPanel.disableButtons();
         } else {
-            System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined");
+            System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
         }
     }
 
@@ -262,8 +262,12 @@ public class MicrotomeManager extends JPanel {
 
 
     private Matrix4d setupBlockOrientation(double initialKnifeAngle) {
+        String[] planeNames = {"target", "block"};
         //reset translation / rotation in case it has been modified
         imageContent.setTransform(new Transform3D());
+        for (String name : planeNames) {
+            universe.getContent(name).setTransform(new Transform3D());
+        }
 
         Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
 
@@ -290,7 +294,6 @@ public class MicrotomeManager extends JPanel {
 
         Vector3d endBlockNormal = new Vector3d(0, -1, 0);
         Vector3d endEdgeVector = new Vector3d(1, 0, 0);
-        //TODO - currently hard code knife angle, make user parameter
         AxisAngle4d initialKnifeOffset = new AxisAngle4d(new Vector3d(0, 0, 1), initialKnifeAngle * Math.PI / 180);
         Matrix4d matrixInitialKnifeOffset = new Matrix4d();
         matrixInitialKnifeOffset.set(initialKnifeOffset);
@@ -332,7 +335,13 @@ public class MicrotomeManager extends JPanel {
         Matrix4d finalSetupTransform = new Matrix4d();
         // rotate about the initial position of bottom edge centre, then translate bottom edge centre to (0,0,0)
         compose(scijavaFormMatrix, new Vector3d(bottomEdgeCentre.getX(), bottomEdgeCentre.getY(), bottomEdgeCentre.getZ()), new Vector3d(endBottomEdgeCentre.getX(), endBottomEdgeCentre.getY(), endBottomEdgeCentre.getZ()), finalSetupTransform);
-        imageContent.setTransform(new Transform3D(finalSetupTransform));
+
+        Transform3D finalTransform = new Transform3D(finalSetupTransform);
+        imageContent.setTransform(finalTransform);
+        for (String name : planeNames) {
+            universe.getContent(name).setTransform(finalTransform);
+        }
+
         // change so view rotates about (0,0,0)
         universe.centerAt(new Point3d());
 
@@ -436,8 +445,12 @@ public class MicrotomeManager extends JPanel {
         Matrix4f init_transform = new Matrix4f(initialBlockTransform);
         blockTiltTransform.mul(init_transform);
 
-        imageContent.setTransform(new Transform3D(blockTiltTransform));
-        planeManager.updatePlanesInPlace();
+        Transform3D finalTransform = new Transform3D(blockTiltTransform);
+        imageContent.setTransform(finalTransform);
+        for (String planeName : new String[] {"target", "block"}) {
+//            planeManager.updatePlanesInPlace();
+            universe.getContent(planeName).setTransform(finalTransform);
+        }
     }
 
     public void setRotation(double rotation) {

@@ -27,7 +27,6 @@ import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
 
-//TODO - add in checks for e.g. right number of points, one of each assignment, target and block normals etc
 //TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
 //TODO - does ctrl+f fail if you are already there? Ya it fails
 //TODO - more sensible placement of varibles / structure
@@ -39,8 +38,6 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
-//TODO removing vertex point doesn't remove its labels, need to make this a set or something it's a pain in teh arse
-//TODO - add enter / exit microtome mode (and have it gray out options you can no longer use
 //TODO - zoom to plane is very close but off by around 1E-14, check T's code is there anything we can improve here precision wise
 //TODO - add in colour change when align
 //TODO - add in solutions

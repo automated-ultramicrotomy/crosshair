@@ -198,11 +198,12 @@ public class PlaneManager {
     }
 
     // update planes on transform of the imagecontent, retain teh existing plane normals and points
-    public void updatePlanesInPlace() {
-        for (String key: planeNormals.keySet()) {
-            updatePlane(planeNormals.get(key), planePoints.get(key), key);
-        }
-    }
+    // TODO - replace this by microtome method, that just transforms planes
+//    public void updatePlanesInPlace() {
+//        for (String key: planeNormals.keySet()) {
+//            updatePlane(planeNormals.get(key), planePoints.get(key), key);
+//        }
+//    }
 
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {
 
@@ -260,11 +261,12 @@ public class PlaneManager {
             Color3f planeColor = null;
             float transparency = 0.7f;
             if (planeName.equals("target")) {
-                planeColor = targetPlaneColour;
+                // make copy of colour to assign (using original interferes with changing colour later)
+                planeColor = new Color3f(targetPlaneColour);
                 transparency = targetTransparency;
 
             } else if (planeName.equals("block")) {
-                planeColor = blockPlaneColour;
+                planeColor = new Color3f(blockPlaneColour);
                 transparency = blockTransparency;
             }
 
@@ -426,26 +428,25 @@ public class PlaneManager {
 
     public void setTargetPlaneColour (Color colour) {
         targetPlaneColour.set(colour);
-//        inefficent - just update colour as is
-        updatePlanesInPlace();
+        universe.getContent("target").setColor(new Color3f(targetPlaneColour));
     }
 
     public void setBlockPlaneColour (Color colour) {
         blockPlaneColour.set(colour);
-//        inefficent - just update colour as is
-        updatePlanesInPlace();
+        universe.getContent("block").setColor(new Color3f(blockPlaneColour));
     }
 
     public void setTargetTransparency (float transparency) {
         targetTransparency = transparency;
-//        inefficent - just update transparency
-        updatePlanesInPlace();
+
+        universe.getContent("target").setTransparency(targetTransparency);
     }
 
     public void setBlockTransparency (float transparency) {
-        blockTransparency = transparency;
-//        inefficent - just update colour as is
-        updatePlanesInPlace();
+//        blockTransparency = transparency;
+//        float transparencyCopy = blockTransparency;
+        universe.getContent("block").setTransparency(1.0f);
+//        universe.getContent("block").setTransparency(blockTransparency);
     }
 
     public void toggleTargetVisbility () {
