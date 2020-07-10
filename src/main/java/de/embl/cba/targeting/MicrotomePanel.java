@@ -54,21 +54,18 @@ public class MicrotomePanel extends JPanel {
     private final BoundedValueDouble knifeAngle;
     private final BoundedValueDouble tiltAngle;
     private final BoundedValueDouble rotationAngle;
+    private final Map<String, SliderPanelDouble> sliders;
+
 
     public MicrotomePanel(MicrotomeManager microtomeManager) {
         this.microtomeManager = microtomeManager;
+        sliders = new HashMap<>();
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Microtome Controls"),
                 BorderFactory.createEmptyBorder(5,5,5,5)));
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
-        ActionListener blockListener = new blockListener();
-        JButton initialiseBlock = new JButton("Initialise block");
-        initialiseBlock.setActionCommand("initialise_block");
-        initialiseBlock.addActionListener(blockListener);
-        this.add(initialiseBlock);
 
         // Initial knife angle
         initialKnifeAngle =
@@ -77,6 +74,22 @@ public class MicrotomePanel extends JPanel {
         // Initial tilt angle
         initialTiltAngle =
                 addSliderToPanel(this, "Initial tilt angle", -20, 20, 0);
+
+        JPanel toggleMicrotomeModePanel = new JPanel();
+        toggleMicrotomeModePanel.setLayout(new GridLayout(1, 2));
+
+        ActionListener blockListener = new blockListener();
+        JButton initialiseBlock = new JButton("Enter Microtome Mode");
+        initialiseBlock.setActionCommand("initialise_block");
+        initialiseBlock.addActionListener(blockListener);
+        toggleMicrotomeModePanel.add(initialiseBlock);
+
+        JButton exitMicrotomeMode = new JButton("Exit Microtome Mode");
+        exitMicrotomeMode.setActionCommand("exit_microtome_mode");
+        exitMicrotomeMode.addActionListener(blockListener);
+        toggleMicrotomeModePanel.add(exitMicrotomeMode);
+
+        add(toggleMicrotomeModePanel);
 
         // Knife Rotation
         MicrotomeListener knifeListener = new KnifeListener();
@@ -90,7 +103,9 @@ public class MicrotomePanel extends JPanel {
         // Holder Rotation
         MicrotomeListener holderFrontListener = new HolderFrontListener();
         rotationAngle =
-                addSliderToPanel(this, "Holder rotation", -180, 180, 0, holderFrontListener);
+                addSliderToPanel(this, "Holder Rotation", -180, 180, 0, holderFrontListener);
+
+        disableSliders();
 
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
@@ -108,6 +123,10 @@ public class MicrotomePanel extends JPanel {
         return rotationAngle;
     }
 
+    public Map<String, SliderPanelDouble> getSliders (){return sliders;}
+
+
+
     private BoundedValueDouble addSliderToPanel(JPanel panel, String sliderName, double min, double max, double currentValue,
                                      MicrotomeListener updateListener) {
 
@@ -119,6 +138,7 @@ public class MicrotomePanel extends JPanel {
         SliderPanelDouble slider = createSlider(panel, sliderName, sliderValue);
         updateListener.setValues(sliderValue, slider);
         sliderValue.setUpdateListener(updateListener);
+
         return sliderValue;
     }
 
@@ -143,6 +163,10 @@ public class MicrotomePanel extends JPanel {
         s.setNumColummns(7);
         s.setDecimalFormat("####.####");
 
+//        Don't want to disable initial angles, these aren't directly tied to microtome movements
+        if (!sliderName.equals("Initial Knife Angle") & !sliderName.equals("Initial tilt angle")) {
+            sliders.put(sliderName, s);
+        }
         panel.add(s);
         refreshGui();
         return s;
@@ -153,10 +177,27 @@ public class MicrotomePanel extends JPanel {
         this.repaint();
     }
 
+    public void enableSliders () {
+        // using setEnabled doesn't work with these bdv.tools style sliders, so we just change the visibility
+        for (String sliderName : sliders.keySet()) {
+            sliders.get(sliderName).setVisible(true);
+        }
+    }
+
+    public void disableSliders () {
+        for (String sliderName : sliders.keySet()) {
+            sliders.get(sliderName).setVisible(false);
+        }
+    }
+
 
     class blockListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
+            if (e.getActionCommand().equals("initialise_block")){
+                microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
+            } else {
+                microtomeManager.exitMicrotomeMode();
+            }
         }
     }
 
@@ -178,8 +219,10 @@ public class MicrotomePanel extends JPanel {
 
         @Override
         public void update() {
-            knifeSlider.update();
-            microtomeManager.setKnifeAngle(knifeAngle.getCurrentValue());
+//            if (slidersEnabled) {
+                knifeSlider.update();
+                microtomeManager.setKnifeAngle(knifeAngle.getCurrentValue());
+//            }
         }
     }
 
@@ -197,8 +240,10 @@ public class MicrotomePanel extends JPanel {
 
         @Override
         public void update() {
-            tiltSlider.update();
-            microtomeManager.setTilt(tiltAngle.getCurrentValue());
+//            if (slidersEnabled) {
+                tiltSlider.update();
+                microtomeManager.setTilt(tiltAngle.getCurrentValue());
+//            }
         }
     }
 
@@ -216,8 +261,10 @@ public class MicrotomePanel extends JPanel {
 
         @Override
         public void update() {
-            rotationSlider.update();
-            microtomeManager.setRotation(rotationAngle.getCurrentValue());
+//            if (slidersEnabled) {
+                rotationSlider.update();
+                microtomeManager.setRotation(rotationAngle.getCurrentValue());
+//            }
         }
     }
 

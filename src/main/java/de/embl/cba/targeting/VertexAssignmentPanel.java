@@ -4,15 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 // TODO - stop free resizing of buttons
 
 public class VertexAssignmentPanel extends JPanel {
 
     private final PlaneManager planeManager;
+    private final Map<String, JButton> buttons;
 
     public VertexAssignmentPanel(PlaneManager planeManager) {
         this.planeManager = planeManager;
+        buttons = new HashMap<>();
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Assign Vertex"),
@@ -27,6 +31,17 @@ public class VertexAssignmentPanel extends JPanel {
         }
     }
 
+    public void enableButtons () {
+        for (String buttonName : buttons.keySet()) {
+            buttons.get(buttonName).setEnabled(true);
+        }
+    }
+
+    public void disableButtons () {
+        for (String buttonName : buttons.keySet()) {
+            buttons.get(buttonName).setEnabled(false);
+        }
+    }
 
     private void addButton(JPanel panel, String pointAssignment, ActionListener vertexListener) {
         JButton b = new JButton(pointAssignment);
@@ -35,6 +50,7 @@ public class VertexAssignmentPanel extends JPanel {
         b.setActionCommand(pointAssignment);
         b.addActionListener(vertexListener);
         panel.add(b);
+        buttons.put(pointAssignment, b);
     }
 
     class vertexPointListener implements ActionListener {

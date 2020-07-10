@@ -27,9 +27,6 @@ import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
 
-//TODO - make sure removal also removes from named_vertices
-//TODO - make it so assigning top left etc, checks if thw point is assigned to any other label, then removes this
-// stops ability to have multilple assignments on each point in bdv
 //TODO - add in checks for e.g. right number of points, one of each assignment, target and block normals etc
 //TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
 //TODO - does ctrl+f fail if you are already there? Ya it fails
@@ -45,6 +42,9 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //TODO removing vertex point doesn't remove its labels, need to make this a set or something it's a pain in teh arse
 //TODO - add enter / exit microtome mode (and have it gray out options you can no longer use
 //TODO - zoom to plane is very close but off by around 1E-14, check T's code is there anything we can improve here precision wise
+//TODO - add in colour change when align
+//TODO - add in solutions
+//TODO - add save / load of planes and points
 
 
 public class Crosshair
@@ -93,6 +93,7 @@ public class Crosshair
 		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
 		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager);
 		microtomeManager.setMicrotomePanel(microtomePanel);
+		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
 		mainPane.add(planePanel);
 		mainPane.add(vertexAssignmentPanel);
 		mainPane.add(microtomePanel);
@@ -122,42 +123,50 @@ public class Crosshair
 		});
 
 		behaviours.behaviour( (ClickBehaviour) (x, y ) -> {
-			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target")) {
+			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target") & !microtomeManager.checkMicrotomeMode()) {
 				planeManager.setTrackPlane(1);
 				// TODO - update plane here
-			} else if (planeManager.getTrackPlane() == 0 & !planeManager.getVisiblityNamedPlane("target")) {
-				System.out.println("Plane must be visible to track it");
 			} else if (planeManager.getTrackPlane() == 1) {
 				planeManager.setTrackPlane(0);
+			} else {
+				System.out.println("Microtome mode must be inactive, and plane visible, to track");
 			}
 		}, "toggle targeting plane update", "shift T" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block")) {
+			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block") & !microtomeManager.checkMicrotomeMode()) {
 				planeManager.setTrackPlane(2);
 				//TODO - update plane here
-			} else if (planeManager.getTrackPlane() == 0 & !planeManager.getVisiblityNamedPlane("block")) {
-				System.out.println("Plane must be visible to track it");
 			} else if (planeManager.getTrackPlane() == 2) {
 				planeManager.setTrackPlane(0);
+			} else {
+				System.out.println("Microtome mode must be inactive, and plane visible, to track");
 			}
 		}, "toggle block plane update", "shift F" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			planeManager.addRemoveCurrentPositionPoints();
+			if (!microtomeManager.checkMicrotomeMode()) {
+				planeManager.addRemoveCurrentPositionPoints();
+			} else {
+				System.out.println("Microtome mode must be inactive to change points");
+			}
 		}, "add point", "P" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (planeManager.getTrackPlane() == 0) {
+			if (planeManager.getTrackPlane() == 0 & !microtomeManager.checkMicrotomeMode()) {
 				ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
 				planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
 			} else {
-				System.out.println("Can only fit to points, when not tracking a plane");
+				System.out.println("Can only fit to points, when not tracking a plane and microtome mode is inactive");
 			}
 		}, "fit to points", "K" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			planeManager.addRemoveCurrentPositionBlockVertices();
+			if (!microtomeManager.checkMicrotomeMode()) {
+				planeManager.addRemoveCurrentPositionBlockVertices();
+			} else {
+				System.out.println("Microtome mode must be inactive to change points");
+			}
 		}, "add block vertex", "V" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {

@@ -1,5 +1,6 @@
 package de.embl.cba.targeting;
 
+import bdv.tools.brightness.SliderPanelDouble;
 import customnode.CustomMesh;
 import customnode.MeshLoader;
 import ij3d.Content;
@@ -56,11 +57,15 @@ public class MicrotomeManager extends JPanel {
     private double initialTiltAngle;
 
     private MicrotomePanel microtomePanel;
+    private VertexAssignmentPanel vertexAssignmentPanel;
+    private boolean microtomeModeActive;
+
     public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent) {
 
         this.planeManager = planeManager;
         this.universe = universe;
         this.imageContent = imageContent;
+        microtomeModeActive = false;
 
         rotationAxis = new Vector3f(new float[] {0, 1, 0});
         tiltAxis = new Vector3f(new float[] {1, 0, 0});
@@ -75,8 +80,14 @@ public class MicrotomeManager extends JPanel {
     public double getTilt() {return tilt;}
     public double getRotation() {return rotation;}
 
+    public boolean checkMicrotomeMode () {return microtomeModeActive;}
+    public boolean setMicrotomeMode(boolean active) {return microtomeModeActive = active;}
+
     public void setMicrotomePanel(MicrotomePanel microtomePanel) {
         this.microtomePanel = microtomePanel;
+    }
+    public void setVertexAssignmentPanel (VertexAssignmentPanel vertexAssignmentPanel) {
+        this.vertexAssignmentPanel = vertexAssignmentPanel;
     }
 
     private void loadMicrotomeMeshes() {
@@ -100,6 +111,8 @@ public class MicrotomeManager extends JPanel {
     }
 
     public void initialiseMicrotome (double initialKnifeAngle, double initialTiltAngle) {
+        microtomeModeActive = true;
+
         //TODO - setup so doesn't reload scale if just change inital values
         for (String key : microtomeSTLs.keySet()) {
             System.out.println(key);
@@ -107,6 +120,8 @@ public class MicrotomeManager extends JPanel {
             if (!universe.contains(key)) {
                 universe.addCustomMesh(microtomeSTLs.get(key), key);
                 universe.getContent(key).setLocked(true);
+            } else {
+                universe.getContent(key).setVisible(true);
             }
         }
 
@@ -170,8 +185,6 @@ public class MicrotomeManager extends JPanel {
         arcComponentsTransform.transform(arcC);
         currentArcCentre = new Vector3f((float) arcC.getX(), (float) arcC.getY(), (float) arcC.getZ());
 
-        //TODO - set arc centre and knife centre to value after scaling and translation
-
         // Set knife to same distance
         // hodler front after scaling
         Point3d knifeCentreAfter = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
@@ -200,9 +213,42 @@ public class MicrotomeManager extends JPanel {
         initialBlockTransform = setupBlockOrientation(initialKnifeAngle);
         this.initialKnifeAngle = initialKnifeAngle;
         this.initialTiltAngle = initialTiltAngle;
+        // activate sliders
+        microtomePanel.enableSliders();
         microtomePanel.getKnifeAngle().setCurrentValue(initialKnifeAngle);
         microtomePanel.getTiltAngle().setCurrentValue(initialTiltAngle);
         microtomePanel.getRotationAngle().setCurrentValue(0);
+
+        // inactivate buttons for vertex assignemnt
+        vertexAssignmentPanel.disableButtons();
+    }
+
+    public void exitMicrotomeMode (){
+        microtomeModeActive = false;
+
+        initialBlockTransform.setIdentity();
+        arcComponentsInitialTransform.setIdentity();
+        knifeInitialTransform.setIdentity();
+        microtomePanel.getKnifeAngle().setCurrentValue(0);
+        microtomePanel.getTiltAngle().setCurrentValue(0);
+        microtomePanel.getRotationAngle().setCurrentValue(0);
+
+        imageContent.setTransform(new Transform3D());
+        universe.centerSelected(imageContent);
+
+        // make microtome models invisible
+        for (String key : microtomeSTLs.keySet()) {
+            // TODO - set as locked - should probably set my other custom meshes to be locked too?
+            if (universe.contains(key)) {
+                universe.getContent(key).setVisible(false);
+            }
+        }
+
+        // inactivate sliders
+        microtomePanel.disableSliders();
+
+        vertexAssignmentPanel.enableButtons();
+
     }
 
 
