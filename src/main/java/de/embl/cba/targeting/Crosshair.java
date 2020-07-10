@@ -45,7 +45,9 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //TODO - add in colour change when align
 //TODO - add in solutions
 //TODO - add save / load of planes and points
-
+// TODO - enforce vertex points on block plane
+//TODO stop view shiting when you move the microtome
+//TODO - when in microtome mode, don't recalculate the intersections, jsut transform it identical to teh block
 
 public class Crosshair
 {

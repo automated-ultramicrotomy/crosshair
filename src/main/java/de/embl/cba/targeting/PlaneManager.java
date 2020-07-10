@@ -276,8 +276,10 @@ public class PlaneManager {
                 newMesh = new CustomTransparentTriangleMesh(triangles, planeColor, transparency);
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
-            meshContent.setVisible(true);
             meshContent.setLocked(true);
+            // TODO - check for current visiblity
+            meshContent.setVisible(true);
+
         }
     }
 

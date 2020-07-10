@@ -114,6 +114,7 @@ public class MicrotomeManager extends JPanel {
         if (planeManager.checkAllPlanesPointsDefined()) {
             microtomeModeActive = true;
 
+            int microtomePiecesAdded = 0;
             //TODO - setup so doesn't reload scale if just change inital values
             for (String key : microtomeSTLs.keySet()) {
                 System.out.println(key);
@@ -121,95 +122,16 @@ public class MicrotomeManager extends JPanel {
                 if (!universe.contains(key)) {
                     universe.addCustomMesh(microtomeSTLs.get(key), key);
                     universe.getContent(key).setLocked(true);
+                    microtomePiecesAdded += 1;
                 } else {
                     universe.getContent(key).setVisible(true);
                 }
             }
 
-            // scale meshes / position them
-            Point3d minArc = new Point3d();
-            Point3d maxArc = new Point3d();
-            universe.getContent("arc.stl").getMax(maxArc);
-            universe.getContent("arc.stl").getMin(minArc);
-            double heightArc = abs(maxArc.getZ() - minArc.getZ());
-
-            Point3d minImage = new Point3d();
-            Point3d maxImage = new Point3d();
-            imageContent.getMax(maxImage);
-            imageContent.getMin(minImage);
-            ArrayList<Double> dims = new ArrayList<>();
-            dims.add(abs(maxImage.getX() - minImage.getX()));
-            dims.add(abs(maxImage.getY() - minImage.getY()));
-            dims.add(abs(maxImage.getZ() - minImage.getZ()));
-            double endHeight = Collections.max(dims);
-
-            double scaleFactor = endHeight / heightArc;
-
-            Matrix4d scaleMatrix = new Matrix4d(scaleFactor, 0, 0, 0,
-                    0, scaleFactor, 0, 0,
-                    0, 0, scaleFactor, 0,
-                    0, 0, 0, 1);
-
-            Transform3D trans = new Transform3D(scaleMatrix);
-
-            Vector3d maxImageVector = new Vector3d();
-            maxImageVector.sub(new Vector3d(maxImage.getX(), maxImage.getY(), maxImage.getZ()),
-                    new Vector3d(minImage.getX(), minImage.getY(), minImage.getZ()));
-            double maxImageDistance = maxImageVector.length();
-
-            // translate so front of holder one max image distance away from 0,0,0
-            // location of min holder front is approximate from original blender file
-            Point3d minHolderFront = new Point3d(0, 3, 0);
-
-            // hodler front after scaling
-            Point3d holderFrontAfter = new Point3d(minHolderFront.getX(), minHolderFront.getY(), minHolderFront.getZ());
-            trans.transform(holderFrontAfter);
-            double yHolderFront = holderFrontAfter.getY();
-
-            double translateY = maxImageDistance - yHolderFront;
-
-            Matrix4d translateArcComponents = new Matrix4d(1, 0, 0, 0,
-                    0, 1, 0, translateY,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1);
-
-            translateArcComponents.mul(scaleMatrix);
-            Transform3D arcComponentsTransform = new Transform3D(translateArcComponents);
-            String[] arcComponents = new String[]{"arc.stl", "holder_front.stl", "holder_back.stl"};
-            for (String key : arcComponents) {
-                universe.getContent(key).setTransform(arcComponentsTransform);
+            // resize microtome parts, if first time adding them
+            if (microtomePiecesAdded > 0) {
+                resizeMicrotomeParts();
             }
-            arcComponentsInitialTransform = translateArcComponents;
-
-            // arc centre after scaling
-            Point3d arcC = new Point3d(initialArcCentre.getX(), initialArcCentre.getY(), initialArcCentre.getZ());
-            arcComponentsTransform.transform(arcC);
-            currentArcCentre = new Vector3f((float) arcC.getX(), (float) arcC.getY(), (float) arcC.getZ());
-
-            // Set knife to same distance
-            // hodler front after scaling
-            Point3d knifeCentreAfter = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
-            trans.transform(knifeCentreAfter);
-            double yKnife = knifeCentreAfter.getY();
-            System.out.println("yknife");
-            System.out.println(yKnife);
-
-            double translateK = -maxImageDistance - yKnife;
-
-            Matrix4d translateKnife = new Matrix4d(1, 0, 0, 0,
-                    0, 1, 0, translateK,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1);
-
-            translateKnife.mul(scaleMatrix);
-            Transform3D knifeTransform = new Transform3D(translateKnife);
-            universe.getContent("knife.stl").setTransform(knifeTransform);
-            knifeInitialTransform = translateKnife;
-
-            // knife centre after scaling
-            Point3d knifeC = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
-            knifeTransform.transform(knifeC);
-            currentKnifeCentre = new Vector3f((float) knifeC.getX(), (float) knifeC.getY(), (float) knifeC.getZ());
 
             initialBlockTransform = setupBlockOrientation(initialKnifeAngle);
             this.initialKnifeAngle = initialKnifeAngle;
@@ -227,12 +149,97 @@ public class MicrotomeManager extends JPanel {
         }
     }
 
+    private void resizeMicrotomeParts () {
+        // scale meshes / position them
+        Point3d minArc = new Point3d();
+        Point3d maxArc = new Point3d();
+        universe.getContent("arc.stl").getMax(maxArc);
+        universe.getContent("arc.stl").getMin(minArc);
+        double heightArc = abs(maxArc.getZ() - minArc.getZ());
+
+        Point3d minImage = new Point3d();
+        Point3d maxImage = new Point3d();
+        imageContent.getMax(maxImage);
+        imageContent.getMin(minImage);
+        ArrayList<Double> dims = new ArrayList<>();
+        dims.add(abs(maxImage.getX() - minImage.getX()));
+        dims.add(abs(maxImage.getY() - minImage.getY()));
+        dims.add(abs(maxImage.getZ() - minImage.getZ()));
+        double endHeight = Collections.max(dims);
+
+        double scaleFactor = endHeight / heightArc;
+
+        Matrix4d scaleMatrix = new Matrix4d(scaleFactor, 0, 0, 0,
+                0, scaleFactor, 0, 0,
+                0, 0, scaleFactor, 0,
+                0, 0, 0, 1);
+
+        Transform3D trans = new Transform3D(scaleMatrix);
+
+        Vector3d maxImageVector = new Vector3d();
+        maxImageVector.sub(new Vector3d(maxImage.getX(), maxImage.getY(), maxImage.getZ()),
+                new Vector3d(minImage.getX(), minImage.getY(), minImage.getZ()));
+        double maxImageDistance = maxImageVector.length();
+
+        // translate so front of holder one max image distance away from 0,0,0
+        // location of min holder front is approximate from original blender file
+        Point3d minHolderFront = new Point3d(0, 3, 0);
+
+        // hodler front after scaling
+        Point3d holderFrontAfter = new Point3d(minHolderFront.getX(), minHolderFront.getY(), minHolderFront.getZ());
+        trans.transform(holderFrontAfter);
+        double yHolderFront = holderFrontAfter.getY();
+
+        double translateY = maxImageDistance - yHolderFront;
+
+        Matrix4d translateArcComponents = new Matrix4d(1, 0, 0, 0,
+                0, 1, 0, translateY,
+                0, 0, 1, 0,
+                0, 0, 0, 1);
+
+        translateArcComponents.mul(scaleMatrix);
+        Transform3D arcComponentsTransform = new Transform3D(translateArcComponents);
+        String[] arcComponents = new String[]{"arc.stl", "holder_front.stl", "holder_back.stl"};
+        for (String key : arcComponents) {
+            universe.getContent(key).setTransform(arcComponentsTransform);
+        }
+        arcComponentsInitialTransform = translateArcComponents;
+
+        // arc centre after scaling
+        Point3d arcC = new Point3d(initialArcCentre.getX(), initialArcCentre.getY(), initialArcCentre.getZ());
+        arcComponentsTransform.transform(arcC);
+        currentArcCentre = new Vector3f((float) arcC.getX(), (float) arcC.getY(), (float) arcC.getZ());
+
+        // Set knife to same distance
+        // hodler front after scaling
+        Point3d knifeCentreAfter = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
+        trans.transform(knifeCentreAfter);
+        double yKnife = knifeCentreAfter.getY();
+
+        double translateK = -maxImageDistance - yKnife;
+
+        Matrix4d translateKnife = new Matrix4d(1, 0, 0, 0,
+                0, 1, 0, translateK,
+                0, 0, 1, 0,
+                0, 0, 0, 1);
+
+        translateKnife.mul(scaleMatrix);
+        Transform3D knifeTransform = new Transform3D(translateKnife);
+        universe.getContent("knife.stl").setTransform(knifeTransform);
+        knifeInitialTransform = translateKnife;
+
+        // knife centre after scaling
+        Point3d knifeC = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
+        knifeTransform.transform(knifeC);
+        currentKnifeCentre = new Vector3f((float) knifeC.getX(), (float) knifeC.getY(), (float) knifeC.getZ());
+    }
+
     public void exitMicrotomeMode (){
         microtomeModeActive = false;
 
         initialBlockTransform.setIdentity();
-        arcComponentsInitialTransform.setIdentity();
-        knifeInitialTransform.setIdentity();
+//        arcComponentsInitialTransform.setIdentity();
+//        knifeInitialTransform.setIdentity();
         microtomePanel.getKnifeAngle().setCurrentValue(0);
         microtomePanel.getTiltAngle().setCurrentValue(0);
         microtomePanel.getRotationAngle().setCurrentValue(0);
@@ -242,7 +249,6 @@ public class MicrotomeManager extends JPanel {
 
         // make microtome models invisible
         for (String key : microtomeSTLs.keySet()) {
-            // TODO - set as locked - should probably set my other custom meshes to be locked too?
             if (universe.contains(key)) {
                 universe.getContent(key).setVisible(false);
             }
@@ -250,7 +256,6 @@ public class MicrotomeManager extends JPanel {
 
         // inactivate sliders
         microtomePanel.disableSliders();
-
         vertexAssignmentPanel.enableButtons();
 
     }
