@@ -73,9 +73,17 @@ import java.util.List;
                     if (colour == null) return;
 
                     if (planeName == "target") {
-                        planeManager.setTargetPlaneColour(colour);
+                        if (planeManager.checkNamedPlaneExists("target")) {
+                            planeManager.setTargetPlaneColour(colour);
+                        } else {
+                            System.out.println("Target plane not initialised");
+                        }
                     } else if (planeName == "block") {
-                        planeManager.setBlockPlaneColour(colour);
+                        if (planeManager.checkNamedPlaneExists("block")) {
+                            planeManager.setBlockPlaneColour(colour);
+                        } else {
+                            System.out.println("Block plane not initialised");
+                        }
                     }
                 } else {
                     System.out.println("Can only change colour, when not tracking a plane");
@@ -95,7 +103,11 @@ import java.util.List;
 
             goToButton.addActionListener(e -> {
                 if (planeManager.getTrackPlane() == 0) {
-                    planeManager.moveViewToNamedPlane(planeName);
+                    if (planeManager.checkNamedPlaneExists(planeName)) {
+                        planeManager.moveViewToNamedPlane(planeName);
+                    } else {
+                        System.out.println("Plane not initialised");
+                    }
                 } else {
                     System.out.println("Can only go to plane, when not tracking a plane");
                 }
@@ -114,9 +126,17 @@ import java.util.List;
             visbilityButton.addActionListener(e -> {
                 if (planeManager.getTrackPlane() == 0) {
                     if (planeName == "target") {
-                        planeManager.toggleTargetVisbility();
+                        if (planeManager.checkNamedPlaneExists("target")) {
+                            planeManager.toggleTargetVisbility();
+                        } else {
+                            System.out.println("Target plane not initialised");
+                        }
                     } else if (planeName == "block") {
-                        planeManager.toggleBlockVisbility();
+                        if (planeManager.checkNamedPlaneExists("block")) {
+                            planeManager.toggleBlockVisbility();
+                        } else {
+                            System.out.println("Block plane not initialised");
+                        }
                     }
                 } else {
                     System.out.println("Can only toggle visiblity, when not tracking a plane");
@@ -169,9 +189,17 @@ import java.util.List;
 
                     float currentTransparency = 0.7f;
                     if (planeName.equals("target")) {
-                        currentTransparency = planeManager.getTargetTransparency();
+                        if (planeManager.checkNamedPlaneExists("target")) {
+                            currentTransparency = planeManager.getTargetTransparency();
+                        } else {
+                            System.out.println("Target plane not initialised");
+                        }
                     } else if (planeName.equals("block")) {
-                        currentTransparency = planeManager.getBlockTransparency();
+                        if (planeManager.checkNamedPlaneExists("block")) {
+                            currentTransparency = planeManager.getBlockTransparency();
+                        } else {
+                            System.out.println("Block plane not initialised");
+                        }
                     }
 
 //                as here https://github.com/tischi/imagej-utils/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java

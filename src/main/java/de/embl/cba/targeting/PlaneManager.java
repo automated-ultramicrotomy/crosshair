@@ -131,6 +131,10 @@ public class PlaneManager {
         content.getPointList().rename(content.getPointList().get(pointIndex), name);
     }
 
+    public boolean checkNamedPlaneExists(String name) {
+        return planeNormals.containsKey(name);
+    }
+
     public void updatePlaneOnTransformChange(AffineTransform3D affineTransform3D, String planeName) {
         ArrayList<Vector3d> planeDefinition = getPlaneDefinitionFromViewTransform(affineTransform3D);
         updatePlane(planeDefinition.get(0), planeDefinition.get(1), planeName);
