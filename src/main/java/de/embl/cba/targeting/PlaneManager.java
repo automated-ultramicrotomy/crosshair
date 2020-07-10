@@ -475,4 +475,25 @@ public class PlaneManager {
             return null;
         }
     }
+
+    public boolean checkAllPlanesPointsDefined() {
+        boolean targetExists = checkNamedPlaneExists("target");
+        boolean blockExists = checkNamedPlaneExists("block");
+
+        boolean allVerticesExist = true;
+        String[] vertexPoints = {"top_left", "top_right", "bottom_left", "bottom_right"};
+        for (String vertexName: vertexPoints) {
+            if (!namedVertices.containsKey(vertexName)) {
+                allVerticesExist = false;
+                break;
+            }
+        }
+
+        if (targetExists & blockExists & allVerticesExist) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 }
