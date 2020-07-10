@@ -163,7 +163,7 @@ public class Crosshair
 		}, "add block vertex", "V" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			planeManager.setSelectedVertexCurrentPosition();
+			planeManager.toggleSelectedVertexCurrentPosition();
 		}, "select point", "button1" );
 
 

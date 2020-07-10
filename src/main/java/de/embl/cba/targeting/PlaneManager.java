@@ -17,10 +17,7 @@ import vib.BenesNamedPoint;
 import vib.PointList;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
 import static de.embl.cba.targeting.GeometryUtils.calculateTrianglesFromPoints;
@@ -373,7 +370,7 @@ public class PlaneManager {
         return gPos;
     }
 
-    public void setSelectedVertexCurrentPosition () {
+    public void toggleSelectedVertexCurrentPosition () {
         double[] pointViewerCoords = getCurrentPositionViewerCoordinates();
         for ( int i = 0; i < blockVertices.size(); i++ ) {
             double[] currentPointViewerCoords = convertToViewerCoordinates(blockVertices.get(i));
@@ -381,9 +378,27 @@ public class PlaneManager {
             if (distance < 5) {
                 RealPoint selection = new RealPoint(3);
                 selection.setPosition(blockVertices.get(i));
-                selectedVertex.put("selected", selection );
-                bdvHandle.getViewerPanel().requestRepaint();
-                break;
+
+                // if point already selected, deselect it
+                if (selectedVertex.containsKey("selected")) {
+                    double[] currentSelectionPosition = new double[3];
+                    selectedVertex.get("selected").localize(currentSelectionPosition);
+                    double[] newSelectionPosition = new double[3];
+                    selection.localize(newSelectionPosition);
+                    if (Arrays.equals(currentSelectionPosition, newSelectionPosition)) {
+                        selectedVertex.clear();
+                        bdvHandle.getViewerPanel().requestRepaint();
+                        break;
+                    } else {
+                        selectedVertex.put("selected", selection);
+                        bdvHandle.getViewerPanel().requestRepaint();
+                        break;
+                    }
+                } else {
+                    selectedVertex.put("selected", selection);
+                    bdvHandle.getViewerPanel().requestRepaint();
+                    break;
+                }
             }
         }
     }
