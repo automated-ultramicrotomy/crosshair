@@ -33,9 +33,12 @@ public class PlaneManager {
     private final Map<String, Vector3d> planePoints;
     private final Map<String, Vector3d> planeCentroids;
     private final Map<String, RealPoint> namedVertices;
+    private final Map<String, RealPoint> selectedVertex;
+
     private final ArrayList<RealPoint> points;
     private final ArrayList<RealPoint> blockVertices;
-    private final RealPoint selectedVertex;
+
+
 
     private final BdvHandle bdvHandle;
     private final BdvStackSource bdvStackSource;
@@ -56,11 +59,12 @@ public class PlaneManager {
         planeNormals = new HashMap<>();
         planePoints = new HashMap<>();
         planeCentroids = new HashMap<>();
+        selectedVertex = new HashMap<>();
 
         namedVertices = new HashMap<>();
         points = new ArrayList<>();
         blockVertices = new ArrayList<>();
-        selectedVertex = new RealPoint(3);
+
         this.bdvStackSource = bdvStackSource;
         this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
@@ -75,7 +79,7 @@ public class PlaneManager {
         blockVisible = true;
     }
 
-    public RealPoint getSelectedVertex() {
+    public Map<String, RealPoint>getSelectedVertex() {
         return selectedVertex;
     }
 
@@ -97,30 +101,28 @@ public class PlaneManager {
     public void setTrackPlane(int track) {trackPlane = track;}
 
     public void nameVertex (String name) {
+        if (!selectedVertex.containsKey("selected")) {
+            System.out.println("No vertex selected");
+        } else {
 
-        //TODO - figure a way to sort this - what's an empty value I can set to? Would need this also to
-        // deselect points
-//        if (selectedVertex == null) {
-//            return;
-//        }
-
-        RealPoint selectedPointCopy = new RealPoint(selectedVertex);
-        if (name.equals("Top Left")) {
-            renamePoint3D(imageContent, selectedVertex, "TL");
-            namedVertices.put("top_left", selectedPointCopy);
-            bdvHandle.getViewerPanel().requestRepaint();
-        } else if (name.equals("Top Right")) {
-            renamePoint3D(imageContent, selectedVertex, "TR");
-            namedVertices.put("top_right", selectedPointCopy);
-            bdvHandle.getViewerPanel().requestRepaint();
-        } else if (name.equals("Bottom Left")) {
-            renamePoint3D(imageContent, selectedVertex, "BL");
-            namedVertices.put("bottom_left", selectedPointCopy);
-            bdvHandle.getViewerPanel().requestRepaint();
-        } else if (name.equals("Bottom Right")) {
-            renamePoint3D(imageContent, selectedVertex, "BR");
-            namedVertices.put("bottom_right", selectedPointCopy);
-            bdvHandle.getViewerPanel().requestRepaint();
+            RealPoint selectedPointCopy = new RealPoint(selectedVertex.get("selected"));
+            if (name.equals("Top Left")) {
+                renamePoint3D(imageContent, selectedPointCopy, "TL");
+                namedVertices.put("top_left", selectedPointCopy);
+                bdvHandle.getViewerPanel().requestRepaint();
+            } else if (name.equals("Top Right")) {
+                renamePoint3D(imageContent, selectedPointCopy, "TR");
+                namedVertices.put("top_right", selectedPointCopy);
+                bdvHandle.getViewerPanel().requestRepaint();
+            } else if (name.equals("Bottom Left")) {
+                renamePoint3D(imageContent, selectedPointCopy, "BL");
+                namedVertices.put("bottom_left", selectedPointCopy);
+                bdvHandle.getViewerPanel().requestRepaint();
+            } else if (name.equals("Bottom Right")) {
+                renamePoint3D(imageContent, selectedPointCopy, "BR");
+                namedVertices.put("bottom_right", selectedPointCopy);
+                bdvHandle.getViewerPanel().requestRepaint();
+            }
         }
     }
 
@@ -377,7 +379,9 @@ public class PlaneManager {
             double[] currentPointViewerCoords = convertToViewerCoordinates(blockVertices.get(i));
             double distance = distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
             if (distance < 5) {
-                selectedVertex.setPosition(blockVertices.get(i));
+                RealPoint selection = new RealPoint(3);
+                selection.setPosition(blockVertices.get(i));
+                selectedVertex.put("selected", selection );
                 bdvHandle.getViewerPanel().requestRepaint();
                 break;
             }

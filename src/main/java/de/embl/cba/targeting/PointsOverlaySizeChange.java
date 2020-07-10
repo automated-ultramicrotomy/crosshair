@@ -16,7 +16,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
     // could make it nicer like in teh bdv workshop, where they make the size taper off in a sphere
         private List< ? extends RealLocalizable> points;
         private List<? extends RealLocalizable> vertexPoints;
-        private RealLocalizable selectedPoint;
+        private Map<String, RealPoint> selectedPoint;
         private Map<String, RealPoint> namedVertices;
 
         private Color colPoint;
@@ -24,7 +24,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         private Color colSelected;
 
         public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertexPoints,
-                                                            final RealLocalizable selectedPoint,
+                                                            final Map<String, RealPoint> selectedPoint,
                                                             final Map<String, RealPoint> namedVertices)
         {
             this.points = points;
@@ -63,7 +63,11 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             }
 
             double[] lposSelected = new double[3];
-            selectedPoint.localize(lposSelected);
+            if (selectedPoint.containsKey("selected")) {
+                selectedPoint.get("selected").localize(lposSelected);
+            } else {
+                lposSelected = null;
+            }
 
             for ( final RealLocalizable p : vertexPoints)
             {
@@ -76,7 +80,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
                 final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
                 final int w = ( int ) size;
-                if (Arrays.equals(lPos, lposSelected)) {
+                if (lposSelected != null & Arrays.equals(lPos, lposSelected)) {
                     graphics.setColor(getColor(gPos, colSelected));
                 } else {
                     graphics.setColor(getColor(gPos, colVertex));
