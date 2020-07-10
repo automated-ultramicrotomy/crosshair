@@ -105,25 +105,46 @@ public class PlaneManager {
             RealPoint selectedPointCopy = new RealPoint(selectedVertex.get("selected"));
             if (name.equals("Top Left")) {
                 renamePoint3D(imageContent, selectedPointCopy, "TL");
-                namedVertices.put("top_left", selectedPointCopy);
-                bdvHandle.getViewerPanel().requestRepaint();
+                addNamedVertexBdv("top_left", selectedPointCopy);
             } else if (name.equals("Top Right")) {
                 renamePoint3D(imageContent, selectedPointCopy, "TR");
-                namedVertices.put("top_right", selectedPointCopy);
-                bdvHandle.getViewerPanel().requestRepaint();
+                addNamedVertexBdv("top_right", selectedPointCopy);
             } else if (name.equals("Bottom Left")) {
                 renamePoint3D(imageContent, selectedPointCopy, "BL");
-                namedVertices.put("bottom_left", selectedPointCopy);
-                bdvHandle.getViewerPanel().requestRepaint();
+                addNamedVertexBdv("bottom_left", selectedPointCopy);
             } else if (name.equals("Bottom Right")) {
                 renamePoint3D(imageContent, selectedPointCopy, "BR");
-                namedVertices.put("bottom_right", selectedPointCopy);
-                bdvHandle.getViewerPanel().requestRepaint();
+                addNamedVertexBdv("bottom_right", selectedPointCopy);
             }
         }
     }
 
+    private void addNamedVertexBdv (String vertexName, RealPoint point) {
+        removeMatchingNamedVertices(point);
+        namedVertices.put(vertexName, point);
+        bdvHandle.getViewerPanel().requestRepaint();
+    }
+
+    private void removeMatchingNamedVertices (RealPoint point) {
+        ArrayList<String> keysToRemove = new ArrayList<>();
+        for (String key : namedVertices.keySet()) {
+            if (checkTwoRealPointsSameLocation(namedVertices.get(key), point)) {
+                keysToRemove.add(key);
+            }
+        }
+
+        for (String key : keysToRemove) {
+            namedVertices.remove(key);
+        }
+    }
+
     private void renamePoint3D(Content content, RealPoint point, String name) {
+        // rename any points with that name to "" to enforce only one point with each name
+        BenesNamedPoint existingPointWithName = content.getPointList().get(name);
+        if (existingPointWithName != null) {
+            content.getPointList().rename(existingPointWithName, "");
+        }
+
         double[] pointCoord = new double[3];
         point.localize(pointCoord);
         int pointIndex = content.getPointList().indexOfPointAt(pointCoord[0], pointCoord[1], pointCoord[2], content.getLandmarkPointSize());
@@ -379,13 +400,9 @@ public class PlaneManager {
                 RealPoint selection = new RealPoint(3);
                 selection.setPosition(blockVertices.get(i));
 
-                // if point already selected, deselect it
+                // if point already selected, deselect it, otherwise add
                 if (selectedVertex.containsKey("selected")) {
-                    double[] currentSelectionPosition = new double[3];
-                    selectedVertex.get("selected").localize(currentSelectionPosition);
-                    double[] newSelectionPosition = new double[3];
-                    selection.localize(newSelectionPosition);
-                    if (Arrays.equals(currentSelectionPosition, newSelectionPosition)) {
+                    if (checkTwoRealPointsSameLocation(selectedVertex.get("selected"), selection)) {
                         selectedVertex.clear();
                         bdvHandle.getViewerPanel().requestRepaint();
                         break;

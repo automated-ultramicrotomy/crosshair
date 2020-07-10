@@ -437,4 +437,16 @@ public final class GeometryUtils {
         return sqrt(sum);
     }
 
+    public static boolean checkTwoRealPointsSameLocation (RealPoint point1, RealPoint point2) {
+        double[] point1Position = new double[3];
+        point1.localize(point1Position);
+        double[] point2Position = new double[3];
+        point2.localize(point2Position);
+        if (Arrays.equals(point1Position, point2Position)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
