@@ -272,10 +272,10 @@ public class PlaneManager {
 
             CustomTriangleMesh newMesh = null;
             if (intersectionPoints.size() == 3) {
-                newMesh = new CustomTransparentTriangleMesh(vectorPoints, planeColor, transparency);
+                newMesh = new CustomTriangleMesh(vectorPoints, planeColor, transparency);
             } else if (intersectionPoints.size() > 3) {
                 ArrayList<Point3f> triangles = calculateTrianglesFromPoints(intersectionPoints, transformedNormal);
-                newMesh = new CustomTransparentTriangleMesh(triangles, planeColor, transparency);
+                newMesh = new CustomTriangleMesh(triangles, planeColor, transparency);
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
             meshContent.setLocked(true);
@@ -438,15 +438,12 @@ public class PlaneManager {
 
     public void setTargetTransparency (float transparency) {
         targetTransparency = transparency;
-
         universe.getContent("target").setTransparency(targetTransparency);
     }
 
     public void setBlockTransparency (float transparency) {
-//        blockTransparency = transparency;
-//        float transparencyCopy = blockTransparency;
-        universe.getContent("block").setTransparency(1.0f);
-//        universe.getContent("block").setTransparency(blockTransparency);
+        blockTransparency = transparency;
+        universe.getContent("block").setTransparency(blockTransparency);
     }
 
     public void toggleTargetVisbility () {
