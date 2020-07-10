@@ -322,6 +322,8 @@ public class PlaneManager {
                 double distance = distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
                 if (distance < 5) {
                     removePointFrom3DViewer(currentPoint);
+                    // remove matching points from named vertices
+                    removeMatchingNamedVertices(currentPoint);
                     points.remove(i);
                     bdvHandle.getViewerPanel().requestRepaint();
 

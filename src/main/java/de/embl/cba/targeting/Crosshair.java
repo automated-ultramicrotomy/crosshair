@@ -27,9 +27,7 @@ import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
 
-//TODO - click remvoe of vertex points
 //TODO - make sure removal also removes from named_vertices
-//TODO - can deselect point
 //TODO - make it so assigning top left etc, checks if thw point is assigned to any other label, then removes this
 // stops ability to have multilple assignments on each point in bdv
 //TODO - add in checks for e.g. right number of points, one of each assignment, target and block normals etc
