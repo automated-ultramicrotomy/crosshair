@@ -30,7 +30,7 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
 //TODO - does ctrl+f fail if you are already there? Ya it fails
 //TODO - more sensible placement of varibles / structure
-//TODO - plaen updates a bit redundant, compartmentalise more
+//TODO - make plane update as efficient as possible
 //TODO - check min /max of image content, doesn't seem to exactly align to global axes? Is this an issue, it will throw off all my intersections right?
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //check points are on block plane
@@ -44,7 +44,7 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 //TODO - add save / load of planes and points
 // TODO - enforce vertex points on block plane
 //TODO stop view shiting when you move the microtome
-//TODO - when in microtome mode, don't recalculate the intersections, jsut transform it identical to teh block
+//TODO - option to change transparency of image volume render?
 
 public class Crosshair
 {
@@ -69,6 +69,7 @@ public class Crosshair
 
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
 		bdvStackSource = BdvFunctions.show(wrap, "raw");
+		// TODO - make generic? Not just 8 bit
 		bdvStackSource.setDisplayRange(0, 255);
 		bdvHandle = bdvStackSource.getBdvHandle();
 

@@ -197,14 +197,6 @@ public class PlaneManager {
         return planeDefinition;
     }
 
-    // update planes on transform of the imagecontent, retain teh existing plane normals and points
-    // TODO - replace this by microtome method, that just transforms planes
-//    public void updatePlanesInPlace() {
-//        for (String key: planeNormals.keySet()) {
-//            updatePlane(planeNormals.get(key), planePoints.get(key), key);
-//        }
-//    }
-
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {
 
         //TODO - shift to use bounding box of image itself

@@ -42,12 +42,12 @@ public class MicrotomeManager extends JPanel {
     private double tilt;
     private double rotation;
 
-    private Vector3f rotationAxis;
-    private Vector3f tiltAxis;
-    private Vector3f initialArcCentre;
-    private Vector3f initialKnifeCentre;
-    private Vector3f currentKnifeCentre;
-    private Vector3f currentArcCentre;
+    private Vector3d rotationAxis;
+    private Vector3d tiltAxis;
+    private Vector3d initialArcCentre;
+    private Vector3d initialKnifeCentre;
+    private Vector3d currentKnifeCentre;
+    private Vector3d currentArcCentre;
 
     private Matrix4d initialBlockTransform;
     private Matrix4d arcComponentsInitialTransform;
@@ -67,10 +67,10 @@ public class MicrotomeManager extends JPanel {
         this.imageContent = imageContent;
         microtomeModeActive = false;
 
-        rotationAxis = new Vector3f(new float[] {0, 1, 0});
-        tiltAxis = new Vector3f(new float[] {1, 0, 0});
-        initialArcCentre = new Vector3f(new float[] {0,1,0});
-        initialKnifeCentre = new Vector3f(new float[] {0,-2,0});
+        rotationAxis = new Vector3d(new double[] {0, 1, 0});
+        tiltAxis = new Vector3d(new double[] {1, 0, 0});
+        initialArcCentre = new Vector3d(new double[] {0,1,0});
+        initialKnifeCentre = new Vector3d(new double[] {0,-2,0});
 
         loadMicrotomeMeshes();
 
@@ -208,7 +208,7 @@ public class MicrotomeManager extends JPanel {
         // arc centre after scaling
         Point3d arcC = new Point3d(initialArcCentre.getX(), initialArcCentre.getY(), initialArcCentre.getZ());
         arcComponentsTransform.transform(arcC);
-        currentArcCentre = new Vector3f((float) arcC.getX(), (float) arcC.getY(), (float) arcC.getZ());
+        currentArcCentre = new Vector3d(arcC.getX(), arcC.getY(), arcC.getZ());
 
         // Set knife to same distance
         // hodler front after scaling
@@ -231,15 +231,13 @@ public class MicrotomeManager extends JPanel {
         // knife centre after scaling
         Point3d knifeC = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
         knifeTransform.transform(knifeC);
-        currentKnifeCentre = new Vector3f((float) knifeC.getX(), (float) knifeC.getY(), (float) knifeC.getZ());
+        currentKnifeCentre = new Vector3d(knifeC.getX(), knifeC.getY(), knifeC.getZ());
     }
 
     public void exitMicrotomeMode (){
         microtomeModeActive = false;
 
         initialBlockTransform.setIdentity();
-//        arcComponentsInitialTransform.setIdentity();
-//        knifeInitialTransform.setIdentity();
         microtomePanel.getKnifeAngle().setCurrentValue(0);
         microtomePanel.getTiltAngle().setCurrentValue(0);
         microtomePanel.getRotationAngle().setCurrentValue(0);
@@ -370,32 +368,11 @@ public class MicrotomeManager extends JPanel {
     //        The two methods below are adapted from the imagej 3d viewer
     //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
     //        setting of transform: https://github.com/fiji/3D_Viewer/blob/ed05e4b2275ad6ad7c94b0e22f4789ebd3472f4d/src/main/java/ij3d/Executer.java
-    private Matrix4f makeMatrix(double angleDegrees, Vector3f axis, Vector3f rotationCentre, Vector3f translation) {
-        float angleRad = (float) (angleDegrees * Math.PI / 180);
-        Matrix4f m = new Matrix4f();
-        compose(new AxisAngle4f(axis, angleRad), rotationCentre, translation, m);
-        return m;
-    }
-
     private Matrix4d makeMatrix(double angleDegrees, Vector3d axis, Vector3d rotationCentre, Vector3d translation) {
         double angleRad = angleDegrees * Math.PI / 180;
         Matrix4d m = new Matrix4d();
         compose(new AxisAngle4d(axis, angleRad), rotationCentre, translation, m);
         return m;
-    }
-
-
-    public void compose(final AxisAngle4f rot, final Vector3f origin,
-                               final Vector3f translation, final Matrix4f ret)
-    {
-        ret.set(rot);
-        final Vector3f trans = new Vector3f(origin);
-        trans.scale(-1);
-        ret.transform(trans);
-        trans.add(translation);
-        trans.add(origin);
-
-        ret.setTranslation(trans);
     }
 
     public void compose(final AxisAngle4d rot, final Vector3d origin,
@@ -425,14 +402,14 @@ public class MicrotomeManager extends JPanel {
     }
 
     private void updateTiltRotationBlock () {
-        Vector3f translation = new Vector3f(new float[] {0,0,0});
+        Vector3d translation = new Vector3d(new double[] {0,0,0});
 
-        Matrix4f initialTransformForArc = new Matrix4f(arcComponentsInitialTransform);
+        Matrix4d initialTransformForArc = new Matrix4d(arcComponentsInitialTransform);
 
-        Matrix4f tiltTransform = makeMatrix(tilt, tiltAxis, currentArcCentre, translation);
-        Matrix4f rotationTransform = makeMatrix(rotation, rotationAxis, currentArcCentre, translation);
+        Matrix4d tiltTransform = makeMatrix(tilt, tiltAxis, currentArcCentre, translation);
+        Matrix4d rotationTransform = makeMatrix(rotation, rotationAxis, currentArcCentre, translation);
         // account for scaling
-        Matrix4f holderBackTransform = new Matrix4f(tiltTransform);
+        Matrix4d holderBackTransform = new Matrix4d(tiltTransform);
         holderBackTransform.mul(initialTransformForArc);
         universe.getContent("holder_back.stl").setTransform(new Transform3D(holderBackTransform));
         tiltTransform.mul(rotationTransform);
@@ -440,9 +417,9 @@ public class MicrotomeManager extends JPanel {
         universe.getContent("holder_front.stl").setTransform(new Transform3D(tiltTransform));
 
         // transform for block > must account for initial tilt
-        Matrix4f blockTiltTransform = makeMatrix(tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
+        Matrix4d blockTiltTransform = makeMatrix(tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
         blockTiltTransform.mul(rotationTransform);
-        Matrix4f init_transform = new Matrix4f(initialBlockTransform);
+        Matrix4d init_transform = new Matrix4d(initialBlockTransform);
         blockTiltTransform.mul(init_transform);
 
         Transform3D finalTransform = new Transform3D(blockTiltTransform);
@@ -468,12 +445,12 @@ public class MicrotomeManager extends JPanel {
     public void setKnifeAngle(double knifeTilt) {
 //        System.out.println(knifeTilt);
         this.knifeTilt = knifeTilt;
-        Vector3f axis = new Vector3f(new float[] {0, 0, 1});
-        Vector3f translation = new Vector3f(new float[] {0,0,0});
+        Vector3d axis = new Vector3d(new double[] {0, 0, 1});
+        Vector3d translation = new Vector3d(new double[] {0,0,0});
 
-        Matrix4f fullTransform = makeMatrix(knifeTilt, axis, currentKnifeCentre, translation);
+        Matrix4d fullTransform = makeMatrix(knifeTilt, axis, currentKnifeCentre, translation);
 
-        Matrix4f initialTransformForKnife = new Matrix4f(knifeInitialTransform);
+        Matrix4d initialTransformForKnife = new Matrix4d(knifeInitialTransform);
         fullTransform.mul(initialTransformForKnife);
         universe.getContent("knife.stl").setTransform(new Transform3D(fullTransform));
     }

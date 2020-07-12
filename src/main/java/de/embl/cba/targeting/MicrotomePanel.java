@@ -219,10 +219,8 @@ public class MicrotomePanel extends JPanel {
 
         @Override
         public void update() {
-//            if (slidersEnabled) {
                 knifeSlider.update();
                 microtomeManager.setKnifeAngle(knifeAngle.getCurrentValue());
-//            }
         }
     }
 
@@ -240,10 +238,8 @@ public class MicrotomePanel extends JPanel {
 
         @Override
         public void update() {
-//            if (slidersEnabled) {
                 tiltSlider.update();
                 microtomeManager.setTilt(tiltAngle.getCurrentValue());
-//            }
         }
     }
 
@@ -261,10 +257,8 @@ public class MicrotomePanel extends JPanel {
 
         @Override
         public void update() {
-//            if (slidersEnabled) {
                 rotationSlider.update();
                 microtomeManager.setRotation(rotationAngle.getCurrentValue());
-//            }
         }
     }
 
