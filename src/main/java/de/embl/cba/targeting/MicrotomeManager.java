@@ -1,8 +1,6 @@
 package de.embl.cba.targeting;
 
-import bdv.tools.brightness.SliderPanelDouble;
 import customnode.CustomMesh;
-import customnode.MeshLoader;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
@@ -12,13 +10,6 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,20 +86,14 @@ public class MicrotomeManager extends JPanel {
         microtomeSTLs = new HashMap<>();
         String[] stlFiles = {"/arc.stl", "/holder_back.stl", "/holder_front.stl", "/knife.stl"};
         for (String file: stlFiles) {
-            try {
-                URL resource = Crosshair.class.getResource(file);
-                String resourceFile = Paths.get(resource.toURI()).toFile().getAbsolutePath();
-
-                Map<String, CustomMesh> currentStl = MeshLoader.loadSTL(resourceFile);
-                // in case there are multiple objects in single stl file
-                for (String key : currentStl.keySet()) {
-                    microtomeSTLs.put(key, currentStl.get(key));
-                }
-            } catch (URISyntaxException e) {
-                System.out.println("Error reading from resource");
-                e.printStackTrace();
+            Map<String, CustomMesh> currentStl = STLResourceLoader.loadSTL(file);
+            // in case there are multiple objects in single stl file
+            for (String key : currentStl.keySet()) {
+                microtomeSTLs.put(key, currentStl.get(key));
             }
         }
+
+
     }
 
     public void initialiseMicrotome (double initialKnifeAngle, double initialTiltAngle) {
@@ -154,8 +139,8 @@ public class MicrotomeManager extends JPanel {
         // scale meshes / position them
         Point3d minArc = new Point3d();
         Point3d maxArc = new Point3d();
-        universe.getContent("arc.stl").getMax(maxArc);
-        universe.getContent("arc.stl").getMin(minArc);
+        universe.getContent("/arc.stl").getMax(maxArc);
+        universe.getContent("/arc.stl").getMin(minArc);
         double heightArc = abs(maxArc.getZ() - minArc.getZ());
 
         Point3d minImage = new Point3d();
@@ -200,7 +185,7 @@ public class MicrotomeManager extends JPanel {
 
         translateArcComponents.mul(scaleMatrix);
         Transform3D arcComponentsTransform = new Transform3D(translateArcComponents);
-        String[] arcComponents = new String[]{"arc.stl", "holder_front.stl", "holder_back.stl"};
+        String[] arcComponents = new String[]{"/arc.stl", "/holder_front.stl", "/holder_back.stl"};
         for (String key : arcComponents) {
             universe.getContent(key).setTransform(arcComponentsTransform);
         }
@@ -226,7 +211,7 @@ public class MicrotomeManager extends JPanel {
 
         translateKnife.mul(scaleMatrix);
         Transform3D knifeTransform = new Transform3D(translateKnife);
-        universe.getContent("knife.stl").setTransform(knifeTransform);
+        universe.getContent("/knife.stl").setTransform(knifeTransform);
         knifeInitialTransform = translateKnife;
 
         // knife centre after scaling
@@ -412,10 +397,10 @@ public class MicrotomeManager extends JPanel {
         // account for scaling
         Matrix4d holderBackTransform = new Matrix4d(tiltTransform);
         holderBackTransform.mul(initialTransformForArc);
-        universe.getContent("holder_back.stl").setTransform(new Transform3D(holderBackTransform));
+        universe.getContent("/holder_back.stl").setTransform(new Transform3D(holderBackTransform));
         tiltTransform.mul(rotationTransform);
         tiltTransform.mul(initialTransformForArc);
-        universe.getContent("holder_front.stl").setTransform(new Transform3D(tiltTransform));
+        universe.getContent("/holder_front.stl").setTransform(new Transform3D(tiltTransform));
 
         // transform for block > must account for initial tilt
         Matrix4d blockTiltTransform = makeMatrix(tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
@@ -456,6 +441,6 @@ public class MicrotomeManager extends JPanel {
 
         Matrix4d initialTransformForKnife = new Matrix4d(knifeInitialTransform);
         fullTransform.mul(initialTransformForKnife);
-        universe.getContent("knife.stl").setTransform(new Transform3D(fullTransform));
+        universe.getContent("/knife.stl").setTransform(new Transform3D(fullTransform));
     }
 }

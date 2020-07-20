@@ -61,8 +61,7 @@ public class Crosshair
 	private final BdvHandle bdvHandle;
 	private final BdvStackSource bdvStackSource;
 
-	public Crosshair () {
-		final ImagePlus imagePlus = WindowManager.getCurrentImage();
+	public Crosshair (ImagePlus imagePlus) {
 
 		universe = new Image3DUniverse();
 		imageContent = universe.addContent(imagePlus, Content.VOLUME);
@@ -292,7 +291,7 @@ public class Crosshair
 		ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
 		imagePlus.show();
 
-
-		new Crosshair();
+		final ImagePlus currImage = WindowManager.getCurrentImage();
+		new Crosshair(currImage);
 	}
 }
