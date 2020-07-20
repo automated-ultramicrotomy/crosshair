@@ -58,6 +58,7 @@ public class Crosshair
 	private final Content imageContent;
 	private final PlaneManager planeManager;
 	private final MicrotomeManager microtomeManager;
+	private final PlanePanel planePanel;
 	private final BdvHandle bdvHandle;
 	private final BdvStackSource bdvStackSource;
 
@@ -109,7 +110,7 @@ public class Crosshair
 		jFrame.setContentPane(mainPane);
 
 
-		PlanePanel planePanel = new PlanePanel(planeManager);
+		planePanel = new PlanePanel(planeManager);
 		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
 		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager);
 		microtomeManager.setMicrotomePanel(microtomePanel);
@@ -157,8 +158,20 @@ public class Crosshair
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block") & !microtomeManager.checkMicrotomeMode()) {
-				planeManager.setTrackPlane(2);
-				//TODO - update plane here
+				// check if there are already vertex points
+				if (planeManager.getBlockVertices().size() > 0) {
+					int result = JOptionPane.showConfirmDialog(null,"If you track the block plane, you will lose all current vertex points", "Are you sure?",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if(result == JOptionPane.YES_OPTION){
+						planeManager.removeAllBlockVertices();
+						planeManager.setTrackPlane(2);
+						//TODO - update plane here
+					}
+				} else {
+					planeManager.setTrackPlane(2);
+					//TODO - update plane here
+				}
 			} else if (planeManager.getTrackPlane() == 2) {
 				planeManager.setTrackPlane(0);
 			} else {
@@ -176,8 +189,19 @@ public class Crosshair
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (planeManager.getTrackPlane() == 0 & !microtomeManager.checkMicrotomeMode()) {
-				ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
-				planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+				if (planeManager.getBlockVertices().size() > 0) {
+					int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points", "Are you sure?",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if (result == JOptionPane.YES_OPTION) {
+						planeManager.removeAllBlockVertices();
+						ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
+						planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+					}
+				} else {
+						ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
+						planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+					}
 			} else {
 				System.out.println("Can only fit to points, when not tracking a plane and microtome mode is inactive");
 			}

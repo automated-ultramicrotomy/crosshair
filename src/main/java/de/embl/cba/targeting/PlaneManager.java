@@ -358,6 +358,14 @@ public class PlaneManager {
             }
 
         }
+    public void removeAllBlockVertices() {
+        for (RealPoint point : blockVertices) {
+            removePointFrom3DViewer(point);
+        }
+        namedVertices.clear();
+        blockVertices.clear();
+        bdvHandle.getViewerPanel().requestRepaint();
+    }
 
     private void removePointFrom3DViewer (RealPoint point) {
         // remove from 3D view and bdv
