@@ -2,7 +2,6 @@ package de.embl.cba.targeting;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
-import customnode.CustomTransparentTriangleMesh;
 import customnode.CustomTriangleMesh;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -282,8 +281,16 @@ public class PlaneManager {
             Vector3d currentPlaneNormal = planeDefinition.get(0);
             Vector3d currentPlanePoint = planeDefinition.get(1);
 
-            if (checkVectorsParallel(planeNormals.get(name), currentPlaneNormal) &
-            checkPointLiesInPlane(currentPlanePoint, planeNormals.get(name), planePoints.get(name))) {
+            boolean normalsParallel = checkVectorsParallel(planeNormals.get(name), currentPlaneNormal);
+            double distanceToPlane = distanceFromPointToPlane(currentPlanePoint, planeNormals.get(name), planePoints.get(name));
+            System.out.println("distance");
+            System.out.println(distanceToPlane);
+            // TODO - make this threshold user definable - e.g. this makes sense for microns, but for different
+            // units may want to be more or less strict
+            // necessary due to double precision, will very rarely get exactly the same value
+            boolean pointInPlane = distanceToPlane < 1E-10;
+
+            if (normalsParallel & pointInPlane) {
                 System.out.println("Already at that plane");
             } else {
                 double[] targetNormal = new double[3];
@@ -292,21 +299,34 @@ public class PlaneManager {
                 double[] targetCentroid = new double[3];
                 planeCentroids.get(name).get(targetCentroid);
                 moveToPosition(bdvStackSource, targetCentroid, 0);
-                levelCurrentView(bdvStackSource, targetNormal);
+                if (!normalsParallel) {
+                    levelCurrentView(bdvStackSource, targetNormal);
+                }
             }
         }
 
         public void addRemoveCurrentPositionPoints () {
-            addRemoveCurrentPositionFromPointList(points);
+            RealPoint point = getCurrentPosition();
+            addRemovePointFromPointList(points, point);
         }
 
         public void addRemoveCurrentPositionBlockVertices () {
-            addRemoveCurrentPositionFromPointList(blockVertices);
+            // Check if on the current block plane
+            RealPoint point = getCurrentPosition();
+            double[] position = new double[3];
+            point.localize(position);
+            double distanceToPlane = distanceFromPointToPlane(new Vector3d(position), planeNormals.get("block"), planePoints.get("block"));
+            // TODO - make this threshold user definable - e.g. this makes sense for microns, but for different
+            // units may want to be more or less strict
+            if (distanceToPlane < 1E-10) {
+                addRemovePointFromPointList(blockVertices, point);
+            } else {
+                System.out.println("Vertex points must lie on the block plane");
+            }
         }
 
-        private void addRemoveCurrentPositionFromPointList (ArrayList<RealPoint> points) {
+        private void addRemovePointFromPointList(ArrayList<RealPoint> points, RealPoint point) {
         // remove point if already present, otherwise add point
-            RealPoint point = getCurrentPosition();
             double[] pointViewerCoords = convertToViewerCoordinates(point);
 
             boolean distanceMatch = false;
@@ -332,7 +352,6 @@ public class PlaneManager {
                 points.add(point);
                 bdvHandle.getViewerPanel().requestRepaint();
 
-                //TODO - check properly that these positions match between two viewers
                 double[] position = new double[3];
                 point.localize(position);
                 imageContent.getPointList().add("", position[0], position[1], position[2]);
