@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.embl.cba.targeting.utils.printImageMinMax;
 import static java.lang.Math.abs;
 
 //TODO - add all sliders up here?
@@ -428,6 +429,9 @@ public class MicrotomeManager extends JPanel {
 //            planeManager.updatePlanesInPlace();
             universe.getContent(planeName).setTransform(finalTransform);
         }
+
+        //TODO -remove
+        printImageMinMax(imageContent);
     }
 
     public void setRotation(double rotation) {

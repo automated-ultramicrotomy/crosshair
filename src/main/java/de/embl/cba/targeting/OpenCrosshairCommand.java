@@ -14,6 +14,6 @@ public class OpenCrosshairCommand implements Command
     @Override
     public void run()
     {
-        final Crosshair crosshair = new Crosshair( imageLocation );
+        final Crosshair crosshair = new Crosshair();
     }
 }

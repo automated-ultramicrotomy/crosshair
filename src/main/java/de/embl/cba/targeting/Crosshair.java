@@ -1,11 +1,16 @@
 package de.embl.cba.targeting;
 
+import bdv.BigDataViewer;
+import bdv.ij.OpenImagePlusPlugIn;
 import bdv.util.*;
+import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.plugin.FolderOpener;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import ij3d.behaviors.InteractiveBehavior;
+import io.scif.img.ImgOpener;
 import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -26,8 +31,8 @@ import java.io.*;
 import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
+import static de.embl.cba.targeting.utils.printImageMinMax;
 
-//TODO - use doubles where possible, convert to float at end to try and avoid inaccuracies
 //TODO - does ctrl+f fail if you are already there? Ya it fails
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible
@@ -45,6 +50,7 @@ import static de.embl.cba.targeting.GeometryUtils.*;
 // TODO - enforce vertex points on block plane
 //TODO stop view shiting when you move the microtome
 //TODO - option to change transparency of image volume render?
+//TODO - can make volume render visible or invisible
 
 public class Crosshair
 {
@@ -55,9 +61,8 @@ public class Crosshair
 	private final BdvHandle bdvHandle;
 	private final BdvStackSource bdvStackSource;
 
-	public Crosshair (String imageLocation) {
-
-		final ImagePlus imagePlus = FolderOpener.open(imageLocation, "");
+	public Crosshair () {
+		final ImagePlus imagePlus = WindowManager.getCurrentImage();
 
 		universe = new Image3DUniverse();
 		imageContent = universe.addContent(imagePlus, Content.VOLUME);
@@ -67,9 +72,20 @@ public class Crosshair
 		imageContent.showPointList(true);
 		universe.show();
 
+		// want this to take scaling of image into account like the open current image command does for bdv - see load method
+		// https://github.com/bigdataviewer/bigdataviewer_fiji/blob/62926d53664c156d7bda925fd74c7f1d7f7a603c/src/main/java/bdv/ij/OpenImagePlusPlugIn.java
+		// set scaling as here: https://github.com/bigdataviewer/bigdataviewer-workshop/blob/master/src/main/java/bdv/workshop/E03MultipleSources.java
+		// source transform method here: https://github.com/bigdataviewer/bigdataviewer-vistools/blob/df9405e4bf3fe156d6ab60152b9a62f0e21e63bf/src/main/java/bdv/util/BdvOptions.java
+		final double pw = imagePlus.getCalibration().pixelWidth;
+		final double ph = imagePlus.getCalibration().pixelHeight;
+		final double pd = imagePlus.getCalibration().pixelDepth;
+		System.out.println(pw);
+		System.out.println(ph);
+		System.out.println(pd);
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
-		bdvStackSource = BdvFunctions.show(wrap, "raw");
-		// TODO - make generic? Not just 8 bit
+		bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
+		.sourceTransform(pw, ph, pd));
+		// TODO - make generic? Not just 8 bit - see open current image bdv command
 		bdvStackSource.setDisplayRange(0, 255);
 		bdvHandle = bdvStackSource.getBdvHandle();
 
@@ -102,10 +118,12 @@ public class Crosshair
 //		jFrame.add(new JSeparator());
 		jFrame.pack();
 		jFrame.setVisible( true );
+
+		//TODO - remove
+		printImageMinMax(imageContent);
 	}
 
 	// GUI - try like https://stackoverflow.com/questions/16067894/how-to-arrange-multiple-panels-in-jframe
-
 	private void installBehaviours() {
 		final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
 		behaviours.install(bdvHandle.getTriggerbindings(), "target");
@@ -265,8 +283,16 @@ public class Crosshair
 	{
 		//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
 		//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
+//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
+//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d_larger_isotropic";
+		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
 		//	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
-		new Crosshair(INPUT_FOLDER);
+//		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
+
+		ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
+		imagePlus.show();
+
+
+		new Crosshair();
 	}
 }

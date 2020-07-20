@@ -274,7 +274,7 @@ public final class GeometryUtils {
         return normal;
     }
 
-    public static ArrayList<Vector3d> calculateIntersections(double[] globalMin, double[] globalMax, Vector3d planeNormal, Vector3d planePoint, Content imageContent, Image3DUniverse universe) {
+    public static ArrayList<Vector3d> calculateIntersections(double[] globalMin, double[] globalMax, Vector3d planeNormal, Vector3d planePoint) {
         ArrayList<Vector3d> boundingBoxPoints = new ArrayList<>();
         boundingBoxPoints.add(new Vector3d (globalMin[0], globalMin[1], globalMin[2]));
         boundingBoxPoints.add(new Vector3d (globalMin[0], globalMin[1], globalMax[2]));
@@ -284,25 +284,6 @@ public final class GeometryUtils {
         boundingBoxPoints.add(new Vector3d (globalMax[0], globalMin[1], globalMax[2]));
         boundingBoxPoints.add(new Vector3d (globalMax[0], globalMax[1], globalMin[2]));
         boundingBoxPoints.add(new Vector3d (globalMax[0], globalMax[1], globalMax[2]));
-
-//        //TODO -remove - checks where bounding box is predicted to be
-//        // plot these for testing
-//        List<Point3f> transformed_points = new ArrayList<>();
-//        Transform3D translate = new Transform3D();
-//        Transform3D rotate = new Transform3D();
-//        imageContent.getLocalTranslate(translate);
-//        imageContent.getLocalRotate(rotate);
-//        for (Vector3d b_point : bounding_box_points) {
-//            Point3d pp = new Point3d();
-//            b_point.get(pp);
-////            Vector3d b_point_copy = new Vector3d(b_point.getX(), b_point.getY(), b_point.getZ());
-//            rotate.transform(pp);
-//            translate.transform(pp);
-//            Point3f poi = new Point3f((float) pp.getX(), (float) pp.getY(), (float) pp.getZ());
-//            transformed_points.add(poi);
-//        }
-//        universe.removeContent("yo");
-//        universe.addPointMesh(transformed_points, new Color3f(0, 1, 0), "yo");
 
         //enumerate all combos of two points on edges
         ArrayList<Vector3d[]> boundingBoxEdges = new ArrayList<>();

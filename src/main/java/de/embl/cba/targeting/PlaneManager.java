@@ -205,15 +205,14 @@ public class PlaneManager {
         Point3d max = new Point3d();
         imageContent.getMax(max);
         imageContent.getMin(min);
+        System.out.println(min.toString());
         System.out.println(max.toString());
         double[] minCoord = new double[3];
         double[] maxCoord = new double[3];
         min.get(minCoord);
         max.get(maxCoord);
-        System.out.println(max.toString());
 
-//		TODO - remvoe image content
-        ArrayList<Vector3d> intersectionPoints = calculateIntersections(minCoord, maxCoord, planeNormal, planePoint, imageContent, universe);
+        ArrayList<Vector3d> intersectionPoints = calculateIntersections(minCoord, maxCoord, planeNormal, planePoint);
 
         if (intersectionPoints.size() > 0) {
             planeNormals.put(planeName, planeNormal);
