@@ -4,6 +4,7 @@ import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.animate.SimilarityTransformAnimator;
 import de.embl.cba.bdv.utils.BdvUtils;
+import edu.mines.jtk.opt.Vect;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
@@ -253,6 +254,61 @@ public final class GeometryUtils {
         }
     }
 
+//    Signed angle between two vectors (disregarding the orientations of the vectors) - so
+//    signed angle from initial line to target line. From a viewpoint vector perpendicular to both.
+    public static double calculateSignedAngleLines (Vector3d view, Vector3d targetVector, Vector3d initialVector) {
+//        Make vectors point in same general direction
+        Vector3d targetVectorCopy = new Vector3d(targetVector);
+        if (targetVectorCopy.dot(initialVector) < 0) {
+            targetVectorCopy.negate();
+        }
+
+        double angle = targetVector.angle(initialVector);
+
+//        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
+//        the viewpoint vector. Anticlockwise is positive; clockwise is negative
+        Vector3d initialCrossTarget = new Vector3d();
+        initialCrossTarget.cross(initialVector, targetVector);
+        if (initialCrossTarget.dot(view) < 0) {
+            angle = -angle;
+        }
+
+        return angle;
+
+    }
+
+//    General eq for signed angle of rotation about a viewpoint vector, to get from an initial plane
+//    to a target plane.
+    public static double rotationPlaneToPlane (Vector3d view, Vector3d targetNormal, Vector3d initialNormal) {
+//         Line of intersection of target plane and plane perpendicular to viewpoint
+        Vector3d intersectionTarget = new Vector3d();
+        intersectionTarget.cross(targetNormal, view);
+
+//        Line of intersection of initial plane and plane perpendicular to viewpoint
+        Vector3d intersectionInitial = new Vector3d();
+        intersectionInitial.cross(initialNormal, view);
+
+//        Issue that as we don't know which direction the normals point in, towards or away, we don't
+//        know which direction the intersections will point in
+//        Here I force both vectors to point in the same general direction
+        if (intersectionTarget.dot(intersectionInitial) < 0) {
+            intersectionTarget.negate();
+        }
+
+        double angle = intersectionTarget.angle(intersectionInitial);
+
+//        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
+//        the viewpoint vector. Anticlockwise is positive; clockwise is negative
+        Vector3d initialCrossTarget = new Vector3d();
+        initialCrossTarget.cross(intersectionInitial, intersectionTarget);
+        if (initialCrossTarget.dot(view) < 0) {
+            angle = -angle;
+        }
+
+        return angle;
+
+    }
+
     public static Vector3d calculateNormalFromPoints(ArrayList<double[]> points) {
         double[] pointA = points.get(0);
         double[] pointB = points.get(1);
@@ -380,6 +436,14 @@ public final class GeometryUtils {
             return false;
         }
 
+    }
+
+    public static double convertToRadians (double angleDegrees) {
+        return angleDegrees * (PI / 180);
+    }
+
+    public static double convertToDegrees (double angleRadians) {
+        return angleRadians * (180 / PI);
     }
 
     public static double distanceFromPointToPlane (Vector3d point, Vector3d planeNormal, Vector3d planePoint) {

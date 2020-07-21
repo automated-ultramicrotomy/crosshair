@@ -33,21 +33,17 @@ import java.util.*;
 import static de.embl.cba.targeting.GeometryUtils.*;
 import static de.embl.cba.targeting.utils.printImageMinMax;
 
-//TODO - does ctrl+f fail if you are already there? Ya it fails
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible
-//TODO - check min /max of image content, doesn't seem to exactly align to global axes? Is this an issue, it will throw off all my intersections right?
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //check points are on block plane
 //TODO need extra requiremnt that that they the out of block normal points towards knife
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
-//TODO - zoom to plane is very close but off by around 1E-14, check T's code is there anything we can improve here precision wise
 //TODO - add in colour change when align
 //TODO - add in solutions
 //TODO - add save / load of planes and points
-// TODO - enforce vertex points on block plane
 //TODO stop view shiting when you move the microtome
 //TODO - option to change transparency of image volume render?
 //TODO - can make volume render visible or invisible
@@ -311,14 +307,14 @@ public class Crosshair
 	{
 		//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
 		//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
+//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
 //		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d_larger_isotropic";
-//		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
+		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
 //		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_sparse_image\\yu.tif";
 		//	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
-		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
+//		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
 
-//		ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
+		ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
 		imagePlus.show();
 
 		final ImagePlus currImage = WindowManager.getCurrentImage();

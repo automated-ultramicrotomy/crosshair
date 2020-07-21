@@ -54,6 +54,7 @@ public class MicrotomePanel extends JPanel {
     private final BoundedValueDouble knifeAngle;
     private final BoundedValueDouble tiltAngle;
     private final BoundedValueDouble rotationAngle;
+    private final BoundedValueDouble rotationSolution;
     private final Map<String, SliderPanelDouble> sliders;
 
 
@@ -104,6 +105,11 @@ public class MicrotomePanel extends JPanel {
         MicrotomeListener holderFrontListener = new HolderFrontListener();
         rotationAngle =
                 addSliderToPanel(this, "Holder Rotation", -180, 180, 0, holderFrontListener);
+
+        // Rotation solution
+        SolutionListener solutionListener = new SolutionListener();
+        rotationSolution =
+                addSliderToPanel(this, "Solution Rotation", -180, 180, 0, solutionListener);
 
         disableSliders();
 
@@ -259,6 +265,26 @@ public class MicrotomePanel extends JPanel {
         public void update() {
                 rotationSlider.update();
                 microtomeManager.setRotation(rotationAngle.getCurrentValue());
+        }
+    }
+
+    class SolutionListener extends MicrotomeListener {
+
+        private BoundedValueDouble rotationSolution;
+        private SliderPanelDouble solutionSlider;
+
+        public SolutionListener() {}
+
+        public void setValues(BoundedValueDouble rotationSolution, SliderPanelDouble solutionSlider) {
+            this.rotationSolution = rotationSolution;
+            this.solutionSlider = solutionSlider;
+        }
+
+        @Override
+        public void update() {
+            solutionSlider.update();
+            microtomeManager.setSolutionFromRotation(rotationSolution.getCurrentValue());
+
         }
     }
 

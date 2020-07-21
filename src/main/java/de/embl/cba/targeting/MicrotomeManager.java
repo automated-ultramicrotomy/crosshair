@@ -15,8 +15,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.embl.cba.targeting.GeometryUtils.*;
 import static de.embl.cba.targeting.utils.printImageMinMax;
-import static java.lang.Math.abs;
+import static java.lang.Math.*;
 
 //TODO - add all sliders up here?
 //TODO - get sliders to handle doubles!! Also have a box to type value if don't want to use slider - more precise
@@ -47,6 +48,8 @@ public class MicrotomeManager extends JPanel {
 
     private double initialKnifeAngle;
     private double initialTiltAngle;
+    private double initialTargetOffset;
+    private double initialTargetTilt;
 
     private MicrotomePanel microtomePanel;
     private VertexAssignmentPanel vertexAssignmentPanel;
@@ -122,6 +125,9 @@ public class MicrotomeManager extends JPanel {
             initialBlockTransform = setupBlockOrientation(initialKnifeAngle);
             this.initialKnifeAngle = initialKnifeAngle;
             this.initialTiltAngle = initialTiltAngle;
+
+            calculateTargetOffsetTilt();
+
             // activate sliders
             microtomePanel.enableSliders();
             microtomePanel.getKnifeAngle().setCurrentValue(initialKnifeAngle);
@@ -133,6 +139,57 @@ public class MicrotomeManager extends JPanel {
         } else {
             System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
         }
+    }
+
+    private void calculateTargetOffsetTilt() {
+        Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
+        Map<String, Vector3d> planeNormals = planeManager.getPlaneNormals();
+        Vector3d blockNormal = planeNormals.get("block");
+        Vector3d targetNormal = planeNormals.get("target");
+
+        double[] topLeft = new double[3];
+        double[] bottomLeft = new double[3];
+        double[] bottomRight = new double[3];
+        namedVertices.get("top_left").localize(topLeft);
+        namedVertices.get("bottom_left").localize(bottomLeft);
+        namedVertices.get("bottom_right").localize(bottomRight);
+
+//        Vector along the bottom edge of block, left to right
+        Vector3d bottomEdgeVector = new Vector3d();
+        bottomEdgeVector.sub(new Vector3d(bottomRight), new Vector3d(bottomLeft));
+
+//        Vector pointing 'up' along left edge of block. Bear in mind may not be exactly perpendicular to the edge_vector
+//        due to not perfectly rectangular block shape. I correct for this later
+        Vector3d upLeftSideVector = new Vector3d();
+        upLeftSideVector.sub(new Vector3d(topLeft), new Vector3d(bottomLeft));
+
+//        Calculate line perpendicular to x (edge vector), in plane of block face
+        Vector3d vertical = new Vector3d();
+        vertical.cross(blockNormal, bottomEdgeVector);
+
+//        But depending on orientation of block normal, this could be 'up' or 'down' relative to user
+//        to force this to be 'up' do:
+        if (upLeftSideVector.dot(vertical) < 0) {
+            vertical.negate();
+        }
+
+        initialTargetOffset = rotationPlaneToPlane(vertical, targetNormal, blockNormal);
+
+//        Calculate initial target tilt
+//        Calculate tilt (about the new axis of rotation, i.e. about line of intersection from previous calc)
+//        new axis of rotation, unknown orientation
+        Vector3d axisRotation = new Vector3d();
+        axisRotation.cross(targetNormal, vertical);
+//        I force this to be pointing in the general direction of the edge vector to give consistent clockwise vs anticlockwise
+//        i.e. I look down the right side of the vector
+        if (axisRotation.dot(bottomEdgeVector) < 0) {
+            axisRotation.negate();
+        }
+
+        Vector3d intersectionNormal = new Vector3d();
+        intersectionNormal.cross(axisRotation, vertical);
+        initialTargetTilt = rotationPlaneToPlane(axisRotation, targetNormal, intersectionNormal);
+
     }
 
     private void resizeMicrotomeParts () {
@@ -442,5 +499,34 @@ public class MicrotomeManager extends JPanel {
         Matrix4d initialTransformForKnife = new Matrix4d(knifeInitialTransform);
         fullTransform.mul(initialTransformForKnife);
         universe.getContent("/knife.stl").setTransform(new Transform3D(fullTransform));
+    }
+
+    public void setSolutionFromRotation (double solutionRotation) {
+        microtomePanel.getRotationAngle().setCurrentValue(solutionRotation);
+
+        double rot = convertToRadians(solutionRotation);
+        double iTilt = convertToRadians(initialTiltAngle);
+        double iKnife = convertToRadians(initialKnifeAngle);
+        double tOffset = convertToRadians(initialTargetOffset);
+        double tRotation = convertToRadians(initialTargetTilt);
+
+        double A = cos(iKnife + tOffset);
+        double B =  sin(tRotation)*sin(iKnife + tOffset);
+        double C = sin(iTilt)*sin(iKnife+tOffset);
+        double D = cos(iTilt)*sin(iKnife+tOffset);
+        double E = cos(tRotation)*sin(iKnife+tOffset);
+        double F = sin(iTilt)*cos(tRotation);
+        double G = sin(tRotation)*cos(iTilt);
+        double H = sin(iTilt)*sin(tRotation);
+        double I = cos(iTilt)*cos(tRotation);
+
+//        solution tilt & rot
+        double solTilt = atan(((-A*F + G)/(-A*I -H))*cos(rot) + ((E/(-A*I - H))*sin(rot)));
+
+//    solution knife & rot
+        double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
+
+        microtomePanel.getTiltAngle().setCurrentValue(convertToDegrees(solTilt));
+        microtomePanel.getKnifeAngle().setCurrentValue(convertToDegrees(solKnife));
     }
 }
