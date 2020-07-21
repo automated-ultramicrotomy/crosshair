@@ -526,7 +526,71 @@ public class MicrotomeManager extends JPanel {
 //    solution knife & rot
         double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
 
+        calculateDistance();
+
         microtomePanel.getTiltAngle().setCurrentValue(convertToDegrees(solTilt));
         microtomePanel.getKnifeAngle().setCurrentValue(convertToDegrees(solKnife));
+    }
+
+    private void calculateDistance () {
+        Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
+        Map<String, Vector3d> planeNormals = planeManager.getPlaneNormals();
+        Map<String, Vector3d> planePoints = planeManager.getPlanePoints();
+        Vector3d targetNormal = new Vector3d(planeNormals.get("target"));
+        Vector3d targetPoint = new Vector3d(planePoints.get("target"));
+
+        double[] topLeft = new double[3];
+        double[] topRight = new double[3];
+        double[] bottomLeft = new double[3];
+        double[] bottomRight = new double[3];
+        namedVertices.get("top_left").localize(topLeft);
+        namedVertices.get("top_right").localize(topRight);
+        namedVertices.get("bottom_left").localize(bottomLeft);
+        namedVertices.get("bottom_right").localize(bottomRight);
+
+//        Calculate first point touched on block face, done by calculating perpendicular distance
+//        from target to each point, and returning that with the largest.
+
+//        Calculate perpendicular distance to each point
+        targetNormal.normalize();
+        double distTopLeft = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(topLeft));
+        double distTopRight = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(topRight));
+        double distBotRight = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(bottomRight));
+        double distBotLeft = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(bottomLeft));
+
+        ArrayList<Double> allDists = new ArrayList<>();
+        allDists.add(distTopLeft);
+        allDists.add(distTopRight);
+        allDists.add(distBotLeft);
+        allDists.add(distBotRight);
+
+        double maxDist = Collections.max(allDists);
+
+        Vector3d firstTouch = new Vector3d();
+//        Assign first touch to point with maximum distance
+        if (distTopLeft == maxDist) {
+            firstTouch.set(topLeft);
+            microtomePanel.setFirstTouch("Top Left");
+        } else if (distTopRight == maxDist) {
+            firstTouch.set(topRight);
+            microtomePanel.setFirstTouch("Top Right");
+        } else if (distBotLeft == maxDist) {
+            firstTouch.set(bottomLeft);
+            microtomePanel.setFirstTouch("Bottom Left");
+        } else if (distBotRight == maxDist) {
+            firstTouch.set(bottomRight);
+            microtomePanel.setFirstTouch("Bottom Right");
+        }
+
+//        Calculate perpendicular distance to target
+        Vector3d firstTouchToTarget = new Vector3d();
+        firstTouchToTarget.sub(targetPoint, firstTouch);
+        double perpDist = abs(firstTouchToTarget.dot(targetNormal));
+
+//        Compensate for offset between perpendicular distance and true N-S of microtome
+//        I believe this is just the angle of the knife in this scenario, as the knife was reset to true 0
+        double NSDist = perpDist / cos(convertToRadians(knifeTilt));
+
+        microtomePanel.setDistanceToCut(NSDist);
     }
 }

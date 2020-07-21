@@ -56,6 +56,11 @@ public class MicrotomePanel extends JPanel {
     private final BoundedValueDouble rotationAngle;
     private final BoundedValueDouble rotationSolution;
     private final Map<String, SliderPanelDouble> sliders;
+    private String firstTouch;
+    private double distanceToCut;
+
+    JLabel firstTouchLabel;
+    JLabel distanceToCutLabel;
 
 
     public MicrotomePanel(MicrotomeManager microtomeManager) {
@@ -113,6 +118,14 @@ public class MicrotomePanel extends JPanel {
 
         disableSliders();
 
+        //TODO - hide this out of microtome mode
+        // TODO - round the distnace values
+        firstTouchLabel = new JLabel("First Touch:");
+        distanceToCutLabel = new JLabel("Distance to cut:");
+        add(firstTouchLabel);
+        add(distanceToCutLabel);
+
+
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
     }
@@ -131,6 +144,15 @@ public class MicrotomePanel extends JPanel {
 
     public Map<String, SliderPanelDouble> getSliders (){return sliders;}
 
+    public void setFirstTouch (String firstTouchVertex) {
+        firstTouchLabel.setText("First Touch:    " + firstTouchVertex);
+        firstTouch = firstTouchVertex;
+    }
+
+    public void setDistanceToCut (double distance) {
+        distanceToCutLabel.setText("Distance to  cut:    " + distance+"");
+        distanceToCut = distance;
+    }
 
 
     private BoundedValueDouble addSliderToPanel(JPanel panel, String sliderName, double min, double max, double currentValue,
