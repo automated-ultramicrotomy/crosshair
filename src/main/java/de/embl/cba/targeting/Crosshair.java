@@ -52,6 +52,13 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
 // TODO - check angle updates - wrote very quickly
 
+// TODO - orient cutting simulation so edge vector at bottom
+// TODO -more sensible placement of centre - perhaps leave it so someone can place centre where they want and then cut through?
+// would be useful if want to look at particular seciton in detail.
+// TODO - there's an issue with the solutions!! (think it's fixed now)
+//TODO - colour change on alignment, only set, if not already that colour?
+// TODO - prettify interface
+
 public class Crosshair
 {
 	private final Image3DUniverse universe;

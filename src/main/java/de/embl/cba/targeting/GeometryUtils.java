@@ -241,6 +241,7 @@ public final class GeometryUtils {
         return newPoint;
     }
 
+//    Note angle in radians
     public static double calculateSignedAngle(Vector3d vector1, Vector3d vector2, Vector3d planeNormal) {
         double unsignedAngle = vector1.angle(vector2);
         Vector3d crossVector1Vector2 = new Vector3d();
@@ -262,7 +263,7 @@ public final class GeometryUtils {
         if (targetVectorCopy.dot(initialVector) < 0) {
             targetVectorCopy.negate();
         }
-
+//TODO - convert to degrees?
         double angle = targetVector.angle(initialVector);
 
 //        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
@@ -295,7 +296,7 @@ public final class GeometryUtils {
             intersectionTarget.negate();
         }
 
-        double angle = intersectionTarget.angle(intersectionInitial);
+        double angle = convertToDegrees(intersectionTarget.angle(intersectionInitial));
 
 //        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
 //        the viewpoint vector. Anticlockwise is positive; clockwise is negative
