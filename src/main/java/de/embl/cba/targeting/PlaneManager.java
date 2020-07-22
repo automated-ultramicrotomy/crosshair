@@ -159,7 +159,7 @@ public class PlaneManager {
         updatePlane(planeDefinition.get(0), planeDefinition.get(1), planeName);
     }
 
-    private ArrayList<Vector3d> getPlaneDefinitionOfCurrentView () {
+    public ArrayList<Vector3d> getPlaneDefinitionOfCurrentView () {
         final AffineTransform3D transform = new AffineTransform3D();
         bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
 

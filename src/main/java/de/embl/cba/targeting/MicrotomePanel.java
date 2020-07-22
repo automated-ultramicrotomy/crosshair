@@ -287,12 +287,15 @@ public class MicrotomePanel extends JPanel {
                 sliders.get("Cutting Depth").setVisible(true);
                 // Disable all other microtome sliders
                 disableSliders("Cutting Depth");
+                microtomeManager.initialiseCuttingPlane();
 //                Set slider bounds
                 microtomeManager.setCuttingBounds();
+
 
             } else if (e.getActionCommand().equals("exit_cutting_mode")) {
                 sliders.get("Cutting Depth").setVisible(false);
                 enableSliders();
+                microtomeManager.removeCuttingPlane();
             }
         }
     }

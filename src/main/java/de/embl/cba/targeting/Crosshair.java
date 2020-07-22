@@ -179,10 +179,10 @@ public class Crosshair
 		}, "toggle block plane update", "shift F" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (!microtomeManager.checkMicrotomeMode()) {
+			if (!microtomeManager.checkMicrotomeMode() & planeManager.getTrackPlane() == 0) {
 				planeManager.addRemoveCurrentPositionPoints();
 			} else {
-				System.out.println("Microtome mode must be inactive to change points");
+				System.out.println("Microtome mode must be inactive, and not tracking plane, to change points");
 			}
 		}, "add point", "P" );
 
@@ -207,10 +207,10 @@ public class Crosshair
 		}, "fit to points", "K" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (!microtomeManager.checkMicrotomeMode()) {
+			if (!microtomeManager.checkMicrotomeMode() & planeManager.getTrackPlane() == 0) {
 				planeManager.addRemoveCurrentPositionBlockVertices();
 			} else {
-				System.out.println("Microtome mode must be inactive to change points");
+				System.out.println("Microtome mode must be inactive, and not tracking plane, to change points");
 			}
 		}, "add block vertex", "V" );
 
