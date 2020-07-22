@@ -1,6 +1,9 @@
 package de.embl.cba.targeting;
 
+import bdv.util.Bdv;
+import bdv.util.BdvStackSource;
 import customnode.CustomMesh;
+import edu.mines.jtk.sgl.Point3;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
@@ -28,6 +31,7 @@ public class MicrotomeManager extends JPanel {
 
     private final Image3DUniverse universe;
     private final PlaneManager planeManager;
+    private final BdvStackSource bdvStackSource;
     private Map<String, CustomMesh> microtomeSTLs;
     private final Content imageContent;
 
@@ -41,6 +45,9 @@ public class MicrotomeManager extends JPanel {
     private Vector3d initialKnifeCentre;
     private Vector3d currentKnifeCentre;
     private Vector3d currentArcCentre;
+    private Vector3d currentHolderFront;
+    private Vector3d currentKnifeNormal;
+    private Vector3d initialKnifeNormal;
 
     private Matrix4d initialBlockTransform;
     private Matrix4d arcComponentsInitialTransform;
@@ -55,17 +62,23 @@ public class MicrotomeManager extends JPanel {
     private VertexAssignmentPanel vertexAssignmentPanel;
     private boolean microtomeModeActive;
 
-    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent) {
+    private Vector3d firstTouchPointSolution;
+    private Vector3d firstTouchPointCutting;
+
+    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource) {
 
         this.planeManager = planeManager;
         this.universe = universe;
         this.imageContent = imageContent;
+        this.bdvStackSource = bdvStackSource;
         microtomeModeActive = false;
 
-        rotationAxis = new Vector3d(new double[] {0, 1, 0});
-        tiltAxis = new Vector3d(new double[] {1, 0, 0});
-        initialArcCentre = new Vector3d(new double[] {0,1,0});
-        initialKnifeCentre = new Vector3d(new double[] {0,-2,0});
+        rotationAxis = new Vector3d(0, 1, 0);
+        tiltAxis = new Vector3d(1, 0, 0);
+        initialArcCentre = new Vector3d(0,1,0);
+        initialKnifeCentre = new Vector3d(0,-2,0);
+        initialKnifeNormal = new Vector3d(0, -1, 0);
+        currentKnifeNormal = new Vector3d(0, -1, 0);
 
         loadMicrotomeMeshes();
 
@@ -252,6 +265,10 @@ public class MicrotomeManager extends JPanel {
         Point3d arcC = new Point3d(initialArcCentre.getX(), initialArcCentre.getY(), initialArcCentre.getZ());
         arcComponentsTransform.transform(arcC);
         currentArcCentre = new Vector3d(arcC.getX(), arcC.getY(), arcC.getZ());
+
+        // holder front after scaling - save for cutting range
+        arcComponentsTransform.transform(minHolderFront);
+        currentHolderFront = new Vector3d(minHolderFront.getX(), minHolderFront.getY(), minHolderFront.getZ());
 
         // Set knife to same distance
         // hodler front after scaling
@@ -480,12 +497,14 @@ public class MicrotomeManager extends JPanel {
 //        System.out.println(rotation);
         this.rotation = rotation;
         updateTiltRotationBlock();
+        microtomePanel.setRotationLabel(rotation);
     }
 
     public void setTilt(double tilt) {
 //        System.out.println(tilt);
         this.tilt = tilt;
         updateTiltRotationBlock();
+        microtomePanel.setTiltLabel(tilt);
     }
 
     public void setKnifeAngle(double knifeTilt) {
@@ -496,9 +515,59 @@ public class MicrotomeManager extends JPanel {
 
         Matrix4d fullTransform = makeMatrix(knifeTilt, axis, currentKnifeCentre, translation);
 
+        // Update normal
+        Transform3D knifeTiltTransform = new Transform3D(fullTransform);
+        knifeTiltTransform.transform(initialKnifeNormal, currentKnifeNormal);
+
+        // Account for initial scaling of knife
         Matrix4d initialTransformForKnife = new Matrix4d(knifeInitialTransform);
         fullTransform.mul(initialTransformForKnife);
         universe.getContent("/knife.stl").setTransform(new Transform3D(fullTransform));
+
+        microtomePanel.setKnifeLabel(knifeTilt);
+    }
+
+    public void setCuttingBounds () {
+//        All image vertices in microtome coordinates
+        Map<String, RealPoint> vertices = planeManager.getNamedVertices();
+        ArrayList<Point3d> verticesMicrotomeCoords = new ArrayList<>();
+        ArrayList<Vector3d> verticesMicrotomeCoordsV = new ArrayList<>();
+        for (String key: vertices.keySet()) {
+            double[] location = new double[3];
+            vertices.get(key).localize(location);
+            verticesMicrotomeCoords.add(new Point3d(location));
+        }
+
+        for (Point3d point : verticesMicrotomeCoords) {
+            initialBlockTransform.transform(point);
+            verticesMicrotomeCoordsV.add(new Vector3d(point.getX(), point.getY(), point.getZ()));
+        }
+
+//        Find one with minimum distance to Knife plane - this is the first point hit by this cutting orientation
+        int indexMinDist = indexMinMaxPointsToPlane(currentKnifeCentre, currentKnifeNormal, verticesMicrotomeCoordsV,"min");
+        firstTouchPointCutting = verticesMicrotomeCoordsV.get(indexMinDist);
+
+//        Set cutting range so first touch point == 0
+        microtomePanel.setCuttingRange(currentKnifeCentre.getY() - firstTouchPointCutting.getY(),
+                currentHolderFront.getY() - firstTouchPointCutting.getY());
+    }
+
+    public void updateCut(double currentDepth) {
+//        Convert to microtome space coordinates - not adjusted for intial point == 0
+        Point3d knifePoint = new Point3d(0, currentDepth + firstTouchPointCutting.getY(), 0);
+
+//        Convert knife plane to image coordinates
+        Transform3D inverseInitialBlockTransform = new Transform3D();
+        inverseInitialBlockTransform.invert(new Transform3D(initialBlockTransform));
+        inverseInitialBlockTransform.transform(knifePoint);
+        Vector3d knifeNormal = new Vector3d();
+        inverseInitialBlockTransform.transform(currentKnifeNormal, knifeNormal);
+
+        double[] knifePointDouble = {knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()};
+        double[] knifeNormalDouble = {knifeNormal.getX(), knifeNormal.getY(), knifeNormal.getZ()};
+        moveToPosition(bdvStackSource, knifePointDouble, 0);
+        levelCurrentView(bdvStackSource, knifeNormalDouble);
+
     }
 
     public void setSolutionFromRotation (double solutionRotation) {
@@ -533,6 +602,7 @@ public class MicrotomeManager extends JPanel {
     }
 
     private void calculateDistance () {
+        //TODO - calculate once then only update for the knife angle interactively???
         Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
         Map<String, Vector3d> planeNormals = planeManager.getPlaneNormals();
         Map<String, Vector3d> planePoints = planeManager.getPlanePoints();
@@ -553,39 +623,36 @@ public class MicrotomeManager extends JPanel {
 
 //        Calculate perpendicular distance to each point
         targetNormal.normalize();
-        double distTopLeft = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(topLeft));
-        double distTopRight = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(topRight));
-        double distBotRight = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(bottomRight));
-        double distBotLeft = distanceFromPointToPlane(targetPoint, targetNormal, new Vector3d(bottomLeft));
+        ArrayList<Vector3d> allVertices = new ArrayList<>();
+        allVertices.add(new Vector3d(topLeft));
+        allVertices.add(new Vector3d(topRight));
+        allVertices.add(new Vector3d(bottomLeft));
+        allVertices.add( new Vector3d(bottomRight));
 
-        ArrayList<Double> allDists = new ArrayList<>();
-        allDists.add(distTopLeft);
-        allDists.add(distTopRight);
-        allDists.add(distBotLeft);
-        allDists.add(distBotRight);
-
-        double maxDist = Collections.max(allDists);
+        int maxDistanceIndex = indexMinMaxPointsToPlane(targetPoint, targetNormal, allVertices, "max");
 
         Vector3d firstTouch = new Vector3d();
 //        Assign first touch to point with maximum distance
-        if (distTopLeft == maxDist) {
+        if (maxDistanceIndex == 0) {
             firstTouch.set(topLeft);
             microtomePanel.setFirstTouch("Top Left");
-        } else if (distTopRight == maxDist) {
+        } else if (maxDistanceIndex == 1) {
             firstTouch.set(topRight);
             microtomePanel.setFirstTouch("Top Right");
-        } else if (distBotLeft == maxDist) {
+        } else if (maxDistanceIndex == 2) {
             firstTouch.set(bottomLeft);
             microtomePanel.setFirstTouch("Bottom Left");
-        } else if (distBotRight == maxDist) {
+        } else if (maxDistanceIndex == 3) {
             firstTouch.set(bottomRight);
             microtomePanel.setFirstTouch("Bottom Right");
         }
+        firstTouchPointSolution = new Vector3d(firstTouch);
 
 //        Calculate perpendicular distance to target
         Vector3d firstTouchToTarget = new Vector3d();
         firstTouchToTarget.sub(targetPoint, firstTouch);
         double perpDist = abs(firstTouchToTarget.dot(targetNormal));
+        System.out.println(perpDist);
 
 //        Compensate for offset between perpendicular distance and true N-S of microtome
 //        I believe this is just the angle of the knife in this scenario, as the knife was reset to true 0

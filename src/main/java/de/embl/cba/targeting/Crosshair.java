@@ -47,6 +47,9 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 //TODO stop view shiting when you move the microtome
 //TODO - option to change transparency of image volume render?
 //TODO - can make volume render visible or invisible
+//TODO - proper checks for entry exit of cutting mode e.g. already have a s
+//TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
+// corner - some vertex points above, some below. Need to think about approaching from a distance.
 
 public class Crosshair
 {
@@ -91,7 +94,7 @@ public class Crosshair
 		bdvHandle = bdvStackSource.getBdvHandle();
 
 		this.planeManager = new PlaneManager( bdvStackSource, universe, imageContent );
-		this.microtomeManager = new MicrotomeManager( planeManager, universe, imageContent );
+		this.microtomeManager = new MicrotomeManager( planeManager, universe, imageContent, bdvStackSource );
 
 		installBehaviours();
 

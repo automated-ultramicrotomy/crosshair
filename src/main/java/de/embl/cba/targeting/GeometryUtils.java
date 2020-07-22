@@ -309,6 +309,33 @@ public final class GeometryUtils {
 
     }
 
+    public static int indexMinMaxPointsToPlane (Vector3d planePoint, Vector3d planeNormal, ArrayList<Vector3d> points, String MinMax) {
+        Vector3d planeNormalCopy = new Vector3d(planeNormal);
+        planeNormalCopy.normalize(); // just in case
+
+        ArrayList<Double> allDists = new ArrayList<>();
+        for (Vector3d point: points) {
+            double distance = distanceFromPointToPlane(planePoint, planeNormalCopy, point);
+            allDists.add(distance);
+        }
+
+        double chosenDist = 0;
+        if (MinMax.equals("max")) {
+            chosenDist = Collections.max(allDists);
+        } else if (MinMax.equals("min")) {
+            chosenDist = Collections.min(allDists);
+        }
+
+        int result = 0;
+        for (int i=0; i<allDists.size(); i++) {
+            if (allDists.get(i) == chosenDist) {
+                result = i;
+                break;
+            }
+        }
+        return result;
+    }
+
     public static Vector3d calculateNormalFromPoints(ArrayList<double[]> points) {
         double[] pointA = points.get(0);
         double[] pointB = points.get(1);

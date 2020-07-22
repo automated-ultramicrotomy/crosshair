@@ -204,8 +204,8 @@ public class PlaneManager {
         Point3d max = new Point3d();
         imageContent.getMax(max);
         imageContent.getMin(min);
-        System.out.println(min.toString());
-        System.out.println(max.toString());
+//        System.out.println(min.toString());
+//        System.out.println(max.toString());
         double[] minCoord = new double[3];
         double[] maxCoord = new double[3];
         min.get(minCoord);

@@ -55,12 +55,17 @@ public class MicrotomePanel extends JPanel {
     private final BoundedValueDouble tiltAngle;
     private final BoundedValueDouble rotationAngle;
     private final BoundedValueDouble rotationSolution;
+    private final BoundedValueDouble cuttingDepth;
     private final Map<String, SliderPanelDouble> sliders;
     private String firstTouch;
+
     private double distanceToCut;
 
     JLabel firstTouchLabel;
     JLabel distanceToCutLabel;
+    JLabel currentRotationLabel;
+    JLabel currentKnifeLabel;
+    JLabel currentTiltLabel;
 
 
     public MicrotomePanel(MicrotomeManager microtomeManager) {
@@ -116,15 +121,41 @@ public class MicrotomePanel extends JPanel {
         rotationSolution =
                 addSliderToPanel(this, "Solution Rotation", -180, 180, 0, solutionListener);
 
+        JPanel toggleCuttingModePanel = new JPanel();
+        toggleCuttingModePanel.setLayout(new GridLayout(1, 2));
+        JButton enterCutting = new JButton("Enter Cutting Mode");
+        enterCutting.setActionCommand("Cutting_mode");
+        enterCutting.addActionListener(blockListener);
+        toggleCuttingModePanel.add(enterCutting);
+
+        JButton exitCutting = new JButton("Exit Cutting Mode");
+        exitCutting.setActionCommand("exit_cutting_mode");
+        exitCutting.addActionListener(blockListener);
+        toggleCuttingModePanel.add(exitCutting);
+
+        add(toggleCuttingModePanel);
+
+        // Cutting simulator
+        CuttingListener cuttingListener = new CuttingListener();
+        // min max arbitrary here, these are set when microtome mode is initialised, depends on final location of knife and
+        // holder after scaling
+        cuttingDepth =
+                addSliderToPanel(this, "Cutting Depth", 0, 100, 0, cuttingListener);
+
         disableSliders();
 
         //TODO - hide this out of microtome mode
         // TODO - round the distnace values
+        currentRotationLabel = new JLabel("Rotation:");
+        currentTiltLabel = new JLabel("Tilt:");
+        currentKnifeLabel = new JLabel("Knife Angle:");
         firstTouchLabel = new JLabel("First Touch:");
         distanceToCutLabel = new JLabel("Distance to cut:");
+        add(currentRotationLabel);
+        add(currentTiltLabel);
+        add(currentKnifeLabel);
         add(firstTouchLabel);
         add(distanceToCutLabel);
-
 
 //        Orientation of axes matches those in original blender file, object positions also match
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
@@ -152,6 +183,22 @@ public class MicrotomePanel extends JPanel {
     public void setDistanceToCut (double distance) {
         distanceToCutLabel.setText("Distance to  cut:    " + distance+"");
         distanceToCut = distance;
+    }
+
+    public void setRotationLabel (double rotation) {
+        currentRotationLabel.setText("Rotation:    " + rotation+"");
+    }
+
+    public void setTiltLabel (double tilt) {
+        currentTiltLabel.setText("Tilt:    " + tilt+"");
+    }
+
+    public void setKnifeLabel (double knife) {
+        currentKnifeLabel.setText("Knife Angle:    " + knife+"");
+    }
+
+    public void setCuttingRange (double min, double max) {
+        cuttingDepth.setRange(min, max);
     }
 
 
@@ -208,7 +255,9 @@ public class MicrotomePanel extends JPanel {
     public void enableSliders () {
         // using setEnabled doesn't work with these bdv.tools style sliders, so we just change the visibility
         for (String sliderName : sliders.keySet()) {
-            sliders.get(sliderName).setVisible(true);
+            if (sliderName != "Cutting Depth") {
+                sliders.get(sliderName).setVisible(true);
+            }
         }
     }
 
@@ -218,13 +267,32 @@ public class MicrotomePanel extends JPanel {
         }
     }
 
+    // disable sliders except for given name
+    public void disableSliders (String name) {
+        for (String sliderName : sliders.keySet()) {
+            if (sliderName != name) {
+                sliders.get(sliderName).setVisible(false);
+            }
+        }
+    }
+
 
     class blockListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().equals("initialise_block")){
                 microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
-            } else {
+            } else if (e.getActionCommand().equals("exit_microtome_mode")) {
                 microtomeManager.exitMicrotomeMode();
+            } else if (e.getActionCommand().equals("Cutting_mode")) {
+                sliders.get("Cutting Depth").setVisible(true);
+                // Disable all other microtome sliders
+                disableSliders("Cutting Depth");
+//                Set slider bounds
+                microtomeManager.setCuttingBounds();
+
+            } else if (e.getActionCommand().equals("exit_cutting_mode")) {
+                sliders.get("Cutting Depth").setVisible(false);
+                enableSliders();
             }
         }
     }
@@ -306,7 +374,26 @@ public class MicrotomePanel extends JPanel {
         public void update() {
             solutionSlider.update();
             microtomeManager.setSolutionFromRotation(rotationSolution.getCurrentValue());
+        }
+    }
 
+    class CuttingListener extends MicrotomeListener {
+
+        private BoundedValueDouble cuttingDepth;
+        private SliderPanelDouble cuttingSlider;
+
+        public CuttingListener() {}
+
+        public void setValues(BoundedValueDouble cuttingDepth, SliderPanelDouble cuttingSlider) {
+            this.cuttingDepth = cuttingDepth;
+            this.cuttingSlider = cuttingSlider;
+        }
+
+        @Override
+        public void update() {
+            cuttingSlider.update();
+            microtomeManager.updateCut(cuttingDepth.getCurrentValue());
+            // TODO - do stuff
         }
     }
 
