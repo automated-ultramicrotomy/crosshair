@@ -290,6 +290,7 @@ public class MicrotomePanel extends JPanel {
                 microtomeManager.initialiseCuttingPlane();
 //                Set slider bounds
                 microtomeManager.setCuttingBounds();
+                cuttingDepth.setCurrentValue(0);
 
 
             } else if (e.getActionCommand().equals("exit_cutting_mode")) {

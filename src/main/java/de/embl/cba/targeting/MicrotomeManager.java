@@ -555,17 +555,16 @@ public class MicrotomeManager extends JPanel {
 //        Need the coordinate where a plane identical to teh knife plane, but centred on the first touch point (imagine
 //        what the knife would look like as it just touches the block) - where this intersects the midline of the microtome (NS).
 //        This will be our 0, at this level of approach NS, our knife will just touch the first touch point.
-
         double NSZeroY;
-        if (knifeTilt == 0) {
+        if (knifeTilt == 0 | firstTouchPointCutting.getX() == 0) {
             NSZeroY = firstTouchPointCutting.getY();
         } else {
-            double oppositeLength = abs(tan(convertToRadians(knifeTilt)) * abs(firstTouchPointCutting.getX()));
+            double oppositeLength = tan(convertToRadians(knifeTilt)) * firstTouchPointCutting.getX();
 
-            if (knifeTilt > 0) {
-                NSZeroY = firstTouchPointCutting.getY() + oppositeLength;
-            } else {
+            if (oppositeLength > 0) {
                 NSZeroY = firstTouchPointCutting.getY() - oppositeLength;
+            } else {
+                NSZeroY = firstTouchPointCutting.getY() + oppositeLength;
             }
         }
         NSZero = new Vector3d(0, NSZeroY,0);
