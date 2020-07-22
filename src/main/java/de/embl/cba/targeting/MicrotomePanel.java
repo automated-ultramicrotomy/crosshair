@@ -66,6 +66,7 @@ public class MicrotomePanel extends JPanel {
     JLabel currentRotationLabel;
     JLabel currentKnifeLabel;
     JLabel currentTiltLabel;
+    JLabel currentAngleKnifeTargetLabel;
 
 
     public MicrotomePanel(MicrotomeManager microtomeManager) {
@@ -149,11 +150,13 @@ public class MicrotomePanel extends JPanel {
         currentRotationLabel = new JLabel("Rotation:");
         currentTiltLabel = new JLabel("Tilt:");
         currentKnifeLabel = new JLabel("Knife Angle:");
+        currentAngleKnifeTargetLabel = new JLabel("Knife-Target Angle:");
         firstTouchLabel = new JLabel("First Touch:");
         distanceToCutLabel = new JLabel("Distance to cut:");
         add(currentRotationLabel);
         add(currentTiltLabel);
         add(currentKnifeLabel);
+        add(currentAngleKnifeTargetLabel);
         add(firstTouchLabel);
         add(distanceToCutLabel);
 
@@ -199,6 +202,10 @@ public class MicrotomePanel extends JPanel {
 
     public void setCuttingRange (double min, double max) {
         cuttingDepth.setRange(min, max);
+    }
+
+    public void setKnifeTargetAngleLabel (double angle) {
+        currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + angle+"");
     }
 
 

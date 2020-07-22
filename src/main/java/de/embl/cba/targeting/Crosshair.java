@@ -50,6 +50,7 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 //TODO - proper checks for entry exit of cutting mode e.g. already have a s
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
+// TODO - check angle updates - wrote very quickly
 
 public class Crosshair
 {

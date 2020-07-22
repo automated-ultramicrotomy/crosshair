@@ -46,6 +46,8 @@ public class MicrotomeManager extends JPanel {
     private Vector3d currentHolderFront;
     private Vector3d currentKnifeNormal;
     private Vector3d initialKnifeNormal;
+    private Vector3d currentTargetNormal;
+    private Vector3d initialTargetNormal;
 
     private Matrix4d initialBlockTransform;
     private Matrix4d arcComponentsInitialTransform;
@@ -64,6 +66,8 @@ public class MicrotomeManager extends JPanel {
     private Vector3d firstTouchPointSolution;
     private Vector3d firstTouchPointCutting;
     private Vector3d NSZero;
+
+    private double angleKnifeTarget;
 
     public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource) {
 
@@ -138,6 +142,11 @@ public class MicrotomeManager extends JPanel {
             initialBlockTransform = setupBlockOrientation(initialKnifeAngle);
             this.initialKnifeAngle = initialKnifeAngle;
             this.initialTiltAngle = initialTiltAngle;
+//            initialise target normals
+            initialTargetNormal = new Vector3d(planeManager.getPlaneNormals().get("target"));
+            currentTargetNormal = new Vector3d(initialTargetNormal);
+            new Transform3D(initialBlockTransform).transform(currentTargetNormal);
+            angleKnifeTarget = 0;
 
             calculateTargetOffsetTilt();
 
@@ -203,6 +212,24 @@ public class MicrotomeManager extends JPanel {
         intersectionNormal.cross(axisRotation, vertical);
         initialTargetTilt = rotationPlaneToPlane(axisRotation, targetNormal, intersectionNormal);
 
+    }
+
+    private void updateAngleKnifeTarget() {
+        double angle = convertToDegrees(currentKnifeNormal.angle(currentTargetNormal));
+//        want smallest possible angle between planes, disregard orientation of normals
+        if (angle > 90) {
+            angle = 180 - angle;
+        }
+        angleKnifeTarget = angle;
+        microtomePanel.setKnifeTargetAngleLabel(angle);
+
+//        check angle - do colour change
+        //TODO - make threshold adjustable
+        if (angleKnifeTarget < 0.1) {
+            planeManager.setTargetPlaneAlignedColour();
+        } else {
+            planeManager.setTargetPlaneNotAlignedColour();
+        }
     }
 
     private void resizeMicrotomeParts () {
@@ -484,6 +511,12 @@ public class MicrotomeManager extends JPanel {
 
         Transform3D finalTransform = new Transform3D(blockTiltTransform);
         currentBlockTransform = blockTiltTransform;
+
+        // Update target normal
+        finalTransform.transform(initialTargetNormal, currentTargetNormal);
+//        Update angle
+        updateAngleKnifeTarget();
+
         imageContent.setTransform(finalTransform);
         for (String planeName : new String[] {"target", "block"}) {
 //            planeManager.updatePlanesInPlace();
@@ -519,6 +552,9 @@ public class MicrotomeManager extends JPanel {
         // Update normal
         Transform3D knifeTiltTransform = new Transform3D(fullTransform);
         knifeTiltTransform.transform(initialKnifeNormal, currentKnifeNormal);
+
+        // Update angle to target plane
+        updateAngleKnifeTarget();
 
         // Account for initial scaling of knife
         Matrix4d initialTransformForKnife = new Matrix4d(knifeInitialTransform);

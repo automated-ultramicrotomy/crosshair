@@ -43,6 +43,7 @@ public class PlaneManager {
 
     private Color3f targetPlaneColour;
     private Color3f blockPlaneColour;
+    private Color3f alignedPlaneColour;
 
     private float targetTransparency;
     private float blockTransparency;
@@ -68,6 +69,7 @@ public class PlaneManager {
 
         targetPlaneColour = new Color3f(0, 1, 0);
         blockPlaneColour = new Color3f(0, 0, 1);
+        alignedPlaneColour = new Color3f(1, 0, 0);
         targetTransparency = 0.7f;
         blockTransparency = 0.7f;
 
@@ -446,6 +448,14 @@ public class PlaneManager {
 
     public void setTargetPlaneColour (Color colour) {
         targetPlaneColour.set(colour);
+        universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+    }
+
+    public void setTargetPlaneAlignedColour () {
+        universe.getContent("target").setColor(new Color3f(alignedPlaneColour));
+    }
+
+    public void setTargetPlaneNotAlignedColour() {
         universe.getContent("target").setColor(new Color3f(targetPlaneColour));
     }
 
