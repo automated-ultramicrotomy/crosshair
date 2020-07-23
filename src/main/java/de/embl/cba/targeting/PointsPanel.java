@@ -31,8 +31,8 @@ public class PointsPanel extends JPanel {
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
         setLayout(new GridLayout(1, 2));
-        addPlaneToPanel("3d view", "3D");
-        addPlaneToPanel("2d view", "2D");
+        addPlaneToPanel("3d view ", "3D");
+        addPlaneToPanel("2d view ", "2D");
     }
 
     public boolean check3DPointsVisible() {

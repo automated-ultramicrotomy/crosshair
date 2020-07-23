@@ -25,7 +25,7 @@ public class ImagesPanel extends JPanel {
                 BorderFactory.createEmptyBorder(5,5,5,5)));
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        addPlaneToPanel("image");
+        addPlaneToPanel("image ");
     }
 
 

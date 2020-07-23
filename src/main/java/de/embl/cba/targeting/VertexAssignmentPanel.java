@@ -22,7 +22,7 @@ public class VertexAssignmentPanel extends JPanel {
                 BorderFactory.createTitledBorder("Assign Vertex"),
                 BorderFactory.createEmptyBorder(5,5,5,5)));
 
-        setLayout(new GridLayout(2, 2));
+        setLayout(new GridLayout(1, 4));
         ActionListener vertexListener = new vertexPointListener();
 
         String[] pointAssignments = {"Top Left", "Top Right", "Bottom Left", "Bottom Right"};
@@ -45,8 +45,8 @@ public class VertexAssignmentPanel extends JPanel {
 
     private void addButton(JPanel panel, String pointAssignment, ActionListener vertexListener) {
         JButton b = new JButton(pointAssignment);
-        b.setPreferredSize(
-                new Dimension(200, 100));
+//        b.setPreferredSize(
+//                new Dimension(200, 100));
         b.setActionCommand(pointAssignment);
         b.addActionListener(vertexListener);
         panel.add(b);
