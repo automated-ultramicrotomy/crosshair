@@ -23,6 +23,8 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         private Color colVertex;
         private Color colSelected;
 
+        private boolean showPoints;
+
         public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertexPoints,
                                                             final Map<String, RealPoint> selectedPoint,
                                                             final Map<String, RealPoint> namedVertices)
@@ -31,12 +33,21 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             this.vertexPoints = vertexPoints;
             this.selectedPoint = selectedPoint;
             this.namedVertices = namedVertices;
+            this.showPoints = true;
+        }
+
+        public void toggleShowPoints () {
+            if (showPoints) {
+                showPoints = false;
+            } else {
+                showPoints = true;
+            }
         }
 
         @Override
         protected void draw( final Graphics2D graphics )
         {
-            if ( points == null & vertexPoints == null)
+            if ( (points == null & vertexPoints == null) | !showPoints )
                 return;
 
             colPoint = new Color( 51, 255, 51);

@@ -13,10 +13,12 @@ import java.awt.*;
 public class ImagesPanel extends JPanel {
 
     private Content imageContent;
+    private PointsPanel pointsPanel;
 
-    public ImagesPanel(Content imageContent) {
+    public ImagesPanel(Content imageContent, PointsPanel pointsPanel) {
 
         this.imageContent = imageContent;
+        this.pointsPanel = pointsPanel;
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Images"),
@@ -55,6 +57,10 @@ public class ImagesPanel extends JPanel {
         visbilityButton.addActionListener(e -> {
             if (imageContent.isVisible()) {
                imageContent.setVisible(false);
+//              Making image content invisible, also makes 3d points invisible, reverse this
+                if (pointsPanel.check3DPointsVisible()) {
+                    imageContent.showPointList(true);
+                }
             } else {
                 imageContent.setVisible(true);
             }

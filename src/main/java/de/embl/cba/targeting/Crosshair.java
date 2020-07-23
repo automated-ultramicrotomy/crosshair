@@ -104,6 +104,10 @@ public class Crosshair
 		this.microtomeManager = new MicrotomeManager( planeManager, universe, imageContent, bdvStackSource );
 
 		installBehaviours();
+		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
+		pointOverlay.setPoints(planeManager.getPoints(), planeManager.getBlockVertices(),
+				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
+		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 
 		JFrame jFrame = new JFrame( "Crosshair");
 		jFrame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
@@ -115,14 +119,16 @@ public class Crosshair
 		mainPane.setOpaque(true);
 		jFrame.setContentPane(mainPane);
 
-		ImagesPanel imagesPanel = new ImagesPanel(imageContent);
 		planePanel = new PlanePanel(planeManager);
+		PointsPanel pointsPanel = new PointsPanel(imageContent, pointOverlay, bdvHandle);
+		ImagesPanel imagesPanel = new ImagesPanel(imageContent, pointsPanel);
 		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
 		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager);
 		microtomeManager.setMicrotomePanel(microtomePanel);
 		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
 		mainPane.add(imagesPanel);
 		mainPane.add(planePanel);
+		mainPane.add(pointsPanel);
 		mainPane.add(vertexAssignmentPanel);
 		mainPane.add(microtomePanel);
 		//TODO - add a point panel - change visiblity of both sets of points, and their colour in bdv
@@ -215,10 +221,10 @@ public class Crosshair
 		}, "fit to points", "K" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-			if (!microtomeManager.checkMicrotomeMode() & planeManager.getTrackPlane() == 0) {
+			if (!microtomeManager.checkMicrotomeMode() & planeManager.getTrackPlane() == 0 & planeManager.checkNamedPlaneExists("block")) {
 				planeManager.addRemoveCurrentPositionBlockVertices();
 			} else {
-				System.out.println("Microtome mode must be inactive, and not tracking plane, to change points");
+				System.out.println("Microtome mode must be inactive, block plane must exit, and not tracking plane, to change points");
 			}
 		}, "add block vertex", "V" );
 
@@ -226,11 +232,6 @@ public class Crosshair
 			planeManager.toggleSelectedVertexCurrentPosition();
 		}, "select point", "button1" );
 
-
-		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
-		pointOverlay.setPoints(planeManager.getPoints(), planeManager.getBlockVertices(),
-				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
-		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 	}
 
 //	behaviours for 3d window
