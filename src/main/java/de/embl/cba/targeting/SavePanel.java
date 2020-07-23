@@ -98,6 +98,7 @@ public class SavePanel extends JPanel {
                         FileReader fileReader = new FileReader(filePath);
                         SettingsToSave settingsToSave = gson.fromJson(fileReader, SettingsToSave.class);
                         // TODO - use this object to set all teh required settings
+
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
                     }

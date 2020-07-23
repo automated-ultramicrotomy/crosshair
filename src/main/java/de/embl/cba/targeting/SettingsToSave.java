@@ -42,4 +42,51 @@ public class SettingsToSave {
         this.imageColour = imageColour;
     }
 
+    public float getBlockTransparency() {
+        return blockTransparency;
+    }
+
+    public float getImageTransparency() {
+        return imageTransparency;
+    }
+
+    public float getTargetTransparency() {
+        return targetTransparency;
+    }
+
+    public Color3f getBlockPlaneColour() {
+        return blockPlaneColour;
+    }
+
+    public Color3f getImageColour() {
+        return imageColour;
+    }
+
+    public Color3f getTargetPlaneColour() {
+        return targetPlaneColour;
+    }
+
+    public ArrayList<RealPoint> getBlockVertices() {
+        return blockVertices;
+    }
+
+    public ArrayList<RealPoint> getPoints() {
+        return points;
+    }
+
+    public Map<String, RealPoint> getNamedVertices() {
+        return namedVertices;
+    }
+
+    public Map<String, Vector3d> getPlaneCentroids() {
+        return planeCentroids;
+    }
+
+    public Map<String, Vector3d> getPlaneNormals() {
+        return planeNormals;
+    }
+
+    public Map<String, Vector3d> getPlanePoints() {
+        return planePoints;
+    }
 }
