@@ -4,41 +4,8 @@ import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.SliderPanel;
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
-import bdv.viewer.Interpolation;
-import de.embl.cba.bdv.utils.BdvUtils;
-import de.embl.cba.bdv.utils.BrightnessUpdateListener;
-import de.embl.cba.bdv.utils.Logger;
-import de.embl.cba.bdv.utils.sources.ARGBConvertedRealSource;
-import de.embl.cba.bdv.utils.sources.Metadata;
-import de.embl.cba.tables.FileAndUrlUtils;
-import de.embl.cba.tables.FileUtils;
-import de.embl.cba.tables.TableColumns;
-import de.embl.cba.tables.color.ColorUtils;
-import de.embl.cba.tables.color.LazyLabelsARGBConverter;
-import de.embl.cba.tables.ij3d.UniverseUtils;
-import de.embl.cba.tables.image.DefaultImageSourcesModel;
-import de.embl.cba.tables.image.SourceAndMetadata;
-import de.embl.cba.tables.tablerow.TableRowImageSegment;
-import de.embl.cba.tables.view.Segments3dView;
-import de.embl.cba.tables.view.SegmentsBdvView;
-import de.embl.cba.tables.view.TableRowsTableView;
-import de.embl.cba.tables.view.combined.SegmentsTableBdvAnd3dViews;
-import ij3d.Content;
-import ij3d.ContentConstants;
-import ij3d.Image3DUniverse;
-import net.imglib2.type.numeric.ARGBType;
-import org.scijava.ui.behaviour.ClickBehaviour;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.vecmath.Color3f;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URI;
-import java.util.*;
-import java.util.List;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 

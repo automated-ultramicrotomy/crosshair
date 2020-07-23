@@ -41,8 +41,6 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
-//TODO - add in colour change when align
-//TODO - add in solutions
 //TODO - add save / load of planes and points
 //TODO stop view shiting when you move the microtome
 //TODO - option to change transparency of image volume render?
@@ -58,6 +56,7 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // TODO - there's an issue with the solutions!! (think it's fixed now)
 //TODO - colour change on alignment, only set, if not already that colour?
 // TODO - prettify interface
+// TODO - align microtome view when enter
 
 public class Crosshair
 {
@@ -116,12 +115,13 @@ public class Crosshair
 		mainPane.setOpaque(true);
 		jFrame.setContentPane(mainPane);
 
-
+		ImagesPanel imagesPanel = new ImagesPanel(imageContent);
 		planePanel = new PlanePanel(planeManager);
 		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
 		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager);
 		microtomeManager.setMicrotomePanel(microtomePanel);
 		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
+		mainPane.add(imagesPanel);
 		mainPane.add(planePanel);
 		mainPane.add(vertexAssignmentPanel);
 		mainPane.add(microtomePanel);
