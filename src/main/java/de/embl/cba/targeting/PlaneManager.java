@@ -95,6 +95,8 @@ public class PlaneManager {
     public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
     public float getTargetTransparency() {return targetTransparency;}
     public float getBlockTransparency() {return blockTransparency;}
+    public Color3f getTargetPlaneColour() {return targetPlaneColour;}
+    public Color3f getBlockPlaneColour() {return blockPlaneColour;}
     public int getTrackPlane() {return trackPlane;}
     public void setTrackPlane(int track) {trackPlane = track;}
 

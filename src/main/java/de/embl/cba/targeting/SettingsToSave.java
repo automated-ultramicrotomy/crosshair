@@ -1,0 +1,45 @@
+package de.embl.cba.targeting;
+
+import net.imglib2.RealPoint;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Vector3d;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+public class SettingsToSave {
+
+    private final Map<String, Vector3d> planeNormals;
+    private final Map<String, Vector3d> planePoints;
+    private final Map<String, Vector3d> planeCentroids;
+    private final Map<String, RealPoint> namedVertices;
+    private final ArrayList<RealPoint> points;
+    private final ArrayList<RealPoint> blockVertices;
+    private Color3f targetPlaneColour;
+    private Color3f blockPlaneColour;
+    private float targetTransparency;
+    private float blockTransparency;
+    private float imageTransparency;
+    private Color3f imageColour;
+    // TODO - add transfer function
+
+    public SettingsToSave(Map<String, Vector3d> planeNormals, Map<String, Vector3d> planePoints,
+                          Map<String, Vector3d> planeCentroids, Map<String, RealPoint> namedVertices,
+                          ArrayList<RealPoint> points, ArrayList<RealPoint> blockVertices,
+                          Color3f targetPlaneColour, Color3f blockPlaneColour, float targetTransparency,
+                          float blockTransparency, float imageTransparency, Color3f imageColour) {
+        this.planeNormals = planeNormals;
+        this.planePoints = planePoints;
+        this.planeCentroids = planeCentroids;
+        this.namedVertices = namedVertices;
+        this.points = points;
+        this.blockVertices = blockVertices;
+        this.targetPlaneColour = targetPlaneColour;
+        this.blockPlaneColour = blockPlaneColour;
+        this.targetTransparency = targetTransparency;
+        this.blockTransparency = blockTransparency;
+        this.imageTransparency = imageTransparency;
+        this.imageColour = imageColour;
+    }
+
+}

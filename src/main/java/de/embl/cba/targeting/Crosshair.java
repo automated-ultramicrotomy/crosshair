@@ -43,8 +43,6 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // displayed - could be confusing
 //TODO - add save / load of planes and points
 //TODO stop view shiting when you move the microtome
-//TODO - option to change transparency of image volume render?
-//TODO - can make volume render visible or invisible
 //TODO - proper checks for entry exit of cutting mode e.g. already have a s
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
@@ -53,9 +51,7 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // TODO - orient cutting simulation so edge vector at bottom
 // TODO -more sensible placement of centre - perhaps leave it so someone can place centre where they want and then cut through?
 // would be useful if want to look at particular seciton in detail.
-// TODO - there's an issue with the solutions!! (think it's fixed now)
 //TODO - colour change on alignment, only set, if not already that colour?
-// TODO - prettify interface
 // TODO - align microtome view when enter
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
 
@@ -128,11 +124,13 @@ public class Crosshair
 		microtomePanel.setParentFrame(jFrame);
 		microtomeManager.setMicrotomePanel(microtomePanel);
 		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
+		SavePanel savePanel = new SavePanel(planeManager, imageContent);
 		mainPane.add(imagesPanel);
 		mainPane.add(planePanel);
 		mainPane.add(pointsPanel);
 		mainPane.add(vertexAssignmentPanel);
 		mainPane.add(microtomePanel);
+		mainPane.add(savePanel);
 		//TODO - add a point panel - change visiblity of both sets of points, and their colour in bdv
 //		jFrame.add(new JSeparator());
 //		jFrame.add(new JSeparator());

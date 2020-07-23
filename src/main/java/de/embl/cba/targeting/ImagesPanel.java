@@ -14,9 +14,9 @@ public class ImagesPanel extends JPanel {
 
     private Content imageContent;
     private PointsPanel pointsPanel;
+    private Color3f imageColour;
 
     public ImagesPanel(Content imageContent, PointsPanel pointsPanel) {
-
         this.imageContent = imageContent;
         this.pointsPanel = pointsPanel;
 
@@ -40,8 +40,8 @@ public class ImagesPanel extends JPanel {
             Color colour = JColorChooser.showDialog(null, "", null);
 
             if (colour == null) return;
-
-            imageContent.setColor(new Color3f(colour));
+            imageColour = new Color3f(colour);
+            imageContent.setColor(imageColour);
         });
 
         panel.add(colorButton);
