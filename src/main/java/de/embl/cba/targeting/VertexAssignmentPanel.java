@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO - stop free resizing of buttons
-
 public class VertexAssignmentPanel extends JPanel {
 
     private final PlaneManager planeManager;

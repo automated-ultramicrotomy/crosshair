@@ -41,21 +41,21 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
-//TODO - add save / load of planes and points
 //TODO stop view shiting when you move the microtome
-//TODO - proper checks for entry exit of cutting mode e.g. already have a s
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
 // TODO - check angle updates - wrote very quickly
-
 // TODO - orient cutting simulation so edge vector at bottom
-// TODO -more sensible placement of centre - perhaps leave it so someone can place centre where they want and then cut through?
+// TODO -more sensible placement of centre of cutting sim - perhaps leave it so someone can place centre where they want and then cut through?
 // would be useful if want to look at particular seciton in detail.
 //TODO - colour change on alignment, only set, if not already that colour?
 // TODO - align microtome view when enter
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
 // TODO -make sure selected point desleced in all removals
 //TODO - deal better with invalid solutions
+// TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plane their runs)
+// TODO - command for loading bdv files
+//TODO - view changes if change planes after exit micrtome mode
 
 public class Crosshair
 {
@@ -121,18 +121,18 @@ public class Crosshair
 		PointsPanel pointsPanel = new PointsPanel(imageContent, pointOverlay, bdvHandle);
 		ImagesPanel imagesPanel = new ImagesPanel(imageContent, pointsPanel);
 		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
-		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager);
+		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager, planeManager);
 		microtomePanel.setParentFrame(jFrame);
 		microtomeManager.setMicrotomePanel(microtomePanel);
 		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
 		SavePanel savePanel = new SavePanel(planeManager, microtomeManager, imageContent, microtomePanel, pointsPanel, pointOverlay);
+		microtomePanel.setSavePanel(savePanel);
 		mainPane.add(imagesPanel);
 		mainPane.add(planePanel);
 		mainPane.add(pointsPanel);
 		mainPane.add(vertexAssignmentPanel);
 		mainPane.add(microtomePanel);
 		mainPane.add(savePanel);
-		//TODO - add a point panel - change visiblity of both sets of points, and their colour in bdv
 //		jFrame.add(new JSeparator());
 //		jFrame.add(new JSeparator());
 		jFrame.pack();

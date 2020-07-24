@@ -748,14 +748,28 @@ public class MicrotomeManager extends JPanel {
 
 //        solution tilt & rot
         double solTilt = atan(((-A*F + G)/(-A*I -H))*cos(rot) + ((E/(-A*I - H))*sin(rot)));
+        double solTiltDegrees = convertToDegrees(solTilt);
 
 //    solution knife & rot
         double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
+        double solKnifeDegrees = convertToDegrees(solKnife);
 
-        microtomePanel.getTiltAngle().setCurrentValue(convertToDegrees(solTilt));
-        microtomePanel.getKnifeAngle().setCurrentValue(convertToDegrees(solKnife));
+//        If solution invalid i.e. does not fit constraints of the angles the microtome can reach
+        if (solTiltDegrees < -20 | solTiltDegrees > 20 | solKnifeDegrees < -30 | solKnifeDegrees > 30) {
+//            Still set to value, so microtome moves / maxes out limit - makes for a smoother transition
+            microtomePanel.getTiltAngle().setCurrentValue(solTiltDegrees);
+            microtomePanel.getKnifeAngle().setCurrentValue(solKnifeDegrees);
 
-        calculateDistance();
+//            Display first touch as nothing, and distance as 0
+            microtomePanel.setFirstTouch("");
+            microtomePanel.setDistanceToCut(0);
+            microtomePanel.setValidSolution(false);
+        } else {
+            microtomePanel.getTiltAngle().setCurrentValue(solTiltDegrees);
+            microtomePanel.getKnifeAngle().setCurrentValue(solKnifeDegrees);
+            calculateDistance();
+            microtomePanel.setValidSolution(true);
+        }
     }
 
     private void calculateDistance () {

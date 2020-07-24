@@ -26,6 +26,7 @@ public class SavePanel extends JPanel {
     private MicrotomePanel microtomePanel;
     private PointsPanel pointsPanel;
     private PointsOverlaySizeChange pointOverlay;
+    private JButton saveSolution;
 
 
     public SavePanel(PlaneManager planeManager, MicrotomeManager microtomeManager, Content imageContent, MicrotomePanel microtomePanel, PointsPanel pointsPanel,
@@ -55,12 +56,21 @@ public class SavePanel extends JPanel {
         loadSettings.addActionListener(saveLoadListener);
         add(loadSettings);
 
-        JButton saveSolution = new JButton("Save Solution");
+        saveSolution = new JButton("Save Solution");
         saveSolution.setActionCommand("save_solution");
         saveSolution.addActionListener(saveLoadListener);
+        saveSolution.setEnabled(false);
         add(saveSolution);
 
 
+    }
+
+    public void enableSaveSolution() {
+        saveSolution.setEnabled(true);
+    }
+
+    public void disableSaveSolution() {
+        saveSolution.setEnabled(false);
     }
 
     class saveLoadListener implements ActionListener {
@@ -92,7 +102,7 @@ public class SavePanel extends JPanel {
                             planeManager.getBlockVertices(), planeManager.getTargetPlaneColour(), planeManager.getBlockPlaneColour(),
                             planeManager.getTargetTransparency(), planeManager.getBlockTransparency(),
                             imageContent.getTransparency(), imageContent.getColor(), redLut, greenLut, blueLut, alphaLut
-                            );
+                    );
 
                     try {
                         FileWriter fileWriter = new FileWriter(filePath);
@@ -127,38 +137,44 @@ public class SavePanel extends JPanel {
                 }
 
             } else if (e.getActionCommand().equals("save_solution")) {
-                String filePath = "";
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
-                int returnVal = chooser.showSaveDialog(null);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
-                }
-
-                if (filePath != "") {
-//                    if you set a solution then move other sliders, it will no longer be a solution. Here we force it
-//                    to react and set all sliders for that current solution.
-                    double currentSolutionRot = microtomePanel.getRotationSolutionAngle().getCurrentValue();
-                    microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
-                    SolutionToSave solutionToSave = new SolutionToSave(microtomeManager.getInitialKnifeAngle(),
-                            microtomeManager.getInitialTiltAngle(), microtomeManager.getKnifeTilt(), microtomeManager.getTilt(),
-                            microtomeManager.getRotation(), microtomePanel.getFirstTouch(), microtomePanel.getDistanceToCut());
-
-                    try {
-                        FileWriter fileWriter = new FileWriter(filePath);
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        gson.toJson(solutionToSave, fileWriter);
-                        fileWriter.flush();
-                        fileWriter.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
+                if (microtomePanel.getValidSolution()) {
+                    String filePath = "";
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
+                    int returnVal = chooser.showSaveDialog(null);
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
                     }
+
+                    if (filePath != "") {
+                        //                    if you set a solution then move other sliders, it will no longer be a solution. Here we force it
+                        //                    to react and set all sliders for that current solution.
+                        double currentSolutionRot = microtomePanel.getRotationSolutionAngle().getCurrentValue();
+                        microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
+
+                        SolutionToSave solutionToSave = new SolutionToSave(microtomeManager.getInitialKnifeAngle(),
+                                microtomeManager.getInitialTiltAngle(), microtomeManager.getKnifeTilt(), microtomeManager.getTilt(),
+                                microtomeManager.getRotation(), microtomePanel.getFirstTouch(), microtomePanel.getDistanceToCut());
+
+                        try {
+                            FileWriter fileWriter = new FileWriter(filePath);
+                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                            gson.toJson(solutionToSave, fileWriter);
+                            fileWriter.flush();
+                            fileWriter.close();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No valid solutions for this rotation. Try another rotation, or revise your target plane.");
                 }
             }
         }
     }
 
-    private void loadSettings (SettingsToSave settingsToSave) {
+    private void loadSettings(SettingsToSave settingsToSave) {
         if (microtomePanel.checkMicrotomeMode()) {
             microtomePanel.exitMicrotomeMode();
         }

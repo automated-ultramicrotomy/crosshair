@@ -49,6 +49,7 @@ import java.util.List;
 public class MicrotomePanel extends JPanel {
 
     private final MicrotomeManager microtomeManager;
+    private final PlaneManager planeManager;
     private final BoundedValueDouble initialKnifeAngle;
     private final BoundedValueDouble initialTiltAngle;
     private final BoundedValueDouble knifeAngle;
@@ -59,7 +60,7 @@ public class MicrotomePanel extends JPanel {
     private final Map<String, SliderPanelDouble> sliders;
     private final Map<String, JPanel> sliderPanels;
     private String firstTouch;
-
+    private boolean validSolution;
     private double distanceToCut;
 
     JLabel firstTouchLabel;
@@ -76,17 +77,19 @@ public class MicrotomePanel extends JPanel {
 
     JPanel cuttingControls;
     JPanel currentSettings;
+    private SavePanel savePanel;
 
     private boolean inCuttingMode;
     private boolean inMicrotomeMode;
     private JFrame parentFrame;
 
-    public MicrotomePanel(MicrotomeManager microtomeManager) {
+    public MicrotomePanel(MicrotomeManager microtomeManager, PlaneManager planeManager) {
         this.microtomeManager = microtomeManager;
         sliders = new HashMap<>();
         sliderPanels = new HashMap<>();
         inCuttingMode = false;
         inMicrotomeMode = false;
+        this.planeManager = planeManager;
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
@@ -222,9 +225,12 @@ public class MicrotomePanel extends JPanel {
 //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
     }
 
+    public void setSavePanel (SavePanel savePanel) {this.savePanel = savePanel;}
     public void setParentFrame(JFrame jFrame) {
         parentFrame = jFrame;
     }
+    public void setValidSolution(boolean valid) {validSolution = valid;}
+    public boolean getValidSolution () {return validSolution;}
 
     public BoundedValueDouble getKnifeAngle() {
         return knifeAngle;
@@ -364,15 +370,20 @@ public class MicrotomePanel extends JPanel {
     class blockListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().equals("initialise_block")){
-                enterMicrotomeMode.setEnabled(false);
-                exitMicrotomeMode.setEnabled(true);
-                enterCutting.setVisible(true);
-                exitCutting.setVisible(true);
-                microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
-                cuttingControls.setVisible(true);
-                currentSettings.setVisible(true);
-                inMicrotomeMode = true;
-                parentFrame.pack();
+                if (planeManager.checkAllPlanesPointsDefined() & planeManager.getTrackPlane() == 0) {
+                    enterMicrotomeMode.setEnabled(false);
+                    exitMicrotomeMode.setEnabled(true);
+                    enterCutting.setVisible(true);
+                    exitCutting.setVisible(true);
+                    microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
+                    cuttingControls.setVisible(true);
+                    currentSettings.setVisible(true);
+                    inMicrotomeMode = true;
+                    savePanel.enableSaveSolution();
+                    parentFrame.pack();
+                } else {
+                System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
+            }
             } else if (e.getActionCommand().equals("exit_microtome_mode")) {
                 exitMicrotomeMode();
             } else if (e.getActionCommand().equals("Cutting_mode")) {
@@ -418,6 +429,7 @@ public class MicrotomePanel extends JPanel {
         currentSettings.setVisible(false);
         microtomeManager.exitMicrotomeMode();
         inMicrotomeMode = false;
+        savePanel.disableSaveSolution();
         parentFrame.pack();
     }
 
@@ -517,7 +529,6 @@ public class MicrotomePanel extends JPanel {
         public void update() {
             cuttingSlider.update();
             microtomeManager.updateCut(cuttingDepth.getCurrentValue());
-            // TODO - do stuff
         }
     }
 
