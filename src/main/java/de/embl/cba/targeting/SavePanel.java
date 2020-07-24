@@ -74,12 +74,23 @@ public class SavePanel extends JPanel {
                 }
 
                 if (filePath != "") {
-                    // TODO - make it possible to save when e.g. some of teh planes aren't initialised yet, or not all vertices named etc...
+
+//                    transfer function settings
+                    int[] redLut = new int[256];
+                    int[] greenLut = new int[256];
+                    int[] blueLut = new int[256];
+                    int[] alphaLut = new int[256];
+                    imageContent.getRedLUT(redLut);
+                    imageContent.getGreenLUT(greenLut);
+                    imageContent.getBlueLUT(blueLut);
+                    imageContent.getAlphaLUT(alphaLut);
+
                     SettingsToSave settingsToSave = new SettingsToSave(planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
                             planeManager.getNamedVertices(), planeManager.getPoints(),
                             planeManager.getBlockVertices(), planeManager.getTargetPlaneColour(), planeManager.getBlockPlaneColour(),
                             planeManager.getTargetTransparency(), planeManager.getBlockTransparency(),
-                            imageContent.getTransparency(), imageContent.getColor());
+                            imageContent.getTransparency(), imageContent.getColor(), redLut, greenLut, blueLut, alphaLut
+                            );
 
                     try {
                         FileWriter fileWriter = new FileWriter(filePath);
@@ -123,60 +134,65 @@ public class SavePanel extends JPanel {
         if (microtomePanel.checkMicrotomeMode()) {
             microtomePanel.exitMicrotomeMode();
         }
-        planeManager.removeAllBlockVertices();
-        planeManager.removeAllPoints();
 
-        Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
-        for (String planeName : settingsPlaneNormals.keySet()) {
-            planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
-        }
+        if (planeManager.getTrackPlane() == 0) {
+            planeManager.removeAllBlockVertices();
+            planeManager.removeAllPoints();
 
-        // if some planes aren't defined in loaded settings, remove them if present
-        for (String plane : new String[] {"target", "block"}) {
-            if (!settingsPlaneNormals.containsKey(plane)) {
-                planeManager.removeNamedPlane(plane);
+            Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
+            for (String planeName : settingsPlaneNormals.keySet()) {
+                planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
             }
-        }
 
-//        TODO - requirement not to track plane
-        planeManager.setTargetPlaneColour(settingsToSave.getTargetPlaneColour().get());
-        planeManager.setBlockPlaneColour(settingsToSave.getBlockPlaneColour().get());
-        planeManager.setTargetTransparency(settingsToSave.getTargetTransparency());
-        planeManager.setBlockTransparency(settingsToSave.getBlockTransparency());
+            // if some planes aren't defined in loaded settings, remove them if present
+            for (String plane : new String[]{"target", "block"}) {
+                if (!settingsPlaneNormals.containsKey(plane)) {
+                    planeManager.removeNamedPlane(plane);
+                }
+            }
 
-        for (RealPoint point: settingsToSave.getPoints()) {
-            planeManager.addRemovePointFromPointList(planeManager.getPoints(), point);
-        }
+            planeManager.setTargetPlaneColour(settingsToSave.getTargetPlaneColour().get());
+            planeManager.setBlockPlaneColour(settingsToSave.getBlockPlaneColour().get());
+            planeManager.setTargetTransparency(settingsToSave.getTargetTransparency());
+            planeManager.setBlockTransparency(settingsToSave.getBlockTransparency());
 
-        for (RealPoint point: settingsToSave.getBlockVertices()) {
-            planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
-        }
+            for (RealPoint point : settingsToSave.getPoints()) {
+                planeManager.addRemovePointFromPointList(planeManager.getPoints(), point);
+            }
 
-        for (Map.Entry<String, RealPoint> entry: settingsToSave.getNamedVertices().entrySet()) {
-            planeManager.nameVertex(entry.getKey(), entry.getValue());
-        }
+            for (RealPoint point : settingsToSave.getBlockVertices()) {
+                planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
+            }
 
-        imageContent.setColor(settingsToSave.getImageColour());
-        imageContent.setTransparency(settingsToSave.getImageTransparency());
+            for (Map.Entry<String, RealPoint> entry : settingsToSave.getNamedVertices().entrySet()) {
+                planeManager.nameVertex(entry.getKey(), entry.getValue());
+            }
+
+            imageContent.setColor(settingsToSave.getImageColour());
+            imageContent.setTransparency(settingsToSave.getImageTransparency());
+
+//            transfer function
+            imageContent.setLUT(settingsToSave.getRedLut(), settingsToSave.getGreenLut(), settingsToSave.getBlueLut(), settingsToSave.getAlphaLut());
 
 //        Set everything to be visible if not already
-        if (!planeManager.getVisiblityNamedPlane("target")) {
-            planeManager.toggleTargetVisbility();
+            if (!planeManager.getVisiblityNamedPlane("target")) {
+                planeManager.toggleTargetVisbility();
+            }
+
+            if (!planeManager.getVisiblityNamedPlane("block")) {
+                planeManager.toggleBlockVisbility();
+            }
+
+            if (!pointsPanel.check3DPointsVisible()) {
+                pointsPanel.toggleVisiblity3DPoints();
+            }
+
+            if (!pointOverlay.checkPointsVisible()) {
+                pointOverlay.toggleShowPoints();
+            }
+        } else {
+            System.out.println("Cant load settings when tracking a plane");
         }
-
-        if (!planeManager.getVisiblityNamedPlane("block")) {
-            planeManager.toggleBlockVisbility();
-        }
-
-        if (!pointsPanel.check3DPointsVisible()) {
-            pointsPanel.toggleVisiblity3DPoints();
-        }
-
-        if (!pointOverlay.checkPointsVisible()) {
-            pointOverlay.toggleShowPoints();
-        }
-
-
 
     }
 }

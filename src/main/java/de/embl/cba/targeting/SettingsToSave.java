@@ -20,13 +20,18 @@ public class SettingsToSave {
     private float blockTransparency;
     private float imageTransparency;
     private Color3f imageColour;
-    // TODO - add transfer function
+//    Transfer function
+    private int[] redLut;
+    private int[] greenLut;
+    private int[] blueLut;
+    private int[] alphaLut;
 
     public SettingsToSave(Map<String, Vector3d> planeNormals, Map<String, Vector3d> planePoints,
                           Map<String, RealPoint> namedVertices,
                           ArrayList<RealPoint> points, ArrayList<RealPoint> blockVertices,
                           Color3f targetPlaneColour, Color3f blockPlaneColour, float targetTransparency,
-                          float blockTransparency, float imageTransparency, Color3f imageColour) {
+                          float blockTransparency, float imageTransparency, Color3f imageColour,
+                          int[] redLut, int[] greenLut, int[] blueLut, int[] alphaLut) {
         this.planeNormals = planeNormals;
         this.planePoints = planePoints;
         this.namedVertices = namedVertices;
@@ -38,6 +43,10 @@ public class SettingsToSave {
         this.blockTransparency = blockTransparency;
         this.imageTransparency = imageTransparency;
         this.imageColour = imageColour;
+        this.redLut = redLut;
+        this.greenLut = greenLut;
+        this.blueLut = blueLut;
+        this.alphaLut = alphaLut;
     }
 
     public float getBlockTransparency() {
@@ -82,5 +91,21 @@ public class SettingsToSave {
 
     public Map<String, Vector3d> getPlanePoints() {
         return planePoints;
+    }
+
+    public int[] getRedLut() {
+        return redLut;
+    }
+
+    public int[] getGreenLut() {
+        return greenLut;
+    }
+
+    public int[] getBlueLut() {
+        return blueLut;
+    }
+
+    public int[] getAlphaLut() {
+        return alphaLut;
     }
 }
