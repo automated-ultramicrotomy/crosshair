@@ -137,7 +137,7 @@ public class SavePanel extends JPanel {
                 planeManager.removeNamedPlane(plane);
             }
         }
-//        TODO - don't need to save cnetroids?
+
 //        TODO - requirement not to track plane
         planeManager.setTargetPlaneColour(settingsToSave.getTargetPlaneColour().get());
         planeManager.setBlockPlaneColour(settingsToSave.getBlockPlaneColour().get());
@@ -156,9 +156,7 @@ public class SavePanel extends JPanel {
             planeManager.nameVertex(entry.getKey(), entry.getValue());
         }
 
-        if (settingsToSave.getImageColour() != null) {
-            imageContent.setColor(settingsToSave.getImageColour());
-        }
+        imageContent.setColor(settingsToSave.getImageColour());
         imageContent.setTransparency(settingsToSave.getImageTransparency());
 
 //        Set everything to be visible if not already
