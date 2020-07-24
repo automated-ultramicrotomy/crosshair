@@ -92,6 +92,14 @@ public class MicrotomeManager extends JPanel {
     public double getTilt() {return tilt;}
     public double getRotation() {return rotation;}
 
+    public double getInitialTiltAngle() {
+        return initialTiltAngle;
+    }
+
+    public double getInitialKnifeAngle() {
+        return initialKnifeAngle;
+    }
+
     public boolean checkMicrotomeMode () {return microtomeModeActive;}
     public boolean setMicrotomeMode(boolean active) {return microtomeModeActive = active;}
 
@@ -524,7 +532,7 @@ public class MicrotomeManager extends JPanel {
         }
 
         //TODO -remove
-        printImageMinMax(imageContent);
+//        printImageMinMax(imageContent);
     }
 
     public void setRotation(double rotation) {
@@ -744,10 +752,10 @@ public class MicrotomeManager extends JPanel {
 //    solution knife & rot
         double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
 
-        calculateDistance();
-
         microtomePanel.getTiltAngle().setCurrentValue(convertToDegrees(solTilt));
         microtomePanel.getKnifeAngle().setCurrentValue(convertToDegrees(solKnife));
+
+        calculateDistance();
     }
 
     private void calculateDistance () {
@@ -801,7 +809,6 @@ public class MicrotomeManager extends JPanel {
         Vector3d firstTouchToTarget = new Vector3d();
         firstTouchToTarget.sub(targetPoint, firstTouch);
         double perpDist = abs(firstTouchToTarget.dot(targetNormal));
-        System.out.println(perpDist);
 
 //        Compensate for offset between perpendicular distance and true N-S of microtome
 //        I believe this is just the angle of the knife in this scenario, as the knife was reset to true 0

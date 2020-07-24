@@ -229,14 +229,22 @@ public class MicrotomePanel extends JPanel {
     public BoundedValueDouble getKnifeAngle() {
         return knifeAngle;
     }
-
     public BoundedValueDouble getTiltAngle() {
         return tiltAngle;
     }
-
     public BoundedValueDouble getRotationAngle() {
         return rotationAngle;
     }
+    public BoundedValueDouble getRotationSolutionAngle() {return rotationSolution;}
+
+    public String getFirstTouch() {
+        return firstTouch;
+    }
+
+    public double getDistanceToCut() {
+        return distanceToCut;
+    }
+
     public boolean checkMicrotomeMode () {return inMicrotomeMode;}
 
     public Map<String, SliderPanelDouble> getSliders (){return sliders;}
@@ -249,6 +257,7 @@ public class MicrotomePanel extends JPanel {
     public void setDistanceToCut (double distance) {
         distanceToCutLabel.setText("Distance to  cut:    " + distance+"");
         distanceToCut = distance;
+        System.out.println(distance);
     }
 
     public void setRotationLabel (double rotation) {

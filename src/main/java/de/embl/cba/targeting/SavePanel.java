@@ -21,15 +21,17 @@ import java.util.Map;
 
 public class SavePanel extends JPanel {
     private PlaneManager planeManager;
+    private MicrotomeManager microtomeManager;
     private Content imageContent;
     private MicrotomePanel microtomePanel;
     private PointsPanel pointsPanel;
     private PointsOverlaySizeChange pointOverlay;
 
 
-    public SavePanel(PlaneManager planeManager, Content imageContent, MicrotomePanel microtomePanel, PointsPanel pointsPanel,
+    public SavePanel(PlaneManager planeManager, MicrotomeManager microtomeManager, Content imageContent, MicrotomePanel microtomePanel, PointsPanel pointsPanel,
                      PointsOverlaySizeChange pointOverlay) {
         this.planeManager = planeManager;
+        this.microtomeManager = microtomeManager;
         this.imageContent = imageContent;
         this.microtomePanel = microtomePanel;
         this.pointsPanel = pointsPanel;
@@ -125,7 +127,33 @@ public class SavePanel extends JPanel {
                 }
 
             } else if (e.getActionCommand().equals("save_solution")) {
+                String filePath = "";
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
+                int returnVal = chooser.showSaveDialog(null);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
+                }
 
+                if (filePath != "") {
+//                    if you set a solution then move other sliders, it will no longer be a solution. Here we force it
+//                    to react and set all sliders for that current solution.
+                    double currentSolutionRot = microtomePanel.getRotationSolutionAngle().getCurrentValue();
+                    microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
+                    SolutionToSave solutionToSave = new SolutionToSave(microtomeManager.getInitialKnifeAngle(),
+                            microtomeManager.getInitialTiltAngle(), microtomeManager.getKnifeTilt(), microtomeManager.getTilt(),
+                            microtomeManager.getRotation(), microtomePanel.getFirstTouch(), microtomePanel.getDistanceToCut());
+
+                    try {
+                        FileWriter fileWriter = new FileWriter(filePath);
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        gson.toJson(solutionToSave, fileWriter);
+                        fileWriter.flush();
+                        fileWriter.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
         }
     }
