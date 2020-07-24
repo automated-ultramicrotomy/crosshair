@@ -36,6 +36,10 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             this.showPoints = true;
         }
 
+        public boolean checkPointsVisible () {
+            return showPoints;
+        }
+
         public void toggleShowPoints () {
             if (showPoints) {
                 showPoints = false;

@@ -100,25 +100,30 @@ public class PlaneManager {
     public int getTrackPlane() {return trackPlane;}
     public void setTrackPlane(int track) {trackPlane = track;}
 
-    public void nameVertex (String name) {
+    public void nameSelectedVertex(String name) {
         if (!selectedVertex.containsKey("selected")) {
             System.out.println("No vertex selected");
         } else {
 
             RealPoint selectedPointCopy = new RealPoint(selectedVertex.get("selected"));
-            if (name.equals("Top Left")) {
-                renamePoint3D(imageContent, selectedPointCopy, "TL");
-                addNamedVertexBdv("top_left", selectedPointCopy);
-            } else if (name.equals("Top Right")) {
-                renamePoint3D(imageContent, selectedPointCopy, "TR");
-                addNamedVertexBdv("top_right", selectedPointCopy);
-            } else if (name.equals("Bottom Left")) {
-                renamePoint3D(imageContent, selectedPointCopy, "BL");
-                addNamedVertexBdv("bottom_left", selectedPointCopy);
-            } else if (name.equals("Bottom Right")) {
-                renamePoint3D(imageContent, selectedPointCopy, "BR");
-                addNamedVertexBdv("bottom_right", selectedPointCopy);
-            }
+            nameVertex(name, selectedPointCopy);
+        }
+    }
+
+    public void nameVertex (String name, RealPoint vertex) {
+        RealPoint vertexCopy = new RealPoint(vertex);
+        if (name.equals("Top Left")) {
+            renamePoint3D(imageContent, vertexCopy, "TL");
+            addNamedVertexBdv(name, vertexCopy);
+        } else if (name.equals("Top Right")) {
+            renamePoint3D(imageContent, vertexCopy, "TR");
+            addNamedVertexBdv(name, vertexCopy);
+        } else if (name.equals("Bottom Left")) {
+            renamePoint3D(imageContent, vertexCopy, "BL");
+            addNamedVertexBdv(name, vertexCopy);
+        } else if (name.equals("Bottom Right")) {
+            renamePoint3D(imageContent, vertexCopy, "BR");
+            addNamedVertexBdv(name, vertexCopy);
         }
     }
 
@@ -329,7 +334,7 @@ public class PlaneManager {
             }
         }
 
-        private void addRemovePointFromPointList(ArrayList<RealPoint> points, RealPoint point) {
+        public void addRemovePointFromPointList(ArrayList<RealPoint> points, RealPoint point) {
         // remove point if already present, otherwise add point
             double[] pointViewerCoords = convertToViewerCoordinates(point);
 
@@ -369,6 +374,30 @@ public class PlaneManager {
         namedVertices.clear();
         blockVertices.clear();
         bdvHandle.getViewerPanel().requestRepaint();
+    }
+
+    public void removeAllPoints() {
+        for (RealPoint point : points) {
+            removePointFrom3DViewer(point);
+        }
+        points.clear();
+        bdvHandle.getViewerPanel().requestRepaint();
+    }
+
+    public void removeNamedPlane (String name) {
+        if (checkNamedPlaneExists(name)) {
+//        remove block vertices as these are tied to a particular plane (unlike the points)
+            if (name == "block") {
+                removeAllBlockVertices();
+            }
+
+            planeNormals.remove(name);
+            planeCentroids.remove(name);
+            planePoints.remove(name);
+
+            universe.removeContent(name);
+        }
+
     }
 
     private void removePointFrom3DViewer (RealPoint point) {
@@ -450,7 +479,9 @@ public class PlaneManager {
 
     public void setTargetPlaneColour (Color colour) {
         targetPlaneColour.set(colour);
-        universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+        if (checkNamedPlaneExists("target")) {
+            universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+        }
     }
 
     public void setTargetPlaneAlignedColour () {
@@ -463,36 +494,46 @@ public class PlaneManager {
 
     public void setBlockPlaneColour (Color colour) {
         blockPlaneColour.set(colour);
-        universe.getContent("block").setColor(new Color3f(blockPlaneColour));
+        if (checkNamedPlaneExists("block")) {
+            universe.getContent("block").setColor(new Color3f(blockPlaneColour));
+        }
     }
 
     public void setTargetTransparency (float transparency) {
         targetTransparency = transparency;
-        universe.getContent("target").setTransparency(targetTransparency);
+        if (checkNamedPlaneExists("target")) {
+            universe.getContent("target").setTransparency(targetTransparency);
+        }
     }
 
     public void setBlockTransparency (float transparency) {
         blockTransparency = transparency;
-        universe.getContent("block").setTransparency(blockTransparency);
+        if (checkNamedPlaneExists("block")) {
+            universe.getContent("block").setTransparency(blockTransparency);
+        }
     }
 
     public void toggleTargetVisbility () {
-        if (targetVisible) {
-            universe.getContent("target").setVisible(false);
-            targetVisible = false;
-        } else {
-            universe.getContent("target").setVisible(true);
-            targetVisible = true;
+        if (checkNamedPlaneExists("target")) {
+            if (targetVisible) {
+                universe.getContent("target").setVisible(false);
+                targetVisible = false;
+            } else {
+                universe.getContent("target").setVisible(true);
+                targetVisible = true;
+            }
         }
     }
 
     public void toggleBlockVisbility () {
-        if (blockVisible) {
-            universe.getContent("block").setVisible(false);
-            blockVisible = false;
-        } else {
-            universe.getContent("block").setVisible(true);
-            blockVisible = true;
+        if (checkNamedPlaneExists("block")) {
+            if (blockVisible) {
+                universe.getContent("block").setVisible(false);
+                blockVisible = false;
+            } else {
+                universe.getContent("block").setVisible(true);
+                blockVisible = true;
+            }
         }
     }
 
@@ -511,7 +552,7 @@ public class PlaneManager {
         boolean blockExists = checkNamedPlaneExists("block");
 
         boolean allVerticesExist = true;
-        String[] vertexPoints = {"top_left", "top_right", "bottom_left", "bottom_right"};
+        String[] vertexPoints = {"Top Left", "Top Right", "Bottom Left", "Bottom Right"};
         for (String vertexName: vertexPoints) {
             if (!namedVertices.containsKey(vertexName)) {
                 allVerticesExist = false;

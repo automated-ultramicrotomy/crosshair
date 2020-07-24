@@ -54,6 +54,7 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 //TODO - colour change on alignment, only set, if not already that colour?
 // TODO - align microtome view when enter
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
+// TODO -make sure selected point desleced in all removals
 
 public class Crosshair
 {
@@ -124,7 +125,7 @@ public class Crosshair
 		microtomePanel.setParentFrame(jFrame);
 		microtomeManager.setMicrotomePanel(microtomePanel);
 		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
-		SavePanel savePanel = new SavePanel(planeManager, imageContent);
+		SavePanel savePanel = new SavePanel(planeManager, imageContent, microtomePanel, pointsPanel, pointOverlay);
 		mainPane.add(imagesPanel);
 		mainPane.add(planePanel);
 		mainPane.add(pointsPanel);

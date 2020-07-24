@@ -47,16 +47,20 @@ public class PointsPanel extends JPanel {
                 new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
         visbilityButton.addActionListener(e -> {
-            if (threeDPointsVisible) {
-                imageContent.showPointList(false);
-                threeDPointsVisible = false;
-            } else {
-                imageContent.showPointList(true);
-                threeDPointsVisible = true;
-            }
+            toggleVisiblity3DPoints();
         });
 
         panel.add(visbilityButton);
+    }
+
+    public void toggleVisiblity3DPoints () {
+        if (threeDPointsVisible) {
+            imageContent.showPointList(false);
+            threeDPointsVisible = false;
+        } else {
+            imageContent.showPointList(true);
+            threeDPointsVisible = true;
+        }
     }
 
     private void add2DVisibilityButton(JPanel panel, int[] buttonDimensions) {

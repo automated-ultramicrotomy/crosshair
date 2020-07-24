@@ -172,9 +172,9 @@ public class MicrotomeManager extends JPanel {
         double[] topLeft = new double[3];
         double[] bottomLeft = new double[3];
         double[] bottomRight = new double[3];
-        namedVertices.get("top_left").localize(topLeft);
-        namedVertices.get("bottom_left").localize(bottomLeft);
-        namedVertices.get("bottom_right").localize(bottomRight);
+        namedVertices.get("Top Left").localize(topLeft);
+        namedVertices.get("Bottom Left").localize(bottomLeft);
+        namedVertices.get("Bottom Right").localize(bottomRight);
 
 //        Vector along the bottom edge of block, left to right
         Vector3d bottomEdgeVector = new Vector3d();
@@ -360,9 +360,9 @@ public class MicrotomeManager extends JPanel {
         double[] topLeft = new double[3];
         double[] bottomLeft = new double[3];
         double[] bottomRight = new double[3];
-        namedVertices.get("top_left").localize(topLeft);
-        namedVertices.get("bottom_left").localize(bottomLeft);
-        namedVertices.get("bottom_right").localize(bottomRight);
+        namedVertices.get("Top Left").localize(topLeft);
+        namedVertices.get("Bottom Left").localize(bottomLeft);
+        namedVertices.get("Bottom Right").localize(bottomRight);
 
         Vector3d bottomEdgeVector = new Vector3d();
         bottomEdgeVector.sub(new Vector3d(bottomRight), new Vector3d(bottomLeft));
@@ -762,10 +762,10 @@ public class MicrotomeManager extends JPanel {
         double[] topRight = new double[3];
         double[] bottomLeft = new double[3];
         double[] bottomRight = new double[3];
-        namedVertices.get("top_left").localize(topLeft);
-        namedVertices.get("top_right").localize(topRight);
-        namedVertices.get("bottom_left").localize(bottomLeft);
-        namedVertices.get("bottom_right").localize(bottomRight);
+        namedVertices.get("Top Left").localize(topLeft);
+        namedVertices.get("Top Right").localize(topRight);
+        namedVertices.get("Bottom Left").localize(bottomLeft);
+        namedVertices.get("Bottom Right").localize(bottomRight);
 
 //        Calculate first point touched on block face, done by calculating perpendicular distance
 //        from target to each point, and returning that with the largest.

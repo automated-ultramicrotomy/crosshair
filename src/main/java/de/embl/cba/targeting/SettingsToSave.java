@@ -11,7 +11,6 @@ public class SettingsToSave {
 
     private final Map<String, Vector3d> planeNormals;
     private final Map<String, Vector3d> planePoints;
-    private final Map<String, Vector3d> planeCentroids;
     private final Map<String, RealPoint> namedVertices;
     private final ArrayList<RealPoint> points;
     private final ArrayList<RealPoint> blockVertices;
@@ -24,13 +23,12 @@ public class SettingsToSave {
     // TODO - add transfer function
 
     public SettingsToSave(Map<String, Vector3d> planeNormals, Map<String, Vector3d> planePoints,
-                          Map<String, Vector3d> planeCentroids, Map<String, RealPoint> namedVertices,
+                          Map<String, RealPoint> namedVertices,
                           ArrayList<RealPoint> points, ArrayList<RealPoint> blockVertices,
                           Color3f targetPlaneColour, Color3f blockPlaneColour, float targetTransparency,
                           float blockTransparency, float imageTransparency, Color3f imageColour) {
         this.planeNormals = planeNormals;
         this.planePoints = planePoints;
-        this.planeCentroids = planeCentroids;
         this.namedVertices = namedVertices;
         this.points = points;
         this.blockVertices = blockVertices;
@@ -76,10 +74,6 @@ public class SettingsToSave {
 
     public Map<String, RealPoint> getNamedVertices() {
         return namedVertices;
-    }
-
-    public Map<String, Vector3d> getPlaneCentroids() {
-        return planeCentroids;
     }
 
     public Map<String, Vector3d> getPlaneNormals() {

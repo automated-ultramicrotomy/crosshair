@@ -55,7 +55,7 @@ public class VertexAssignmentPanel extends JPanel {
 
     class vertexPointListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            planeManager.nameVertex(e.getActionCommand());
+            planeManager.nameSelectedVertex(e.getActionCommand());
         }
     }
 

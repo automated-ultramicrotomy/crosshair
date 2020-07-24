@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import ij3d.Content;
+import net.imglib2.RealPoint;
+import org.scijava.vecmath.Vector3d;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -20,11 +22,18 @@ import java.util.Map;
 public class SavePanel extends JPanel {
     private PlaneManager planeManager;
     private Content imageContent;
+    private MicrotomePanel microtomePanel;
+    private PointsPanel pointsPanel;
+    private PointsOverlaySizeChange pointOverlay;
 
 
-    public SavePanel(PlaneManager planeManager, Content imageContent) {
+    public SavePanel(PlaneManager planeManager, Content imageContent, MicrotomePanel microtomePanel, PointsPanel pointsPanel,
+                     PointsOverlaySizeChange pointOverlay) {
         this.planeManager = planeManager;
         this.imageContent = imageContent;
+        this.microtomePanel = microtomePanel;
+        this.pointsPanel = pointsPanel;
+        this.pointOverlay = pointOverlay;
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Save and Load"),
@@ -67,7 +76,7 @@ public class SavePanel extends JPanel {
                 if (filePath != "") {
                     // TODO - make it possible to save when e.g. some of teh planes aren't initialised yet, or not all vertices named etc...
                     SettingsToSave settingsToSave = new SettingsToSave(planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
-                            planeManager.getPlaneCentroids(), planeManager.getNamedVertices(), planeManager.getPoints(),
+                            planeManager.getNamedVertices(), planeManager.getPoints(),
                             planeManager.getBlockVertices(), planeManager.getTargetPlaneColour(), planeManager.getBlockPlaneColour(),
                             planeManager.getTargetTransparency(), planeManager.getBlockTransparency(),
                             imageContent.getTransparency(), imageContent.getColor());
@@ -97,7 +106,7 @@ public class SavePanel extends JPanel {
                     try {
                         FileReader fileReader = new FileReader(filePath);
                         SettingsToSave settingsToSave = gson.fromJson(fileReader, SettingsToSave.class);
-                        // TODO - use this object to set all teh required settings
+                        loadSettings(settingsToSave);
 
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
@@ -108,5 +117,68 @@ public class SavePanel extends JPanel {
 
             }
         }
+    }
+
+    private void loadSettings (SettingsToSave settingsToSave) {
+        if (microtomePanel.checkMicrotomeMode()) {
+            microtomePanel.exitMicrotomeMode();
+        }
+        planeManager.removeAllBlockVertices();
+        planeManager.removeAllPoints();
+
+        Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
+        for (String planeName : settingsPlaneNormals.keySet()) {
+            planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
+        }
+
+        // if some planes aren't defined in loaded settings, remove them if present
+        for (String plane : new String[] {"target", "block"}) {
+            if (!settingsPlaneNormals.containsKey(plane)) {
+                planeManager.removeNamedPlane(plane);
+            }
+        }
+//        TODO - don't need to save cnetroids?
+//        TODO - requirement not to track plane
+        planeManager.setTargetPlaneColour(settingsToSave.getTargetPlaneColour().get());
+        planeManager.setBlockPlaneColour(settingsToSave.getBlockPlaneColour().get());
+        planeManager.setTargetTransparency(settingsToSave.getTargetTransparency());
+        planeManager.setBlockTransparency(settingsToSave.getBlockTransparency());
+
+        for (RealPoint point: settingsToSave.getPoints()) {
+            planeManager.addRemovePointFromPointList(planeManager.getPoints(), point);
+        }
+
+        for (RealPoint point: settingsToSave.getBlockVertices()) {
+            planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
+        }
+
+        for (Map.Entry<String, RealPoint> entry: settingsToSave.getNamedVertices().entrySet()) {
+            planeManager.nameVertex(entry.getKey(), entry.getValue());
+        }
+
+        if (settingsToSave.getImageColour() != null) {
+            imageContent.setColor(settingsToSave.getImageColour());
+        }
+        imageContent.setTransparency(settingsToSave.getImageTransparency());
+
+//        Set everything to be visible if not already
+        if (!planeManager.getVisiblityNamedPlane("target")) {
+            planeManager.toggleTargetVisbility();
+        }
+
+        if (!planeManager.getVisiblityNamedPlane("block")) {
+            planeManager.toggleBlockVisbility();
+        }
+
+        if (!pointsPanel.check3DPointsVisible()) {
+            pointsPanel.toggleVisiblity3DPoints();
+        }
+
+        if (!pointOverlay.checkPointsVisible()) {
+            pointOverlay.toggleShowPoints();
+        }
+
+
+
     }
 }

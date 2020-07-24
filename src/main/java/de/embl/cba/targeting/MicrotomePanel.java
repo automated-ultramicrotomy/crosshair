@@ -78,12 +78,15 @@ public class MicrotomePanel extends JPanel {
     JPanel currentSettings;
 
     private boolean inCuttingMode;
+    private boolean inMicrotomeMode;
     private JFrame parentFrame;
 
     public MicrotomePanel(MicrotomeManager microtomeManager) {
         this.microtomeManager = microtomeManager;
         sliders = new HashMap<>();
         sliderPanels = new HashMap<>();
+        inCuttingMode = false;
+        inMicrotomeMode = false;
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
@@ -234,6 +237,7 @@ public class MicrotomePanel extends JPanel {
     public BoundedValueDouble getRotationAngle() {
         return rotationAngle;
     }
+    public boolean checkMicrotomeMode () {return inMicrotomeMode;}
 
     public Map<String, SliderPanelDouble> getSliders (){return sliders;}
 
@@ -358,25 +362,10 @@ public class MicrotomePanel extends JPanel {
                 microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
                 cuttingControls.setVisible(true);
                 currentSettings.setVisible(true);
+                inMicrotomeMode = true;
                 parentFrame.pack();
             } else if (e.getActionCommand().equals("exit_microtome_mode")) {
-                enterMicrotomeMode.setEnabled(true);
-                exitMicrotomeMode.setEnabled(false);
-                enterCutting.setVisible(false);
-                exitCutting.setVisible(false);
-//                 if in cutting mode, also disable this
-                if (inCuttingMode) {
-                    sliderPanels.get("Cutting Depth").setVisible(false);
-                    enableSliders();
-                    microtomeManager.removeCuttingPlane();
-                    inCuttingMode = false;
-                }
-                enterCutting.setEnabled(true);
-                exitCutting.setEnabled(false);
-                cuttingControls.setVisible(false);
-                currentSettings.setVisible(false);
-                microtomeManager.exitMicrotomeMode();
-                parentFrame.pack();
+                exitMicrotomeMode();
             } else if (e.getActionCommand().equals("Cutting_mode")) {
                 sliderPanels.get("Cutting Depth").setVisible(true);
                 // Disable all other microtome sliders
@@ -400,6 +389,27 @@ public class MicrotomePanel extends JPanel {
                 parentFrame.pack();
             }
         }
+    }
+
+    public void exitMicrotomeMode () {
+        enterMicrotomeMode.setEnabled(true);
+        exitMicrotomeMode.setEnabled(false);
+        enterCutting.setVisible(false);
+        exitCutting.setVisible(false);
+//                 if in cutting mode, also disable this
+        if (inCuttingMode) {
+            sliderPanels.get("Cutting Depth").setVisible(false);
+            enableSliders();
+            microtomeManager.removeCuttingPlane();
+            inCuttingMode = false;
+        }
+        enterCutting.setEnabled(true);
+        exitCutting.setEnabled(false);
+        cuttingControls.setVisible(false);
+        currentSettings.setVisible(false);
+        microtomeManager.exitMicrotomeMode();
+        inMicrotomeMode = false;
+        parentFrame.pack();
     }
 
     abstract class MicrotomeListener implements BoundedValueDouble.UpdateListener {
