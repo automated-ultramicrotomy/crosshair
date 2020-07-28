@@ -1,5 +1,6 @@
 package de.embl.cba.targeting;
 
+import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import customnode.CustomTriangleMesh;
@@ -18,6 +19,7 @@ import vib.PointList;
 import java.awt.*;
 import java.util.*;
 
+import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
 import static de.embl.cba.targeting.GeometryUtils.*;
 import static de.embl.cba.targeting.GeometryUtils.calculateTrianglesFromPoints;
 
@@ -203,6 +205,16 @@ public class PlaneManager {
         planeDefinition.add(planePoint);
 
         return planeDefinition;
+    }
+
+    public double[] getGlobalViewCentre () {
+        final AffineTransform3D transform = new AffineTransform3D();
+        bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+        double[] centrePointView = getBdvWindowCentre(bdvStackSource);
+        double[] centrePointGlobal = new double[3];
+        transform.inverse().apply(centrePointView, centrePointGlobal);
+
+        return centrePointGlobal;
     }
 
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {

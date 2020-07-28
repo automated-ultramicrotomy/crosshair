@@ -52,10 +52,10 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // TODO - align microtome view when enter
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
 // TODO -make sure selected point desleced in all removals
-//TODO - deal better with invalid solutions
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plane their runs)
 // TODO - command for loading bdv files
 //TODO - view changes if change planes after exit micrtome mode
+//TODO - take relevant T functions and put in main code
 
 public class Crosshair
 {

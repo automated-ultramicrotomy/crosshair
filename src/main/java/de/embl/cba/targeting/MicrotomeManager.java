@@ -712,16 +712,7 @@ public class MicrotomeManager extends JPanel {
     public void updateCut(double currentDepth) {
 
 //        Update position of cutting plane
-        //TODO - remove
-        // for testing set to current knife cnetre
-//        double depthMicrotomeCoords = 0;
-//        double yDistFromKnife = abs(currentKnifeCentre.getY());
         double depthMicrotomeCoords = currentDepth + NSZero.getY();
-
-        //TODO -remove
-//        ArrayList<Point3f> test = new ArrayList<>();
-//        test.add(new Point3f(0, (float) depthMicrotomeCoords, 0));
-//        universe.addPointMesh(test, new Color3f(0, 1,0), "yo");
         double yDistFromKnife = depthMicrotomeCoords - currentKnifeCentre.getY();
 
         Matrix4d translateCuttingPlane = new Matrix4d(1, 0, 0, 0,
@@ -754,7 +745,25 @@ public class MicrotomeManager extends JPanel {
         // TODO - level view so that it is also with bottom vector along x
 //        System.out.println(Arrays.toString(knifePointDouble));
         if (distanceToPlane > 1E-10) {
-            moveToPosition(bdvStackSource, knifePointDouble, 0);
+//            Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
+            Vector3d currentViewCentreGlobal = new Vector3d(planeManager.getGlobalViewCentre());
+            Vector3d knifePointV = new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ());
+            double distanceCurrentToFinal = distanceFromPointToPlane(currentViewCentreGlobal, knifeNormal, knifePointV);
+
+//            Check unit normal points from the current view point to the plane
+            Vector3d finalNormalCopy = new Vector3d(knifeNormal);
+            finalNormalCopy.normalize();
+            Vector3d pointToPlane = new Vector3d();
+            pointToPlane.sub(knifePointV, currentViewCentreGlobal);
+            if (pointToPlane.dot(finalNormalCopy) < 0) {
+                finalNormalCopy.negate();
+            }
+            Vector3d toAdd = new Vector3d(finalNormalCopy.getX()*distanceCurrentToFinal, finalNormalCopy.getY()*distanceCurrentToFinal,
+                    finalNormalCopy.getZ()*distanceCurrentToFinal);
+            currentViewCentreGlobal.add(toAdd);
+            double[] currentViewCentreDouble = {currentViewCentreGlobal.getX(), currentViewCentreGlobal.getY(), currentViewCentreGlobal.getZ()};
+            moveToPosition(bdvStackSource, currentViewCentreDouble, 0);
+//            moveToPosition(bdvStackSource, knifePointDouble, 0);
         }
 //        System.out.println(Arrays.toString(knifeNormalDouble));
         if (!normalsParallel) {
