@@ -10,7 +10,10 @@ import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
+import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
+import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3d;
 
@@ -529,6 +532,51 @@ public final class GeometryUtils {
         } else {
             return false;
         }
+    }
+
+    public static void levelCurrentViewNormalandHorizontal( Bdv bdv, double[] targetNormalVector, double[] targetHorizontalVector)
+    {
+
+        AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
+
+        LinAlgHelpers.normalize( targetNormalVector ); // just to be sure.
+
+        // Convert everything to viewer coordinates
+        double[] qCurrentRotation = new double[ 4 ];
+        Affine3DHelpers.extractRotation( currentViewerTransform, qCurrentRotation );
+        final AffineTransform3D currentRotation = quaternionToAffineTransform3D( qCurrentRotation );
+
+        double[] targetNormalInViewerSystem = new double[3];
+        currentRotation.apply( targetNormalVector, targetNormalInViewerSystem);
+
+        double[] targetHorizontalVectorInViewerSystem = new double[3];
+        currentRotation.apply( targetHorizontalVector, targetHorizontalVectorInViewerSystem);
+
+        // Rotation to bring target normal and horizontal, to be viewer normal and horizontal
+        Rotation endRotation = new Rotation(new Vector3D(targetNormalInViewerSystem),
+                new Vector3D(targetHorizontalVectorInViewerSystem),
+                new Vector3D(0,0,-1),
+                new Vector3D(1, 0, 0));
+
+        final AffineTransform3D rotation = matrixAsAffineTransform3D(endRotation.getMatrix());
+
+        // apply transformation (rotating around current viewer centre position)
+        final AffineTransform3D translateCenterToOrigin = new AffineTransform3D();
+        translateCenterToOrigin.translate( DoubleStream.of( getBdvWindowCenter( bdv )).map(x -> -x ).toArray() );
+
+        final AffineTransform3D translateCenterBack = new AffineTransform3D();
+        translateCenterBack.translate( getBdvWindowCenter( bdv ) );
+
+        ArrayList< AffineTransform3D > viewerTransforms = new ArrayList<>(  );
+
+        viewerTransforms.add( currentViewerTransform.copy()
+                .preConcatenate( translateCenterToOrigin )
+                .preConcatenate( rotation )
+                .preConcatenate( translateCenterBack ) );
+
+        changeBdvViewerTransform( bdv, viewerTransforms, 300 );
+
     }
 
 }

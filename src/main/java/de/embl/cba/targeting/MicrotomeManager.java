@@ -53,6 +53,8 @@ public class MicrotomeManager extends JPanel {
     private Vector3d initialKnifeNormal;
     private Vector3d currentTargetNormal;
     private Vector3d initialTargetNormal;
+    private Vector3d initialEdgeVector;
+    private Vector3d currentEdgeVector;
 
     private Matrix4d initialBlockTransform;
     private Matrix4d arcComponentsInitialTransform;
@@ -89,6 +91,8 @@ public class MicrotomeManager extends JPanel {
         initialKnifeCentre = new Vector3d(0,-2,0);
         initialKnifeNormal = new Vector3d(0, -1, 0);
         currentKnifeNormal = new Vector3d(0, -1, 0);
+        initialEdgeVector = new Vector3d(1, 0, 0);
+        currentEdgeVector = new Vector3d(1, 0,0);
 
         loadMicrotomeMeshes();
 
@@ -593,9 +597,10 @@ public class MicrotomeManager extends JPanel {
 
         Matrix4d fullTransform = makeMatrix(knifeTilt, axis, currentKnifeCentre, translation);
 
-        // Update normal
+        // Update normal and edge vector
         Transform3D knifeTiltTransform = new Transform3D(fullTransform);
         knifeTiltTransform.transform(initialKnifeNormal, currentKnifeNormal);
+        knifeTiltTransform.transform(initialEdgeVector, currentEdgeVector);
 
         // Update angle to target plane
         updateAngleKnifeTarget();
@@ -731,9 +736,12 @@ public class MicrotomeManager extends JPanel {
         inverseBlockTransform.transform(knifePoint);
         Vector3d knifeNormal = new Vector3d();
         inverseBlockTransform.transform(currentKnifeNormal, knifeNormal);
+        Vector3d edgeVector = new Vector3d();
+        inverseBlockTransform.transform(currentEdgeVector, edgeVector);
 
         double[] knifePointDouble = {knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()};
         double[] knifeNormalDouble = {knifeNormal.getX(), knifeNormal.getY(), knifeNormal.getZ()};
+        double[] edgeVectorDouble = {edgeVector.getX(), edgeVector.getY(), edgeVector.getZ()};
 
         ArrayList<Vector3d> planeDefinition = planeManager.getPlaneDefinitionOfCurrentView();
         Vector3d currentPlaneNormal = planeDefinition.get(0);
@@ -742,7 +750,6 @@ public class MicrotomeManager extends JPanel {
 //        Check if already at that plane
         boolean normalsParallel = checkVectorsParallel(knifeNormal, currentPlaneNormal);
         double distanceToPlane = distanceFromPointToPlane(currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
-        // TODO - level view so that it is also with bottom vector along x
 //        System.out.println(Arrays.toString(knifePointDouble));
         if (distanceToPlane > 1E-10) {
 //            Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
@@ -763,11 +770,11 @@ public class MicrotomeManager extends JPanel {
             currentViewCentreGlobal.add(toAdd);
             double[] currentViewCentreDouble = {currentViewCentreGlobal.getX(), currentViewCentreGlobal.getY(), currentViewCentreGlobal.getZ()};
             moveToPosition(bdvStackSource, currentViewCentreDouble, 0);
-//            moveToPosition(bdvStackSource, knifePointDouble, 0);
         }
 //        System.out.println(Arrays.toString(knifeNormalDouble));
+        // TODO - broader check, and not rotated properly
         if (!normalsParallel) {
-            levelCurrentView(bdvStackSource, knifeNormalDouble);
+            levelCurrentViewNormalandHorizontal(bdvStackSource, knifeNormalDouble, edgeVectorDouble);
         }
 
     }

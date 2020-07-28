@@ -46,8 +46,6 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
 // TODO - check angle updates - wrote very quickly
 // TODO - orient cutting simulation so edge vector at bottom
-// TODO -more sensible placement of centre of cutting sim - perhaps leave it so someone can place centre where they want and then cut through?
-// would be useful if want to look at particular seciton in detail.
 //TODO - colour change on alignment, only set, if not already that colour?
 // TODO - align microtome view when enter
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
@@ -56,7 +54,8 @@ import static de.embl.cba.targeting.utils.printImageMinMax;
 // TODO - command for loading bdv files
 //TODO - view changes if change planes after exit micrtome mode
 //TODO - take relevant T functions and put in main code
-
+// TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
+// not out of it, like our target normals are set?
 public class Crosshair
 {
 	private final Image3DUniverse universe;
