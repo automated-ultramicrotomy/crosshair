@@ -5,6 +5,7 @@ import bdv.util.BdvStackSource;
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;
 import customnode.Tube;
+import edu.mines.jtk.opt.Vect;
 import edu.mines.jtk.sgl.Point3;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -161,6 +162,7 @@ public class MicrotomeManager extends JPanel {
             tubeEnds.add(new Point3f((float) currentInsideHolderBack.getX(),
                     (float) currentInsideHolderBack.getY(), (float) currentInsideHolderBack.getZ()));
                 universe.addCustomMesh(new Tube(tubeEnds, (float) (0.05*microtomeComponentsScaleFactor)), "rotationAxis");
+                universe.getContent("rotationAxis").setVisible(false);
             } else {
                 universe.getContent("rotationAxis").setVisible(false);
             }
@@ -524,30 +526,35 @@ public class MicrotomeManager extends JPanel {
 
     private void updateTiltRotationBlock () {
         Vector3d translation = new Vector3d(new double[] {0,0,0});
-
         Matrix4d initialTransformForArc = new Matrix4d(arcComponentsInitialTransform);
+        Matrix4d initBlockTransform = new Matrix4d(initialBlockTransform);
 
         Matrix4d tiltTransform = makeMatrix(tilt, tiltAxis, currentArcCentre, translation);
-        Matrix4d rotationTransform = makeMatrix(rotation, rotationAxis, currentArcCentre, translation);
+        Vector3d rotAxisAfterTilt = new Vector3d();
+        new Transform3D(tiltTransform).transform(rotationAxis, rotAxisAfterTilt);
+        Matrix4d rotationTransform = makeMatrix(rotation, rotAxisAfterTilt, currentArcCentre, translation);
 
         // Tilt the rotation axis
         universe.getContent("rotationAxis").setTransform(new Transform3D(tiltTransform));
-        // account for scaling
+
+        // tilt holder components, accounting for scaling. Scale around global, tilt around global, rotate around global
+        // see https://stackoverflow.com/questions/21923482/rotate-and-translate-object-in-local-and-global-orientation-using-glm
         Matrix4d holderBackTransform = new Matrix4d(tiltTransform);
         holderBackTransform.mul(initialTransformForArc);
         universe.getContent("/holder_back.stl").setTransform(new Transform3D(holderBackTransform));
-        tiltTransform.mul(rotationTransform);
-        tiltTransform.mul(initialTransformForArc);
-        universe.getContent("/holder_front.stl").setTransform(new Transform3D(tiltTransform));
 
-        // transform for block > must account for initial tilt
+        Matrix4d holderFrontTransform = new Matrix4d(rotationTransform);
+        holderFrontTransform.mul(holderBackTransform);
+        universe.getContent("/holder_front.stl").setTransform(new Transform3D(holderFrontTransform));
+
+        // transform for block, global initial rotate & translate, then global tilt and global rotate
         Matrix4d blockTiltTransform = makeMatrix(tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
-        blockTiltTransform.mul(rotationTransform);
-        Matrix4d init_transform = new Matrix4d(initialBlockTransform);
-        blockTiltTransform.mul(init_transform);
+        Matrix4d blockTransform = new Matrix4d(rotationTransform);
+        blockTransform.mul(blockTiltTransform);
+        blockTransform.mul(initBlockTransform);
 
-        Transform3D finalTransform = new Transform3D(blockTiltTransform);
-        currentBlockTransform = blockTiltTransform;
+        Transform3D finalTransform = new Transform3D(blockTransform);
+        currentBlockTransform = blockTransform;
 
         // Update target normal
         finalTransform.transform(initialTargetNormal, currentTargetNormal);
