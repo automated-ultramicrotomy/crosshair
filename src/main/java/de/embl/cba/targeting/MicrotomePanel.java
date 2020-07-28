@@ -78,13 +78,15 @@ public class MicrotomePanel extends JPanel {
     JPanel cuttingControls;
     JPanel currentSettings;
     private SavePanel savePanel;
+    private PointsPanel pointsPanel;
 
     private boolean inCuttingMode;
     private boolean inMicrotomeMode;
     private JFrame parentFrame;
 
-    public MicrotomePanel(MicrotomeManager microtomeManager, PlaneManager planeManager) {
+    public MicrotomePanel(MicrotomeManager microtomeManager, PlaneManager planeManager, PointsPanel pointsPanel) {
         this.microtomeManager = microtomeManager;
+        this.pointsPanel = pointsPanel;
         sliders = new HashMap<>();
         sliderPanels = new HashMap<>();
         inCuttingMode = false;
@@ -380,6 +382,7 @@ public class MicrotomePanel extends JPanel {
                     currentSettings.setVisible(true);
                     inMicrotomeMode = true;
                     savePanel.enableSaveSolution();
+                    pointsPanel.activateMicrotomeButtons();
                     parentFrame.pack();
                 } else {
                 System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
@@ -430,6 +433,7 @@ public class MicrotomePanel extends JPanel {
         microtomeManager.exitMicrotomeMode();
         inMicrotomeMode = false;
         savePanel.disableSaveSolution();
+        pointsPanel.activateMicrotomeButtons();
         parentFrame.pack();
     }
 

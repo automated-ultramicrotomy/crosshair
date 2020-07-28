@@ -4,9 +4,11 @@ import bdv.util.Bdv;
 import bdv.util.BdvStackSource;
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;
+import customnode.Tube;
 import edu.mines.jtk.sgl.Point3;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import ij3d.ImageJ3DViewer;
 import net.imglib2.RealPoint;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -14,6 +16,7 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.*;
 
 import static de.embl.cba.targeting.GeometryUtils.*;
@@ -44,6 +47,7 @@ public class MicrotomeManager extends JPanel {
     private Vector3d currentKnifeCentre;
     private Vector3d currentArcCentre;
     private Vector3d currentHolderFront;
+    private Vector3d currentInsideHolderBack;
     private Vector3d currentKnifeNormal;
     private Vector3d initialKnifeNormal;
     private Vector3d currentTargetNormal;
@@ -68,6 +72,7 @@ public class MicrotomeManager extends JPanel {
     private Vector3d NSZero;
 
     private double angleKnifeTarget;
+    private double microtomeComponentsScaleFactor;
 
     public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource) {
 
@@ -147,6 +152,19 @@ public class MicrotomeManager extends JPanel {
                 resizeMicrotomeParts();
             }
 
+            if (!universe.contains("rotationAxis")) {
+//            width of knife is about 2 intially from blender file
+            ArrayList<Point3f> tubeEnds = new ArrayList<>();
+            tubeEnds.add(new Point3f((float) currentKnifeCentre.getX(),
+                    (float) (currentKnifeCentre.getY() + (2*microtomeComponentsScaleFactor)),
+                    (float) currentKnifeCentre.getZ()));
+            tubeEnds.add(new Point3f((float) currentInsideHolderBack.getX(),
+                    (float) currentInsideHolderBack.getY(), (float) currentInsideHolderBack.getZ()));
+                universe.addCustomMesh(new Tube(tubeEnds, (float) (0.05*microtomeComponentsScaleFactor)), "rotationAxis");
+            } else {
+                universe.getContent("rotationAxis").setVisible(false);
+            }
+
             initialBlockTransform = setupBlockOrientation(initialKnifeAngle);
             this.initialKnifeAngle = initialKnifeAngle;
             this.initialTiltAngle = initialTiltAngle;
@@ -166,6 +184,7 @@ public class MicrotomeManager extends JPanel {
 
             // inactivate buttons for vertex assignemnt
             vertexAssignmentPanel.disableButtons();
+
         } else {
             System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
         }
@@ -259,6 +278,7 @@ public class MicrotomeManager extends JPanel {
         double endHeight = Collections.max(dims);
 
         double scaleFactor = endHeight / heightArc;
+        microtomeComponentsScaleFactor = scaleFactor;
 
         Matrix4d scaleMatrix = new Matrix4d(scaleFactor, 0, 0, 0,
                 0, scaleFactor, 0, 0,
@@ -305,6 +325,11 @@ public class MicrotomeManager extends JPanel {
         arcComponentsTransform.transform(minHolderFront);
         currentHolderFront = new Vector3d(minHolderFront.getX(), minHolderFront.getY(), minHolderFront.getZ());
 
+//        Point inside holder after scaling - save for end of rotation axis
+        Point3d insideHolderBack = new Point3d(0, 4, 0);
+        arcComponentsTransform.transform(insideHolderBack);
+        currentInsideHolderBack = new Vector3d(insideHolderBack.getX(), insideHolderBack.getY(), insideHolderBack.getZ());
+
         // Set knife to same distance
         // hodler front after scaling
         Point3d knifeCentreAfter = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
@@ -346,6 +371,7 @@ public class MicrotomeManager extends JPanel {
                 universe.getContent(key).setVisible(false);
             }
         }
+        universe.getContent("rotationAxis").setVisible(false);
 
         // inactivate sliders
         microtomePanel.disableSliders();
@@ -503,6 +529,9 @@ public class MicrotomeManager extends JPanel {
 
         Matrix4d tiltTransform = makeMatrix(tilt, tiltAxis, currentArcCentre, translation);
         Matrix4d rotationTransform = makeMatrix(rotation, rotationAxis, currentArcCentre, translation);
+
+        // Tilt the rotation axis
+        universe.getContent("rotationAxis").setTransform(new Transform3D(tiltTransform));
         // account for scaling
         Matrix4d holderBackTransform = new Matrix4d(tiltTransform);
         holderBackTransform.mul(initialTransformForArc);
@@ -749,10 +778,12 @@ public class MicrotomeManager extends JPanel {
 //        solution tilt & rot
         double solTilt = atan(((-A*F + G)/(-A*I -H))*cos(rot) + ((E/(-A*I - H))*sin(rot)));
         double solTiltDegrees = convertToDegrees(solTilt);
+        System.out.println(solTiltDegrees);
 
 //    solution knife & rot
         double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
         double solKnifeDegrees = convertToDegrees(solKnife);
+        System.out.println(solKnifeDegrees);
 
 //        If solution invalid i.e. does not fit constraints of the angles the microtome can reach
         if (solTiltDegrees < -20 | solTiltDegrees > 20 | solKnifeDegrees < -30 | solKnifeDegrees > 30) {

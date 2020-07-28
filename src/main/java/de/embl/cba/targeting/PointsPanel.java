@@ -1,38 +1,45 @@
 package de.embl.cba.targeting;
 
-import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BdvHandle;
-import bdv.util.BoundedValueDouble;
 import ij3d.Content;
-import org.scijava.vecmath.Color3f;
+import ij3d.Image3DUniverse;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
 public class PointsPanel extends JPanel {
 
     private Content imageContent;
+    private final Image3DUniverse universe;
     private boolean threeDPointsVisible;
     private PointsOverlaySizeChange pointOverlay;
     private BdvHandle bdvHandle;
+    private ArrayList<JButton> microtomeVisibilityButtons;
 
-    public PointsPanel(Content imageContent, PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle) {
+    public PointsPanel(Image3DUniverse universe, Content imageContent, PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle) {
 
         this.imageContent = imageContent;
+        this.universe = universe;
         this.pointOverlay = pointOverlay;
         this.bdvHandle = bdvHandle;
         threeDPointsVisible = true;
+        microtomeVisibilityButtons = new ArrayList<>();
 
         setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Points"),
+                BorderFactory.createTitledBorder("Other"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
-        setLayout(new GridLayout(1, 2));
-        addPlaneToPanel("3d view ", "3D");
-        addPlaneToPanel("2d view ", "2D");
+        setLayout(new GridLayout(2, 3));
+        addPointToPanel("3d points ", "3D");
+        addPointToPanel("Knife", "/knife.stl");
+        addPointToPanel("Rotation Axis", "rotationAxis");
+        addPointToPanel("2d points ", "2D");
+        addPointToPanel("Holder", "holder");
+        deactivateMicrotomeButtons();
+
     }
 
     public boolean check3DPointsVisible() {
@@ -78,7 +85,43 @@ public class PointsPanel extends JPanel {
         panel.add(visbilityButton);
     }
 
-    private void addPlaneToPanel(String pointName, String pointType) {
+    private void addMicrotomeVisiblityButton(JPanel panel, int[] buttonDimensions, String microtomePart) {
+        JButton visbilityButton;
+        visbilityButton = new JButton("V");
+
+        visbilityButton.setPreferredSize(
+                new Dimension(buttonDimensions[0], buttonDimensions[1]));
+
+        microtomeVisibilityButtons.add(visbilityButton);
+
+        visbilityButton.addActionListener(e -> {
+            if (!microtomePart.equals("holder")) {
+                Content microtomeObject = universe.getContent(microtomePart);
+                if (microtomeObject.isVisible()) {
+                    microtomeObject.setVisible(false);
+                } else {
+                    microtomeObject.setVisible(true);
+                }
+            } else {
+                ArrayList<String> holderParts = new ArrayList<>();
+                holderParts.add("/arc.stl");
+                holderParts.add( "/holder_back.stl");
+                holderParts.add("/holder_front.stl");
+                for (String part : holderParts) {
+                    Content microtomeObject = universe.getContent(part);
+                    if (microtomeObject.isVisible()) {
+                        microtomeObject.setVisible(false);
+                    } else {
+                        microtomeObject.setVisible(true);
+                    }
+                }
+            }
+        });
+
+        panel.add(visbilityButton);
+    }
+
+    private void addPointToPanel(String pointName, String pointType) {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
@@ -95,10 +138,24 @@ public class PointsPanel extends JPanel {
             add3DVisibilityButton(panel, buttonDimensions);
         } else if (pointType == "2D") {
             add2DVisibilityButton(panel, buttonDimensions);
+        } else {
+            addMicrotomeVisiblityButton(panel, buttonDimensions, pointType);
         }
 
         add(panel);
         refreshGui();
+    }
+
+    public void deactivateMicrotomeButtons () {
+        for (JButton button : microtomeVisibilityButtons) {
+            button.setEnabled(false);
+        }
+    }
+
+    public void activateMicrotomeButtons () {
+        for (JButton button : microtomeVisibilityButtons) {
+            button.setEnabled(true);
+        }
     }
 
     private void refreshGui() {
