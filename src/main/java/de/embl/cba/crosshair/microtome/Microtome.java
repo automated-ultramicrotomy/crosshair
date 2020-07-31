@@ -142,6 +142,18 @@ class Microtome {
         return initialTargetTilt;
     }
 
+    Matrix4d getCurrentBlockTransform() {
+        return currentBlockTransform;
+    }
+
+    Vector3d getCurrentEdgeVector() {
+        return currentEdgeVector;
+    }
+
+    public BdvStackSource getBdvStackSource() {
+        return bdvStackSource;
+    }
+
     void setArcComponentsInitialTransform(Matrix4d arcComponentsInitialTransform) {
         this.arcComponentsInitialTransform = arcComponentsInitialTransform;
     }

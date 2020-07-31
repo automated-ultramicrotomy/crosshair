@@ -47,8 +47,6 @@ public class MicrotomePanel extends JPanel {
     private SavePanel savePanel;
     private PointsPanel pointsPanel;
 
-    private boolean inCuttingMode;
-    private boolean inMicrotomeMode;
     private JFrame parentFrame;
 
     public MicrotomePanel(MicrotomeManager microtomeManager, PlaneManager planeManager, PointsPanel pointsPanel) {
@@ -56,8 +54,6 @@ public class MicrotomePanel extends JPanel {
         this.pointsPanel = pointsPanel;
         sliders = new HashMap<>();
         sliderPanels = new HashMap<>();
-        inCuttingMode = false;
-        inMicrotomeMode = false;
         this.planeManager = planeManager;
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -91,7 +87,7 @@ public class MicrotomePanel extends JPanel {
 
         ActionListener blockListener = new blockListener();
         enterMicrotomeMode = new JButton("Enter Microtome Mode");
-        enterMicrotomeMode.setActionCommand("initialise_block");
+        enterMicrotomeMode.setActionCommand("enter_microtome_mode");
         enterMicrotomeMode.addActionListener(blockListener);
         toggleMicrotomeModePanel.add(enterMicrotomeMode);
 
@@ -134,7 +130,7 @@ public class MicrotomePanel extends JPanel {
         JPanel toggleCuttingModePanel = new JPanel();
         toggleCuttingModePanel.setLayout(new GridLayout(1, 2));
         enterCutting = new JButton("Enter Cutting Mode");
-        enterCutting.setActionCommand("Cutting_mode");
+        enterCutting.setActionCommand("enter_cutting_mode");
         enterCutting.addActionListener(blockListener);
         toggleCuttingModePanel.add(enterCutting);
         enterCutting.setVisible(false);
@@ -218,8 +214,6 @@ public class MicrotomePanel extends JPanel {
         return distanceToCut;
     }
 
-    public boolean checkMicrotomeMode () {return inMicrotomeMode;}
-
     public Map<String, SliderPanelDouble> getSliders (){return sliders;}
 
     public void setFirstTouch (String firstTouchVertex) {
@@ -245,12 +239,12 @@ public class MicrotomePanel extends JPanel {
         currentKnifeLabel.setText("Knife:    " + knife+"");
     }
 
-    public void setCuttingRange (double min, double max) {
-        cuttingDepth.setRange(min, max);
-    }
-
     public void setKnifeTargetAngleLabel (double angle) {
         currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + angle+"");
+    }
+
+    public void setCuttingRange (double min, double max) {
+        cuttingDepth.setRange(min, max);
     }
 
 //padName is total number of characters, will pad all to this length, so sliders line up
@@ -336,46 +330,32 @@ public class MicrotomePanel extends JPanel {
 
     class blockListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if (e.getActionCommand().equals("initialise_block")){
-                if (planeManager.checkAllPlanesPointsDefined() & planeManager.getTrackPlane() == 0) {
-                    enterMicrotomeMode.setEnabled(false);
-                    exitMicrotomeMode.setEnabled(true);
-                    enterCutting.setVisible(true);
-                    exitCutting.setVisible(true);
-                    microtomeManager.initialiseMicrotome(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
-                    cuttingControls.setVisible(true);
-                    currentSettings.setVisible(true);
-                    inMicrotomeMode = true;
-                    savePanel.enableSaveSolution();
-                    pointsPanel.activateMicrotomeButtons();
-                    parentFrame.pack();
-                } else {
-                System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
-            }
+            if (e.getActionCommand().equals("enter_microtome_mode")){
+                enterMicrotomeMode();
             } else if (e.getActionCommand().equals("exit_microtome_mode")) {
                 exitMicrotomeMode();
-            } else if (e.getActionCommand().equals("Cutting_mode")) {
-                sliderPanels.get("Cutting Depth").setVisible(true);
-                // Disable all other microtome sliders
-                disableSliders("Cutting Depth");
-                microtomeManager.initialiseCuttingPlane();
-//                Set slider bounds
-                microtomeManager.setCuttingBounds();
-                cuttingDepth.setCurrentValue(0);
-                enterCutting.setEnabled(false);
-                exitCutting.setEnabled(true);
-                inCuttingMode = true;
-                parentFrame.pack();
-
+            } else if (e.getActionCommand().equals("enter_cutting_mode")) {
+                enterCuttingMode();
             } else if (e.getActionCommand().equals("exit_cutting_mode")) {
-                sliderPanels.get("Cutting Depth").setVisible(false);
-                enableSliders();
-                microtomeManager.removeCuttingPlane();
-                inCuttingMode = false;
-                enterCutting.setEnabled(true);
-                exitCutting.setEnabled(false);
-                parentFrame.pack();
+                exitCuttingMode();
             }
+        }
+    }
+
+    private void enterMicrotomeMode () {
+        if (planeManager.checkAllPlanesPointsDefined() & planeManager.getTrackPlane() == 0) {
+            enterMicrotomeMode.setEnabled(false);
+            exitMicrotomeMode.setEnabled(true);
+            enterCutting.setVisible(true);
+            exitCutting.setVisible(true);
+            microtomeManager.enterMicrotomeMode(initialKnifeAngle.getCurrentValue(), initialTiltAngle.getCurrentValue());
+            cuttingControls.setVisible(true);
+            currentSettings.setVisible(true);
+            savePanel.enableSaveSolution();
+            pointsPanel.activateMicrotomeButtons();
+            parentFrame.pack();
+        } else {
+            System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
         }
     }
 
@@ -384,23 +364,40 @@ public class MicrotomePanel extends JPanel {
         exitMicrotomeMode.setEnabled(false);
         enterCutting.setVisible(false);
         exitCutting.setVisible(false);
-//                 if in cutting mode, also disable this
-        if (inCuttingMode) {
-            sliderPanels.get("Cutting Depth").setVisible(false);
-            enableSliders();
-            microtomeManager.removeCuttingPlane();
-            inCuttingMode = false;
+        // if in cutting mode, also disable this
+        if (microtomeManager.isCuttingModeActive()) {
+            exitCuttingMode();
         }
-        enterCutting.setEnabled(true);
-        exitCutting.setEnabled(false);
         cuttingControls.setVisible(false);
         currentSettings.setVisible(false);
         microtomeManager.exitMicrotomeMode();
-        inMicrotomeMode = false;
         savePanel.disableSaveSolution();
         pointsPanel.activateMicrotomeButtons();
         parentFrame.pack();
     }
+
+    private void enterCuttingMode () {
+        sliderPanels.get("Cutting Depth").setVisible(true);
+        // Disable all other microtome sliders
+        disableSliders("Cutting Depth");
+        microtomeManager.enterCuttingMode();
+        cuttingDepth.setCurrentValue(0);
+        enterCutting.setEnabled(false);
+        exitCutting.setEnabled(true);
+        parentFrame.pack();
+
+    }
+
+    private void exitCuttingMode () {
+        sliderPanels.get("Cutting Depth").setVisible(false);
+        enableSliders();
+        microtomeManager.exitCuttingMode();
+        enterCutting.setEnabled(true);
+        exitCutting.setEnabled(false);
+        parentFrame.pack();
+    }
+
+
 
     abstract class MicrotomeListener implements BoundedValueDouble.UpdateListener {
         public void setValues(BoundedValueDouble value, SliderPanelDouble slider) {}

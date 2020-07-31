@@ -37,6 +37,7 @@ public class MicrotomeManager extends JPanel {
     private VertexAssignmentPanel vertexAssignmentPanel;
 
     private boolean microtomeModeActive;
+    private boolean cuttingModeActive;
 
     private Microtome microtome;
     private MicrotomeSetup microtomeSetup;
@@ -66,7 +67,9 @@ public class MicrotomeManager extends JPanel {
         this.vertexAssignmentPanel = vertexAssignmentPanel;
     }
 
-
+    public boolean isCuttingModeActive() {
+        return cuttingModeActive;
+    }
 
     public void enterMicrotomeMode (double initialKnifeAngle, double initialTiltAngle) {
         if (planeManager.checkAllPlanesPointsDefined() & planeManager.getTrackPlane() == 0) {
@@ -155,11 +158,30 @@ public class MicrotomeManager extends JPanel {
     }
 
     public void enterCuttingMode () {
+        if (microtomeModeActive & !cuttingModeActive) {
+            cutting.initialiseCuttingPlane();
+            microtomePanel.setCuttingRange( cutting.getCuttingDepthMin(), cutting.getCuttingDepthMax() );
+            cuttingModeActive = true;
+        } else {
+            System.out.println("Microtome mode inactive, or cutting mode already active");
+        }
+    }
 
+    public void setCuttingDepth (double cuttingDepth) {
+        if (cuttingModeActive) {
+            cutting.updateCut(cuttingDepth);
+        } else {
+            System.out.println("Cutting mode inactive");
+        }
     }
 
     public void exitCuttingMode() {
-
+        if (cuttingModeActive) {
+            cuttingModeActive = false;
+            cutting.removeCuttingPlane();
+        } else {
+            System.out.println("Cutting mode inactive");
+        }
     }
 
 
