@@ -12,6 +12,8 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Vector3d;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,10 +24,7 @@ class Microtome {
     private final Image3DUniverse universe;
     private final PlaneManager planeManager;
     private final BdvStackSource bdvStackSource;
-
     private final Content imageContent;
-    private MicrotomePanel microtomePanel;
-    private VertexAssignmentPanel vertexAssignmentPanel;
 
     // current angles in degrees for knife, tilt and rotation
     private double knife;
@@ -40,7 +39,6 @@ class Microtome {
     private Vector3d currentArcCentre;
     private Vector3d currentKnifeCentre;
     private Vector3d currentHolderFront;
-
 
     // Knife normal at 0 degrees (initial)
     private Vector3d initialKnifeNormal;
@@ -77,15 +75,15 @@ class Microtome {
     private double initialTargetOffset;
     private double initialTargetTilt;
 
-
-    // first point of block touched by knife under current solution
-    private Vector3d firstTouchPointSolution;
-    // first point of block touched by knife under current microtome parameters
-    private Vector3d firstTouchPointCutting;
-    private Vector3d NSZero;
     private double angleKnifeTarget;
+    private String[] microtomeObjectNames;
 
-    Microtome () {
+    Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
+        this.universe = universe;
+        this.planeManager = planeManager;
+        this.bdvStackSource = bdvStackSource;
+        this.imageContent = imageContent;
+
         rotationAxis = new Vector3d(0, 1, 0);
         tiltAxis = new Vector3d(1, 0, 0);
 
@@ -96,12 +94,22 @@ class Microtome {
 
     }
 
-    double getKnife() {return knife;}
-    double getTilt() {return tilt;}
-    double getRotation() {return rotation;}
+    double getKnife() {
+        return knife;
+    }
+
+    double getTilt() {
+        return tilt;
+    }
+
+    double getRotation() {
+        return rotation;
+    }
+
     double getInitialTiltAngle() {
         return initialTiltAngle;
     }
+
     double getInitialKnifeAngle() {
         return initialKnifeAngle;
     }
@@ -150,8 +158,12 @@ class Microtome {
         return currentEdgeVector;
     }
 
-    public BdvStackSource getBdvStackSource() {
+    BdvStackSource getBdvStackSource() {
         return bdvStackSource;
+    }
+
+    double getAngleKnifeTarget() {
+        return angleKnifeTarget;
     }
 
     void setArcComponentsInitialTransform(Matrix4d arcComponentsInitialTransform) {
@@ -164,13 +176,6 @@ class Microtome {
 
     void setCurrentHolderFront(Vector3d currentHolderFront) {
         this.currentHolderFront = currentHolderFront;
-    }
-
-    void setRotation(double rotation) {
-//        System.out.println(rotation);
-        this.rotation = rotation;
-        updateTiltRotationBlock();
-        microtomePanel.setRotationLabel(rotation);
     }
 
     void setInitialTargetNormal(Vector3d initialTargetNormal) {
@@ -193,13 +198,6 @@ class Microtome {
         this.initialTargetTilt = initialTargetTilt;
     }
 
-    void setTilt(double tilt) {
-//        System.out.println(tilt);
-        this.tilt = tilt;
-        updateTiltRotationBlock();
-        microtomePanel.setTiltLabel(tilt);
-    }
-
     void setInitialBlockTransform(Matrix4d initialBlockTransform) {
         this.initialBlockTransform = initialBlockTransform;
     }
@@ -220,8 +218,21 @@ class Microtome {
         this.currentKnifeCentre = currentKnifeCentre;
     }
 
+    void setMicrotomeObjectNames(String[] microtomeObjectNames) {
+        this.microtomeObjectNames = microtomeObjectNames;
+    }
+
+    void setRotation(double rotation) {
+        this.rotation = rotation;
+        updateTiltRotationBlock();
+    }
+
+    void setTilt(double tilt) {
+        this.tilt = tilt;
+        updateTiltRotationBlock();
+    }
+
     void setKnife(double knife) {
-//        System.out.println(knife);
         this.knife = knife;
         Vector3d axis = new Vector3d(new double[] {0, 0, 1});
         Vector3d translation = new Vector3d(new double[] {0,0,0});
@@ -240,8 +251,6 @@ class Microtome {
         Matrix4d initialTransformForKnife = new Matrix4d(knifeInitialTransform);
         fullTransform.mul(initialTransformForKnife);
         universe.getContent("/knife.stl").setTransform(new Transform3D(fullTransform));
-
-        microtomePanel.setKnifeLabel(knife);
     }
 
     private void updateTiltRotationBlock () {
@@ -278,29 +287,23 @@ class Microtome {
 
         // Update target normal
         finalTransform.transform(initialTargetNormal, currentTargetNormal);
-//        Update angle
         updateAngleKnifeTarget();
 
         imageContent.setTransform(finalTransform);
         for (String planeName : new String[] {"target", "block"}) {
-//            planeManager.updatePlanesInPlace();
             universe.getContent(planeName).setTransform(finalTransform);
         }
-
-        //TODO -remove
-//        printImageMinMax(imageContent);
     }
 
     private void updateAngleKnifeTarget() {
         double angle = convertToDegrees(currentKnifeNormal.angle(currentTargetNormal));
-//        want smallest possible angle between planes, disregard orientation of normals
+        //  want smallest possible angle between planes, disregard orientation of normals
         if (angle > 90) {
             angle = 180 - angle;
         }
         angleKnifeTarget = angle;
-        microtomePanel.setKnifeTargetAngleLabel(angle);
 
-//        check angle - do colour change
+        // check angle - do colour change
         //TODO - make threshold adjustable
         if (angleKnifeTarget < 0.1) {
             planeManager.setTargetPlaneAlignedColour();
@@ -313,9 +316,9 @@ class Microtome {
         initialBlockTransform.setIdentity();
 
         // make microtome models invisible
-        for (String key : microtomeSTLs.keySet()) {
-            if (universe.contains(key)) {
-                universe.getContent(key).setVisible(false);
+        for (String name : microtomeObjectNames) {
+            if (universe.contains(name)) {
+                universe.getContent(name).setVisible(false);
             }
         }
 

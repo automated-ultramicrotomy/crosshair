@@ -51,6 +51,7 @@ class MicrotomeSetup {
     }
 
     private void loadMicrotomeMeshes() {
+        // NOTE: Orientation of axes matches those in original blender file, object positions also match
         microtomeSTLs = new HashMap<>();
         String[] stlFiles = {"/arc.stl", "/holder_back.stl", "/holder_front.stl", "/knife.stl"};
         for (String file: stlFiles) {
@@ -60,6 +61,7 @@ class MicrotomeSetup {
                 microtomeSTLs.put(key, currentStl.get(key));
             }
         }
+        microtome.setMicrotomeObjectNames(stlFiles);
     }
 
     public void initialiseMicrotome () {

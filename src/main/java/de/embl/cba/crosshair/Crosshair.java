@@ -103,7 +103,7 @@ public class Crosshair
 		PointsPanel pointsPanel = new PointsPanel(universe, imageContent, pointOverlay, bdvHandle);
 		ImagesPanel imagesPanel = new ImagesPanel(imageContent, pointsPanel);
 		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
-		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager, planeManager, pointsPanel);
+		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager, planeManager, pointsPanel, vertexAssignmentPanel);
 		microtomePanel.setParentFrame(jFrame);
 		microtomeManager.setMicrotomePanel(microtomePanel);
 		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
