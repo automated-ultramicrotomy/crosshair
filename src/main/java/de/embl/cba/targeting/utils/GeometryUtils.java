@@ -1,19 +1,16 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.animate.SimilarityTransformAnimator;
 import de.embl.cba.bdv.utils.BdvUtils;
-import edu.mines.jtk.opt.Vect;
-import ij3d.Content;
-import ij3d.Image3DUniverse;
+import de.embl.cba.targeting.utils.PointAngle;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
-import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3d;
 

@@ -1,4 +1,4 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.io;
 
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Color3f;

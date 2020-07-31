@@ -1,6 +1,5 @@
 package de.embl.cba.targeting;
 
-import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import customnode.CustomTriangleMesh;
@@ -20,8 +19,8 @@ import java.awt.*;
 import java.util.*;
 
 import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
-import static de.embl.cba.targeting.GeometryUtils.*;
-import static de.embl.cba.targeting.GeometryUtils.calculateTrianglesFromPoints;
+import static de.embl.cba.targeting.utils.GeometryUtils.*;
+import static de.embl.cba.targeting.utils.GeometryUtils.calculateTrianglesFromPoints;
 
 public class PlaneManager {
 

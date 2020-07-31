@@ -1,37 +1,25 @@
 package de.embl.cba.targeting;
 
-import bdv.BigDataViewer;
-import bdv.ij.OpenImagePlusPlugIn;
 import bdv.util.*;
+import de.embl.cba.targeting.ui.swing.*;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-import ij.plugin.FolderOpener;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import ij3d.behaviors.InteractiveBehavior;
-import io.scif.img.ImgOpener;
-import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
-import org.scijava.java3d.Transform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.vecmath.*;
-import vib.BenesNamedPoint;
-import vib.PointList;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.io.*;
 import java.util.*;
 
-import static de.embl.cba.targeting.GeometryUtils.*;
-import static de.embl.cba.targeting.utils.printImageMinMax;
+import static de.embl.cba.targeting.utils.GeometryUtils.*;
 
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible

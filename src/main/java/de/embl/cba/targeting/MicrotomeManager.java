@@ -1,15 +1,14 @@
 package de.embl.cba.targeting;
 
-import bdv.util.Bdv;
 import bdv.util.BdvStackSource;
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;
 import customnode.Tube;
-import edu.mines.jtk.opt.Vect;
-import edu.mines.jtk.sgl.Point3;
+import de.embl.cba.targeting.io.STLResourceLoader;
+import de.embl.cba.targeting.ui.swing.MicrotomePanel;
+import de.embl.cba.targeting.ui.swing.VertexAssignmentPanel;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import ij3d.ImageJ3DViewer;
 import net.imglib2.RealPoint;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -17,11 +16,9 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.*;
 
-import static de.embl.cba.targeting.GeometryUtils.*;
-import static de.embl.cba.targeting.utils.printImageMinMax;
+import static de.embl.cba.targeting.utils.GeometryUtils.*;
 import static java.lang.Math.*;
 
 //TODO - add all sliders up here?

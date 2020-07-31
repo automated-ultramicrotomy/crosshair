@@ -1,4 +1,6 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.ui.swing;
+
+import de.embl.cba.targeting.PlaneManager;
 
 import javax.swing.*;
 import java.awt.*;

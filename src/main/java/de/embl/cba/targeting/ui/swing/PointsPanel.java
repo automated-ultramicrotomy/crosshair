@@ -1,6 +1,7 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.ui.swing;
 
 import bdv.util.BdvHandle;
+import de.embl.cba.targeting.PointsOverlaySizeChange;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 

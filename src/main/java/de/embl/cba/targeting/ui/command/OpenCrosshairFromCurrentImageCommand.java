@@ -1,4 +1,5 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.ui.command;
+import de.embl.cba.targeting.Crosshair;
 import ij.ImagePlus;
 import ij.WindowManager;
 import org.scijava.command.Command;

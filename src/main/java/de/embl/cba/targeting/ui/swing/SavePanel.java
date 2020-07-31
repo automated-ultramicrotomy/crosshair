@@ -1,8 +1,10 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.ui.swing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
+import de.embl.cba.targeting.*;
+import de.embl.cba.targeting.io.SettingsToSave;
+import de.embl.cba.targeting.io.SolutionToSave;
 import ij3d.Content;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
@@ -16,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SavePanel extends JPanel {

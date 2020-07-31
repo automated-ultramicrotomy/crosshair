@@ -1,4 +1,4 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BoundedValueDouble;

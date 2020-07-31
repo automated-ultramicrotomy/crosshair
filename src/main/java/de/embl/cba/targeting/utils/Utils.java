@@ -1,9 +1,9 @@
-package de.embl.cba.targeting;
+package de.embl.cba.targeting.utils;
 
 import ij3d.Content;
 import org.scijava.vecmath.Point3d;
 
-public class utils {
+public class Utils {
 
     public static void printImageMinMax (Content imageContent) {
         Point3d min = new Point3d();
