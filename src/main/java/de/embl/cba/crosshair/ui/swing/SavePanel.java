@@ -6,6 +6,7 @@ import de.embl.cba.crosshair.*;
 import de.embl.cba.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.cba.crosshair.io.SettingsToSave;
 import de.embl.cba.crosshair.io.SolutionToSave;
+import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import ij3d.Content;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
@@ -155,7 +156,7 @@ public class SavePanel extends JPanel {
                         microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
 
                         SolutionToSave solutionToSave = new SolutionToSave(microtomeManager.getInitialKnifeAngle(),
-                                microtomeManager.getInitialTiltAngle(), microtomeManager.getKnifeTilt(), microtomeManager.getTilt(),
+                                microtomeManager.getInitialTiltAngle(), microtomeManager.getKnife(), microtomeManager.getTilt(),
                                 microtomeManager.getRotation(), microtomePanel.getFirstTouch(), microtomePanel.getDistanceToCut());
 
                         try {

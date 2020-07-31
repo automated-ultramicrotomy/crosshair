@@ -10,6 +10,8 @@ import net.imglib2.util.LinAlgHelpers;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
+import org.scijava.vecmath.AxisAngle4d;
+import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3d;
 
@@ -573,6 +575,42 @@ public final class GeometryUtils {
 
         changeBdvViewerTransform( bdv, viewerTransforms, 300 );
 
+    }
+
+    //        The two methods below are adapted from the imagej 3d viewer
+    //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
+    //        setting of transform: https://github.com/fiji/3D_Viewer/blob/ed05e4b2275ad6ad7c94b0e22f4789ebd3472f4d/src/main/java/ij3d/Executer.java
+    public static Matrix4d makeMatrix(double angleDegrees, Vector3d axis, Vector3d rotationCentre, Vector3d translation) {
+        double angleRad = angleDegrees * Math.PI / 180;
+        Matrix4d m = new Matrix4d();
+        compose(new AxisAngle4d(axis, angleRad), rotationCentre, translation, m);
+        return m;
+    }
+
+    public static void compose(final AxisAngle4d rot, final Vector3d origin,
+                        final Vector3d translation, final Matrix4d ret)
+    {
+        ret.set(rot);
+        final Vector3d trans = new Vector3d(origin);
+        trans.scale(-1);
+        ret.transform(trans);
+        trans.add(translation);
+        trans.add(origin);
+
+        ret.setTranslation(trans);
+    }
+
+    public static void compose(final Matrix4d rot, final Vector3d origin,
+                        final Vector3d translation, final Matrix4d ret)
+    {
+        ret.set(rot);
+        final Vector3d trans = new Vector3d(origin);
+        trans.scale(-1);
+        ret.transform(trans);
+        trans.add(translation);
+        trans.add(origin);
+
+        ret.setTranslation(trans);
     }
 
 }

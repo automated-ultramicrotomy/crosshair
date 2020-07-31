@@ -1,7 +1,7 @@
 package de.embl.cba.crosshair.bdv;
 
 import bdv.util.BdvHandle;
-import de.embl.cba.crosshair.MicrotomeManager;
+import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import de.embl.cba.crosshair.PlaneManager;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;

@@ -2,7 +2,7 @@ package de.embl.cba.crosshair.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
-import de.embl.cba.crosshair.MicrotomeManager;
+import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import de.embl.cba.crosshair.PlaneManager;
 
 import javax.swing.*;
