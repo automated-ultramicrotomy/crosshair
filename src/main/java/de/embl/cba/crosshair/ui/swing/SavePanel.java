@@ -3,6 +3,7 @@ package de.embl.cba.crosshair.ui.swing;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.embl.cba.crosshair.*;
+import de.embl.cba.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.cba.crosshair.io.SettingsToSave;
 import de.embl.cba.crosshair.io.SolutionToSave;
 import ij3d.Content;

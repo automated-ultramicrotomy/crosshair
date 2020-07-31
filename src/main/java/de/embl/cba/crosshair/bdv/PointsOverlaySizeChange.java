@@ -1,4 +1,4 @@
-package de.embl.cba.crosshair;
+package de.embl.cba.crosshair.bdv;
 
 import bdv.util.BdvOverlay;
 import net.imglib2.RealLocalizable;

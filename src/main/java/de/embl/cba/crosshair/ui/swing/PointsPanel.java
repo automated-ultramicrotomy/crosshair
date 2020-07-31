@@ -1,7 +1,7 @@
 package de.embl.cba.crosshair.ui.swing;
 
 import bdv.util.BdvHandle;
-import de.embl.cba.crosshair.PointsOverlaySizeChange;
+import de.embl.cba.crosshair.bdv.PointsOverlaySizeChange;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 
