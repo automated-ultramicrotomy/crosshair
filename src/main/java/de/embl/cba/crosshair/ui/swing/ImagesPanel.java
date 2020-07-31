@@ -1,4 +1,4 @@
-package de.embl.cba.targeting.ui.swing;
+package de.embl.cba.crosshair.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BoundedValueDouble;

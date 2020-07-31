@@ -1,4 +1,4 @@
-package de.embl.cba.targeting.utils;
+package de.embl.cba.crosshair.utils;
 
 import ij3d.Content;
 import org.scijava.vecmath.Point3d;

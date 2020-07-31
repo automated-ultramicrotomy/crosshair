@@ -1,4 +1,4 @@
-package de.embl.cba.targeting.utils;
+package de.embl.cba.crosshair.utils;
 
 import org.scijava.vecmath.Point3f;
 

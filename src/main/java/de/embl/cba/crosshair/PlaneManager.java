@@ -1,4 +1,4 @@
-package de.embl.cba.targeting;
+package de.embl.cba.crosshair;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
@@ -19,8 +19,8 @@ import java.awt.*;
 import java.util.*;
 
 import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
-import static de.embl.cba.targeting.utils.GeometryUtils.*;
-import static de.embl.cba.targeting.utils.GeometryUtils.calculateTrianglesFromPoints;
+import static de.embl.cba.crosshair.utils.GeometryUtils.*;
+import static de.embl.cba.crosshair.utils.GeometryUtils.calculateTrianglesFromPoints;
 
 public class PlaneManager {
 

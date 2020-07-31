@@ -1,4 +1,4 @@
-package de.embl.cba.targeting;
+package de.embl.cba.crosshair;
 
 import bdv.util.BdvOverlay;
 import net.imglib2.RealLocalizable;
@@ -6,7 +6,6 @@ import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

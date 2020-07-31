@@ -1,10 +1,10 @@
-package de.embl.cba.targeting.ui.swing;
+package de.embl.cba.crosshair.ui.swing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.embl.cba.targeting.*;
-import de.embl.cba.targeting.io.SettingsToSave;
-import de.embl.cba.targeting.io.SolutionToSave;
+import de.embl.cba.crosshair.*;
+import de.embl.cba.crosshair.io.SettingsToSave;
+import de.embl.cba.crosshair.io.SolutionToSave;
 import ij3d.Content;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;

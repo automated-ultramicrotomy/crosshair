@@ -1,10 +1,9 @@
-package de.embl.cba.targeting.utils;
+package de.embl.cba.crosshair.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.animate.SimilarityTransformAnimator;
 import de.embl.cba.bdv.utils.BdvUtils;
-import de.embl.cba.targeting.utils.PointAngle;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;

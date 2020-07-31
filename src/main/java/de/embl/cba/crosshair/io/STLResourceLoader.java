@@ -1,4 +1,4 @@
-package de.embl.cba.targeting.io;
+package de.embl.cba.crosshair.io;
 
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;

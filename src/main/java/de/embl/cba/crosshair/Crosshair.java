@@ -1,7 +1,7 @@
-package de.embl.cba.targeting;
+package de.embl.cba.crosshair;
 
 import bdv.util.*;
-import de.embl.cba.targeting.ui.swing.*;
+import de.embl.cba.crosshair.ui.swing.*;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -19,7 +19,7 @@ import org.scijava.vecmath.*;
 import javax.swing.*;
 import java.util.*;
 
-import static de.embl.cba.targeting.utils.GeometryUtils.*;
+import static de.embl.cba.crosshair.utils.GeometryUtils.*;
 
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible
@@ -155,7 +155,7 @@ public class Crosshair
 			} else {
 				System.out.println("Microtome mode must be inactive, and plane visible, to track");
 			}
-		}, "toggle targeting plane update", "shift T" );
+		}, "toggle crosshair plane update", "shift T" );
 
 		behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
 			if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block") & !microtomeManager.checkMicrotomeMode()) {

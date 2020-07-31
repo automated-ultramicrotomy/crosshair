@@ -1,6 +1,6 @@
-package de.embl.cba.targeting.ui.swing;
+package de.embl.cba.crosshair.ui.swing;
 
-import de.embl.cba.targeting.PlaneManager;
+import de.embl.cba.crosshair.PlaneManager;
 
 import javax.swing.*;
 import java.awt.*;
