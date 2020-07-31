@@ -38,23 +38,17 @@ import javax.swing.*;
 //TODO - take relevant T functions and put in main code
 // TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
 // not out of it, like our target normals are set?
-public class Crosshair
-{
-	private final Image3DUniverse universe;
-	private final Content imageContent;
-	private final PlaneManager planeManager;
-	private final MicrotomeManager microtomeManager;
-	private final PlanePanel planePanel;
-	private final BdvHandle bdvHandle;
-	private final BdvStackSource bdvStackSource;
+public class Crosshair {
 
 	public Crosshair (ImagePlus imagePlus) {
 
-		universe = new Image3DUniverse();
-		imageContent = universe.addContent(imagePlus, Content.VOLUME);
+		Image3DUniverse universe = new Image3DUniverse();
+		Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
+
 		imageContent.setTransparency(0.7F);
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
+
 		universe.show();
 
 		// the global min of the image is often not (0,0,0), looks like this is calculated only from pixels != 0
@@ -69,59 +63,23 @@ public class Crosshair
 		final double pw = imagePlus.getCalibration().pixelWidth;
 		final double ph = imagePlus.getCalibration().pixelHeight;
 		final double pd = imagePlus.getCalibration().pixelDepth;
-		System.out.println(pw);
-		System.out.println(ph);
-		System.out.println(pd);
+
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
-		bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
-		.sourceTransform(pw, ph, pd));
+		BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
+				.sourceTransform(pw, ph, pd));
 		// TODO - make generic? Not just 8 bit - see open current image bdv command
 		bdvStackSource.setDisplayRange(0, 255);
-		bdvHandle = bdvStackSource.getBdvHandle();
+		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
 
-		this.planeManager = new PlaneManager( bdvStackSource, universe, imageContent );
-		this.microtomeManager = new MicrotomeManager( planeManager, universe, imageContent, bdvStackSource );
-
+		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource);
 		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
 		pointOverlay.setPoints(planeManager.getPoints(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
 		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
-		BdvBehaviours bdvBehaviours = new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
-		bdvBehaviours.installBehaviours();
+		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
-		JFrame jFrame = new JFrame( "Crosshair");
-		jFrame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-
-		// main panel
-		JPanel mainPane = new JPanel();
-		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
-		mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-		mainPane.setOpaque(true);
-		jFrame.setContentPane(mainPane);
-
-		planePanel = new PlanePanel(planeManager);
-		PointsPanel pointsPanel = new PointsPanel(universe, imageContent, pointOverlay, bdvHandle);
-		ImagesPanel imagesPanel = new ImagesPanel(imageContent, pointsPanel);
-		VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);
-		MicrotomePanel microtomePanel = new MicrotomePanel(microtomeManager, planeManager, pointsPanel, vertexAssignmentPanel);
-		microtomePanel.setParentFrame(jFrame);
-		microtomeManager.setMicrotomePanel(microtomePanel);
-		microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
-		SavePanel savePanel = new SavePanel(planeManager, microtomeManager, imageContent, microtomePanel, pointsPanel, pointOverlay);
-		microtomePanel.setSavePanel(savePanel);
-		mainPane.add(imagesPanel);
-		mainPane.add(planePanel);
-		mainPane.add(pointsPanel);
-		mainPane.add(vertexAssignmentPanel);
-		mainPane.add(microtomePanel);
-		mainPane.add(savePanel);
-//		jFrame.add(new JSeparator());
-//		jFrame.add(new JSeparator());
-		jFrame.pack();
-		jFrame.setVisible( true );
-
-		//TODO - remove
-//		printImageMinMax(imageContent);
+		new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle);
 	}
 
 	public static void main( String[] args )

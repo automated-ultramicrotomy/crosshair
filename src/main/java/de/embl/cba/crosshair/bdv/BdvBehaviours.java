@@ -25,9 +25,11 @@ public class BdvBehaviours {
         this.bdvHandle = bdvHandle;
         this.planeManager = planeManager;
         this.microtomeManager = microtomeManager;
+
+        installBehaviours();
     }
 
-    public void installBehaviours() {
+    private void installBehaviours() {
         final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
         behaviours.install(bdvHandle.getTriggerbindings(), "target");
 

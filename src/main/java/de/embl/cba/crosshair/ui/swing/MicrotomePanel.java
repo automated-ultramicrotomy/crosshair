@@ -27,7 +27,6 @@ public class MicrotomePanel extends JPanel {
     private BoundedValueDouble rotationSolution;
     private BoundedValueDouble cuttingDepth;
 
-    private final Map<String, SliderPanelDouble> sliders;
     private final Map<String, JPanel> sliderPanels;
 
     private JLabel firstTouchLabel;
@@ -57,7 +56,6 @@ public class MicrotomePanel extends JPanel {
         this.vertexAssignmentPanel = vertexAssignmentPanel;
         this.planeManager = planeManager;
 
-        sliders = new HashMap<>();
         sliderPanels = new HashMap<>();
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -299,7 +297,6 @@ public class MicrotomePanel extends JPanel {
 
         //        Don't want to disable initial angles, these aren't directly tied to microtome movements
         if (!sliderName.equals("Initial Knife") & !sliderName.equals("Initial Tilt")) {
-            sliders.put(sliderName, s);
             sliderPanels.put(sliderName, sliderPanel);
         }
 
@@ -330,7 +327,7 @@ public class MicrotomePanel extends JPanel {
     // disable sliders except for given name
     private void disableSliders (String name) {
         for (String sliderName : sliderPanels.keySet()) {
-            if (sliderName != name) {
+            if (!sliderName.equals(name)) {
                 sliderPanels.get(sliderName).setVisible(false);
             }
         }
