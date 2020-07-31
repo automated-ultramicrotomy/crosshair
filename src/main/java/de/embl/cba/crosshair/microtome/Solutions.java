@@ -45,6 +45,8 @@ class Solutions {
         return solutionKnife;
     }
 
+    double getSolutionRotation() { return solutionRotation; }
+
     double getDistanceToCut() {
         return distanceToCut;
     }

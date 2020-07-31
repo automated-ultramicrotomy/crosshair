@@ -378,7 +378,7 @@ public class MicrotomePanel extends JPanel {
         }
     }
 
-    private void exitMicrotomeMode () {
+    void exitMicrotomeMode () {
         enterMicrotomeModeButton.setEnabled(true);
         exitMicrotomeModeButton.setEnabled(false);
         enterCuttingModeButton.setVisible(false);

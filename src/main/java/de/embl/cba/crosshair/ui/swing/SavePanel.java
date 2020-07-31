@@ -68,11 +68,11 @@ public class SavePanel extends JPanel {
 
     }
 
-    public void enableSaveSolution() {
+    void enableSaveSolution() {
         saveSolution.setEnabled(true);
     }
 
-    public void disableSaveSolution() {
+    void disableSaveSolution() {
         saveSolution.setEnabled(false);
     }
 
@@ -90,7 +90,7 @@ public class SavePanel extends JPanel {
 
                 if (filePath != "") {
 
-//                    transfer function settings
+                    // transfer function settings
                     int[] redLut = new int[256];
                     int[] greenLut = new int[256];
                     int[] blueLut = new int[256];
@@ -150,14 +150,12 @@ public class SavePanel extends JPanel {
                     }
 
                     if (filePath != "") {
-                        //                    if you set a solution then move other sliders, it will no longer be a solution. Here we force it
-                        //                    to react and set all sliders for that current solution.
+                        // if you set a solution then move other sliders, it will no longer be a solution. Here we force it
+                        // to react and set all sliders for that current solution.
                         double currentSolutionRot = microtomePanel.getRotationSolutionAngle().getCurrentValue();
                         microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
 
-                        SolutionToSave solutionToSave = new SolutionToSave(microtomeManager.getInitialKnifeAngle(),
-                                microtomeManager.getInitialTiltAngle(), microtomeManager.getKnife(), microtomeManager.getTilt(),
-                                microtomeManager.getRotation(), microtomePanel.getFirstTouch(), microtomePanel.getDistanceToCut());
+                        SolutionToSave solutionToSave = microtomeManager.getCurrentSolution();
 
                         try {
                             FileWriter fileWriter = new FileWriter(filePath);
@@ -178,7 +176,7 @@ public class SavePanel extends JPanel {
     }
 
     private void loadSettings(SettingsToSave settingsToSave) {
-        if (microtomePanel.checkMicrotomeMode()) {
+        if (microtomeManager.isMicrotomeModeActive()) {
             microtomePanel.exitMicrotomeMode();
         }
 

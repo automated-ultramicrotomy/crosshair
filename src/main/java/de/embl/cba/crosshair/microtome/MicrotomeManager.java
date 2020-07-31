@@ -2,6 +2,7 @@ package de.embl.cba.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
 import de.embl.cba.crosshair.PlaneManager;
+import de.embl.cba.crosshair.io.SolutionToSave;
 import de.embl.cba.crosshair.ui.swing.MicrotomePanel;
 import de.embl.cba.crosshair.ui.swing.VertexAssignmentPanel;
 import ij3d.Content;
@@ -37,6 +38,13 @@ public class MicrotomeManager {
 
     }
 
+    public SolutionToSave getCurrentSolution() {
+        SolutionToSave currentSolution = new SolutionToSave(microtome.getInitialKnifeAngle(),
+                microtome.getInitialTiltAngle(), solutions.getSolutionKnife(), solutions.getSolutionTilt(),
+                solutions.getSolutionRotation(), solutions.getSolutionFirstTouchName(), solutions.getDistanceToCut());
+
+        return currentSolution;
+    }
 
     public void setMicrotomePanel(MicrotomePanel microtomePanel) {
         this.microtomePanel = microtomePanel;
@@ -49,6 +57,8 @@ public class MicrotomeManager {
     public boolean isCuttingModeActive() {
         return cuttingModeActive;
     }
+
+    public boolean isMicrotomeModeActive() { return microtomeModeActive; }
 
     public void enterMicrotomeMode (double initialKnifeAngle, double initialTiltAngle) {
         if (!microtomeModeActive) {
