@@ -325,6 +325,7 @@ class Microtome {
         imageContent.setTransform(new Transform3D());
         universe.centerSelected(imageContent);
         universe.getContent("rotationAxis").setVisible(false);
+        planeManager.redrawCurrentPlanes();
 
         //TODO - reset other variables
     }

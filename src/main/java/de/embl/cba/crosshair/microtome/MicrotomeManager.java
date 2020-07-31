@@ -75,7 +75,6 @@ public class MicrotomeManager {
     public void exitMicrotomeMode (){
         if (microtomeModeActive) {
             microtomeModeActive = false;
-
             microtome.resetMicrotome();
         } else {
             System.out.println("Microtome mode already active");

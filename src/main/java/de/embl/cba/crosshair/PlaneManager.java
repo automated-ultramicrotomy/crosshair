@@ -169,6 +169,12 @@ public class PlaneManager {
         updatePlane(planeDefinition.get(0), planeDefinition.get(1), planeName);
     }
 
+    public void redrawCurrentPlanes () {
+        for (String planeName: planeNormals.keySet()) {
+            updatePlane(planeNormals.get(planeName), planePoints.get(planeName), planeName );
+        }
+    }
+
     public ArrayList<Vector3d> getPlaneDefinitionOfCurrentView () {
         final AffineTransform3D transform = new AffineTransform3D();
         bdvHandle.getViewerPanel().getState().getViewerTransform( transform );

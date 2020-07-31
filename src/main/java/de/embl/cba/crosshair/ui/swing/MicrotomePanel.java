@@ -389,10 +389,10 @@ public class MicrotomePanel extends JPanel {
         }
         cuttingControlsPanel.setVisible(false);
         currentSettingsPanel.setVisible(false);
-        microtomeManager.exitMicrotomeMode();
         knifeAngle.setCurrentValue(0);
         tiltAngle.setCurrentValue(0);
         rotationAngle.setCurrentValue(0);
+        microtomeManager.exitMicrotomeMode();
 
         // inactivate sliders
         disableSliders();
