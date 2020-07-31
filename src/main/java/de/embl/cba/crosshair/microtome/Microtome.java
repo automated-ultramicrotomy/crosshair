@@ -96,111 +96,119 @@ class Microtome {
 
     }
 
-    public double getKnife() {return knife;}
-    public double getTilt() {return tilt;}
-    public double getRotation() {return rotation;}
-    public double getInitialTiltAngle() {
+    double getKnife() {return knife;}
+    double getTilt() {return tilt;}
+    double getRotation() {return rotation;}
+    double getInitialTiltAngle() {
         return initialTiltAngle;
     }
-    public double getInitialKnifeAngle() {
+    double getInitialKnifeAngle() {
         return initialKnifeAngle;
     }
 
-    public Image3DUniverse getUniverse() {
+    Image3DUniverse getUniverse() {
         return universe;
     }
 
-    public PlaneManager getPlaneManager() {
+    PlaneManager getPlaneManager() {
         return planeManager;
     }
 
-    public Vector3d getCurrentKnifeCentre() {
+    Vector3d getCurrentKnifeCentre() {
         return currentKnifeCentre;
     }
 
-    public Vector3d getCurrentKnifeNormal() {
+    Vector3d getCurrentKnifeNormal() {
         return currentKnifeNormal;
     }
 
-    public Vector3d getCurrentArcCentre() {
+    Vector3d getCurrentArcCentre() {
         return currentArcCentre;
     }
 
-    public Vector3d getCurrentHolderFront() {
+    Vector3d getCurrentHolderFront() {
         return currentHolderFront;
     }
 
-    public Content getImageContent() {
+    Content getImageContent() {
         return imageContent;
     }
 
-    public void setArcComponentsInitialTransform(Matrix4d arcComponentsInitialTransform) {
+    double getInitialTargetOffset() {
+        return initialTargetOffset;
+    }
+
+    double getInitialTargetTilt() {
+        return initialTargetTilt;
+    }
+
+    void setArcComponentsInitialTransform(Matrix4d arcComponentsInitialTransform) {
         this.arcComponentsInitialTransform = arcComponentsInitialTransform;
     }
 
-    public void setCurrentArcCentre(Vector3d currentArcCentre) {
+    void setCurrentArcCentre(Vector3d currentArcCentre) {
         this.currentArcCentre = currentArcCentre;
     }
 
-    public void setCurrentHolderFront(Vector3d currentHolderFront) {
+    void setCurrentHolderFront(Vector3d currentHolderFront) {
         this.currentHolderFront = currentHolderFront;
     }
 
-    public void setRotation(double rotation) {
+    void setRotation(double rotation) {
 //        System.out.println(rotation);
         this.rotation = rotation;
         updateTiltRotationBlock();
         microtomePanel.setRotationLabel(rotation);
     }
 
-    public void setInitialTargetNormal(Vector3d initialTargetNormal) {
+    void setInitialTargetNormal(Vector3d initialTargetNormal) {
         this.initialTargetNormal = initialTargetNormal;
     }
 
-    public void setCurrentTargetNormal(Vector3d currentTargetNormal) {
+    void setCurrentTargetNormal(Vector3d currentTargetNormal) {
         this.currentTargetNormal = currentTargetNormal;
     }
 
-    public void setAngleKnifeTarget(double angleKnifeTarget) {
+    void setAngleKnifeTarget(double angleKnifeTarget) {
         this.angleKnifeTarget = angleKnifeTarget;
     }
 
-    public void setInitialTargetOffset(double initialTargetOffset) {
+    void setInitialTargetOffset(double initialTargetOffset) {
         this.initialTargetOffset = initialTargetOffset;
     }
 
-    public void setInitialTargetTilt(double initialTargetTilt) {
+    void setInitialTargetTilt(double initialTargetTilt) {
         this.initialTargetTilt = initialTargetTilt;
     }
 
-    public void setTilt(double tilt) {
+    void setTilt(double tilt) {
 //        System.out.println(tilt);
         this.tilt = tilt;
         updateTiltRotationBlock();
         microtomePanel.setTiltLabel(tilt);
     }
 
-    public void setInitialBlockTransform(Matrix4d initialBlockTransform) {
+    void setInitialBlockTransform(Matrix4d initialBlockTransform) {
         this.initialBlockTransform = initialBlockTransform;
     }
 
-    public void setInitialKnifeAngle(double initialKnifeAngle) {
+    void setInitialKnifeAngle(double initialKnifeAngle) {
         this.initialKnifeAngle = initialKnifeAngle;
     }
 
-    public void setInitialTiltAngle(double initialTiltAngle) {
+    void setInitialTiltAngle(double initialTiltAngle) {
         this.initialTiltAngle = initialTiltAngle;
     }
 
-    public void setKnifeInitialTransform(Matrix4d knifeInitialTransform) {
+    void setKnifeInitialTransform(Matrix4d knifeInitialTransform) {
         this.knifeInitialTransform = knifeInitialTransform;
     }
 
-    public void setCurrentKnifeCentre(Vector3d currentKnifeCentre) {
+    void setCurrentKnifeCentre(Vector3d currentKnifeCentre) {
         this.currentKnifeCentre = currentKnifeCentre;
     }
 
-    public void setKnife(double knife) {
+    void setKnife(double knife) {
 //        System.out.println(knife);
         this.knife = knife;
         Vector3d axis = new Vector3d(new double[] {0, 0, 1});
@@ -289,7 +297,7 @@ class Microtome {
         }
     }
 
-    public void resetMicrotome () {
+    void resetMicrotome () {
         initialBlockTransform.setIdentity();
 
         // make microtome models invisible

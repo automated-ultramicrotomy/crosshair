@@ -140,7 +140,7 @@ public class SavePanel extends JPanel {
                 }
 
             } else if (e.getActionCommand().equals("save_solution")) {
-                if (microtomePanel.getValidSolution()) {
+                if ( microtomeManager.isValidSolution() ) {
                     String filePath = "";
                     JFileChooser chooser = new JFileChooser();
                     chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));

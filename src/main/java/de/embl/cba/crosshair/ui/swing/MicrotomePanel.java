@@ -28,7 +28,6 @@ public class MicrotomePanel extends JPanel {
     private final Map<String, SliderPanelDouble> sliders;
     private final Map<String, JPanel> sliderPanels;
     private String firstTouch;
-    private boolean validSolution;
     private double distanceToCut;
 
     JLabel firstTouchLabel;
@@ -199,8 +198,6 @@ public class MicrotomePanel extends JPanel {
     public void setParentFrame(JFrame jFrame) {
         parentFrame = jFrame;
     }
-    public void setValidSolution(boolean valid) {validSolution = valid;}
-    public boolean getValidSolution () {return validSolution;}
 
     public BoundedValueDouble getKnifeAngle() {
         return knifeAngle;
@@ -481,7 +478,7 @@ public class MicrotomePanel extends JPanel {
         @Override
         public void update() {
             solutionSlider.update();
-            microtomeManager.setSolutionFromRotation(rotationSolution.getCurrentValue());
+            microtomeManager.setSolution( rotationSolution.getCurrentValue() );
         }
     }
 

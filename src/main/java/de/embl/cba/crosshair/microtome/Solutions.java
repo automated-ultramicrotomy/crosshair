@@ -1,5 +1,6 @@
 package de.embl.cba.crosshair.microtome;
 
+import de.embl.cba.crosshair.PlaneManager;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
 
@@ -12,14 +13,53 @@ import static java.lang.Math.*;
 
 class Solutions {
 
-    public void setSolutionFromRotation (double solutionRotation) {
-        microtomePanel.getRotationAngle().setCurrentValue(solutionRotation);
+    private Microtome microtome;
+    private PlaneManager planeManager;
 
+    private double solutionRotation;
+    private double solutionKnife;
+    private double solutionTilt;
+
+    private boolean validSolution;
+
+    private String solutionFirstTouchName;
+    private Vector3d solutionFirstTouch;
+    private double distanceToCut;
+
+    Solutions (Microtome microtome) {
+        this.microtome = microtome;
+        this.planeManager = microtome.getPlaneManager();
+        solutionFirstTouch = new Vector3d();
+        validSolution = false;
+    }
+
+    boolean isValidSolution() {
+        return validSolution;
+    }
+
+    double getSolutionTilt() {
+        return solutionTilt;
+    }
+
+    double getSolutionKnife() {
+        return solutionKnife;
+    }
+
+    double getDistanceToCut() {
+        return distanceToCut;
+    }
+
+    String getSolutionFirstTouchName() {
+        return solutionFirstTouchName;
+    }
+
+    void setSolutionFromRotation (double solutionRotation) {
+        this.solutionRotation = solutionRotation;
         double rot = convertToRadians(solutionRotation);
-        double iTilt = convertToRadians(initialTiltAngle);
-        double iKnife = convertToRadians(initialKnifeAngle);
-        double tOffset = convertToRadians(initialTargetOffset);
-        double tRotation = convertToRadians(initialTargetTilt);
+        double iTilt = convertToRadians( microtome.getInitialTiltAngle() );
+        double iKnife = convertToRadians( microtome.getInitialKnifeAngle() );
+        double tOffset = convertToRadians( microtome.getInitialTargetOffset() );
+        double tRotation = convertToRadians( microtome.getInitialTargetTilt() );
 
         double A = cos(iKnife + tOffset);
         double B =  sin(tRotation)*sin(iKnife + tOffset);
@@ -31,31 +71,21 @@ class Solutions {
         double H = sin(iTilt)*sin(tRotation);
         double I = cos(iTilt)*cos(tRotation);
 
-//        solution tilt & rot
         double solTilt = atan(((-A*F + G)/(-A*I -H))*cos(rot) + ((E/(-A*I - H))*sin(rot)));
-        double solTiltDegrees = convertToDegrees(solTilt);
-        System.out.println(solTiltDegrees);
+        this.solutionTilt = convertToDegrees(solTilt);
 
-//    solution knife & rot
         double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
-        double solKnifeDegrees = convertToDegrees(solKnife);
-        System.out.println(solKnifeDegrees);
+        this.solutionKnife = convertToDegrees(solKnife);
 
-//        If solution invalid i.e. does not fit constraints of the angles the microtome can reach
-        if (solTiltDegrees < -20 | solTiltDegrees > 20 | solKnifeDegrees < -30 | solKnifeDegrees > 30) {
-//            Still set to value, so microtome moves / maxes out limit - makes for a smoother transition
-            microtomePanel.getTiltAngle().setCurrentValue(solTiltDegrees);
-            microtomePanel.getKnifeAngle().setCurrentValue(solKnifeDegrees);
+        calculateDistance();
+        checkSolutionValid();
+    }
 
-//            Display first touch as nothing, and distance as 0
-            microtomePanel.setFirstTouch("");
-            microtomePanel.setDistanceToCut(0);
-            microtomePanel.setValidSolution(false);
+    private void checkSolutionValid () {
+        if (solutionTilt < -20 | solutionTilt > 20 | solutionKnife < -30 | solutionKnife > 30) {
+            validSolution = false;
         } else {
-            microtomePanel.getTiltAngle().setCurrentValue(solTiltDegrees);
-            microtomePanel.getKnifeAngle().setCurrentValue(solKnifeDegrees);
-            calculateDistance();
-            microtomePanel.setValidSolution(true);
+            validSolution = true;
         }
     }
 
@@ -76,10 +106,10 @@ class Solutions {
         namedVertices.get("Bottom Left").localize(bottomLeft);
         namedVertices.get("Bottom Right").localize(bottomRight);
 
-//        Calculate first point touched on block face, done by calculating perpendicular distance
-//        from target to each point, and returning that with the largest.
+        // Calculate first point touched on block face, done by calculating perpendicular distance
+        // from target to each point, and returning that with the largest.
 
-//        Calculate perpendicular distance to each point
+        // Calculate perpendicular distance to each point
         targetNormal.normalize();
         ArrayList<Vector3d> allVertices = new ArrayList<>();
         allVertices.add(new Vector3d(topLeft));
@@ -89,32 +119,30 @@ class Solutions {
 
         int maxDistanceIndex = indexMinMaxPointsToPlane(targetPoint, targetNormal, allVertices, "max");
 
-        Vector3d firstTouch = new Vector3d();
-//        Assign first touch to point with maximum distance
-        if (maxDistanceIndex == 0) {
-            firstTouch.set(topLeft);
-            microtomePanel.setFirstTouch("Top Left");
-        } else if (maxDistanceIndex == 1) {
-            firstTouch.set(topRight);
-            microtomePanel.setFirstTouch("Top Right");
-        } else if (maxDistanceIndex == 2) {
-            firstTouch.set(bottomLeft);
-            microtomePanel.setFirstTouch("Bottom Left");
-        } else if (maxDistanceIndex == 3) {
-            firstTouch.set(bottomRight);
-            microtomePanel.setFirstTouch("Bottom Right");
-        }
-        firstTouchPointSolution = new Vector3d(firstTouch);
 
-//        Calculate perpendicular distance to target
+        //  Assign first touch to point with maximum distance
+        if (maxDistanceIndex == 0) {
+            solutionFirstTouch.set(topLeft);
+            solutionFirstTouchName = "Top Left";
+        } else if (maxDistanceIndex == 1) {
+            solutionFirstTouch.set(topRight);
+            solutionFirstTouchName = "Top Right";
+        } else if (maxDistanceIndex == 2) {
+            solutionFirstTouch.set(bottomLeft);
+            solutionFirstTouchName = "Bottom Left";
+        } else if (maxDistanceIndex == 3) {
+            solutionFirstTouch.set(bottomRight);
+            solutionFirstTouchName = "Bottom Right";
+        }
+
+        // Calculate perpendicular distance to target
         Vector3d firstTouchToTarget = new Vector3d();
-        firstTouchToTarget.sub(targetPoint, firstTouch);
+        firstTouchToTarget.sub(targetPoint, solutionFirstTouch);
         double perpDist = abs(firstTouchToTarget.dot(targetNormal));
 
-//        Compensate for offset between perpendicular distance and true N-S of microtome
-//        I believe this is just the angle of the knife in this scenario, as the knife was reset to true 0
-        double NSDist = perpDist / cos(convertToRadians(knife));
-
-        microtomePanel.setDistanceToCut(NSDist);
+        // Compensate for offset between perpendicular distance and true N-S of microtome
+        // I believe this is just the angle of the knife in this scenario, as the knife was reset to true 0
+        double NSDist = perpDist / cos(convertToRadians( microtome.getKnife() ));
+        distanceToCut = NSDist;
     }
 }

@@ -52,7 +52,7 @@ public class MicrotomeManager extends JPanel {
         microtomeModeActive = false;
 
         this.microtome = new Microtome();
-        this.microtomeSetup = new MicrotomeSetup(microtome, universe);
+        this.microtomeSetup = new MicrotomeSetup(microtome);
         this.solutions = new Solutions();
         this.cutting = new Cutting();
 
@@ -123,6 +123,32 @@ public class MicrotomeManager extends JPanel {
     public void setRotation (double angleDegrees) {
         if (microtomeModeActive) {
             microtome.setRotation(angleDegrees);
+        } else {
+            System.out.println("Microtome mode inactive");
+        }
+    }
+
+    public boolean isValidSolution () {
+        return solutions.isValidSolution();
+    }
+
+    public void setSolution (double rotationDegrees) {
+        if (microtomeModeActive) {
+            microtomePanel.getRotationAngle().setCurrentValue(rotationDegrees);
+            solutions.setSolutionFromRotation(rotationDegrees);
+
+            // Still set to value, even if not valid solution, so microtome moves / maxes out limit - makes for a smoother transition
+            microtomePanel.getTiltAngle().setCurrentValue( solutions.getSolutionTilt() );
+            microtomePanel.getKnifeAngle().setCurrentValue( solutions.getSolutionKnife() );
+
+            if ( !solutions.isValidSolution() ) {
+                // Display first touch as nothing, and distance as 0
+                microtomePanel.setFirstTouch("");
+                microtomePanel.setDistanceToCut(0);
+            } else {
+                microtomePanel.setFirstTouch( solutions.getSolutionFirstTouchName() );
+                microtomePanel.setDistanceToCut( solutions.getDistanceToCut() );
+            }
         } else {
             System.out.println("Microtome mode inactive");
         }
