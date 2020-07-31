@@ -11,6 +11,7 @@ import org.scijava.vecmath.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static de.embl.cba.crosshair.utils.BdvUtils.moveToPosition;
 import static de.embl.cba.crosshair.utils.GeometryUtils.*;
 import static de.embl.cba.crosshair.utils.GeometryUtils.levelCurrentViewNormalandHorizontal;
 import static java.lang.Math.*;

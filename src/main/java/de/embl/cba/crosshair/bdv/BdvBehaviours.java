@@ -46,7 +46,7 @@ public class BdvBehaviours {
         });
 
         behaviours.behaviour( (ClickBehaviour) (x, y ) -> {
-            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target") & !microtomeManager.checkMicrotomeMode()) {
+            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target") & !microtomeManager.isMicrotomeModeActive()) {
                 planeManager.setTrackPlane(1);
                 // TODO - update plane here
             } else if (planeManager.getTrackPlane() == 1) {
@@ -57,7 +57,7 @@ public class BdvBehaviours {
         }, "toggle crosshair plane update", "shift T" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block") & !microtomeManager.checkMicrotomeMode()) {
+            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block") & !microtomeManager.isMicrotomeModeActive()) {
                 // check if there are already vertex points
                 if (planeManager.getBlockVertices().size() > 0) {
                     int result = JOptionPane.showConfirmDialog(null,"If you track the block plane, you will lose all current vertex points", "Are you sure?",
@@ -80,7 +80,7 @@ public class BdvBehaviours {
         }, "toggle block plane update", "shift F" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (!microtomeManager.checkMicrotomeMode() & planeManager.getTrackPlane() == 0) {
+            if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0) {
                 planeManager.addRemoveCurrentPositionPoints();
             } else {
                 System.out.println("Microtome mode must be inactive, and not tracking plane, to change points");
@@ -88,7 +88,7 @@ public class BdvBehaviours {
         }, "add point", "P" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (planeManager.getTrackPlane() == 0 & !microtomeManager.checkMicrotomeMode()) {
+            if (planeManager.getTrackPlane() == 0 & !microtomeManager.isMicrotomeModeActive()) {
                 if (planeManager.getBlockVertices().size() > 0) {
                     int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points", "Are you sure?",
                             JOptionPane.YES_NO_OPTION,
@@ -108,7 +108,7 @@ public class BdvBehaviours {
         }, "fit to points", "K" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (!microtomeManager.checkMicrotomeMode() & planeManager.getTrackPlane() == 0 & planeManager.checkNamedPlaneExists("block")) {
+            if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0 & planeManager.checkNamedPlaneExists("block")) {
                 planeManager.addRemoveCurrentPositionBlockVertices();
             } else {
                 System.out.println("Microtome mode must be inactive, block plane must exit, and not tracking plane, to change points");

@@ -3,7 +3,6 @@ package de.embl.cba.crosshair.utils;
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.animate.SimilarityTransformAnimator;
-import de.embl.cba.bdv.utils.BdvUtils;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
@@ -18,106 +17,12 @@ import org.scijava.vecmath.Vector3d;
 import java.util.*;
 import java.util.stream.DoubleStream;
 
-import static de.embl.cba.bdv.utils.BdvUtils.*;
+import static de.embl.cba.crosshair.utils.BdvUtils.changeBdvViewerTransform;
 import static java.lang.Math.*;
 
 public final class GeometryUtils {
 
-    // from MOBIE
-    public static void moveToPosition(Bdv bdv, double[] xyz, long durationMillis )
-    {
 
-        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
-
-        AffineTransform3D newViewerTransform = currentViewerTransform.copy();
-
-        // ViewerTransform
-        // applyInverse: coordinates in viewer => coordinates in image
-        // apply: coordinates in image => coordinates in viewer
-
-        final double[] locationOfTargetCoordinatesInCurrentViewer = new double[ 3 ];
-        currentViewerTransform.apply( xyz, locationOfTargetCoordinatesInCurrentViewer );
-
-        for ( int d = 0; d < 3; d++ )
-        {
-            locationOfTargetCoordinatesInCurrentViewer[ d ] *= -1;
-        }
-
-        newViewerTransform.translate( locationOfTargetCoordinatesInCurrentViewer );
-
-        newViewerTransform.translate( getBdvWindowCenter( bdv ) );
-
-        if ( durationMillis <= 0 )
-        {
-            bdv.getBdvHandle().getViewerPanel().setCurrentViewerTransform( newViewerTransform );
-            return;
-        }
-        else
-        {
-            final SimilarityTransformAnimator similarityTransformAnimator =
-                    new SimilarityTransformAnimator(
-                            currentViewerTransform,
-                            newViewerTransform,
-                            0,
-                            0,
-                            durationMillis );
-
-            bdv.getBdvHandle().getViewerPanel().setTransformAnimator( similarityTransformAnimator );
-            bdv.getBdvHandle().getViewerPanel().transformChanged( currentViewerTransform );
-        }
-    }
-
-
-    // from MOBIE
-    public static void levelCurrentView( Bdv bdv, double[] targetNormalVector )
-    {
-
-        double[] currentNormalVector = BdvUtils.getCurrentViewNormalVector( bdv );
-
-        AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
-
-        LinAlgHelpers.normalize( targetNormalVector ); // just to be sure.
-
-        // determine rotation axis
-        double[] rotationAxis = new double[ 3 ];
-        LinAlgHelpers.cross( currentNormalVector, targetNormalVector, rotationAxis );
-        if ( LinAlgHelpers.length( rotationAxis ) > 0 ) LinAlgHelpers.normalize( rotationAxis );
-
-        // The rotation axis is in the coordinate system of the original data set => transform to viewer coordinate system
-        double[] qCurrentRotation = new double[ 4 ];
-        Affine3DHelpers.extractRotation( currentViewerTransform, qCurrentRotation );
-        final AffineTransform3D currentRotation = quaternionToAffineTransform3D( qCurrentRotation );
-
-        double[] rotationAxisInViewerSystem = new double[ 3 ];
-        currentRotation.apply( rotationAxis, rotationAxisInViewerSystem );
-
-        // determine rotation angle
-        double angle = - Math.acos( LinAlgHelpers.dot( currentNormalVector, targetNormalVector ) );
-
-        // construct rotation of angle around axis
-        double[] rotationQuaternion = new double[ 4 ];
-        LinAlgHelpers.quaternionFromAngleAxis( rotationAxisInViewerSystem, angle, rotationQuaternion );
-        final AffineTransform3D rotation = quaternionToAffineTransform3D( rotationQuaternion );
-
-        // apply transformation (rotating around current viewer centre position)
-        final AffineTransform3D translateCenterToOrigin = new AffineTransform3D();
-        translateCenterToOrigin.translate( DoubleStream.of( getBdvWindowCenter( bdv )).map(x -> -x ).toArray() );
-
-        final AffineTransform3D translateCenterBack = new AffineTransform3D();
-        translateCenterBack.translate( getBdvWindowCenter( bdv ) );
-
-        ArrayList< AffineTransform3D > viewerTransforms = new ArrayList<>(  );
-
-        viewerTransforms.add( currentViewerTransform.copy()
-                .preConcatenate( translateCenterToOrigin )
-                .preConcatenate( rotation )
-                .preConcatenate( translateCenterBack ) );
-
-        changeBdvViewerTransform( bdv, viewerTransforms, 500 );
-
-    }
 
 
 
@@ -561,10 +466,10 @@ public final class GeometryUtils {
 
         // apply transformation (rotating around current viewer centre position)
         final AffineTransform3D translateCenterToOrigin = new AffineTransform3D();
-        translateCenterToOrigin.translate( DoubleStream.of( getBdvWindowCenter( bdv )).map(x -> -x ).toArray() );
+        translateCenterToOrigin.translate( DoubleStream.of( BdvUtils.getBdvWindowCentre( bdv )).map(x -> -x ).toArray() );
 
         final AffineTransform3D translateCenterBack = new AffineTransform3D();
-        translateCenterBack.translate( getBdvWindowCenter( bdv ) );
+        translateCenterBack.translate( BdvUtils.getBdvWindowCentre( bdv ) );
 
         ArrayList< AffineTransform3D > viewerTransforms = new ArrayList<>(  );
 
@@ -611,6 +516,24 @@ public final class GeometryUtils {
         trans.add(origin);
 
         ret.setTranslation(trans);
+    }
+
+    // from Christian Tischer BdvUtils
+    public static AffineTransform3D quaternionToAffineTransform3D( double[] rotationQuaternion )
+    {
+        double[][] rotationMatrix = new double[ 3 ][ 3 ];
+        LinAlgHelpers.quaternionToR( rotationQuaternion, rotationMatrix );
+        return matrixAsAffineTransform3D( rotationMatrix );
+    }
+
+    // from Christian Tischer BdvUtils
+    public static AffineTransform3D matrixAsAffineTransform3D( double[][] rotationMatrix )
+    {
+        final AffineTransform3D rotation = new AffineTransform3D();
+        for ( int row = 0; row < 3; ++row )
+            for ( int col = 0; col < 3; ++ col)
+                rotation.set( rotationMatrix[ row ][ col ], row, col);
+        return rotation;
     }
 
 }

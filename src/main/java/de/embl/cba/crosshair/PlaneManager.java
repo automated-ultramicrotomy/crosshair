@@ -18,7 +18,7 @@ import vib.PointList;
 import java.awt.*;
 import java.util.*;
 
-import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
+import static de.embl.cba.crosshair.utils.BdvUtils.*;
 import static de.embl.cba.crosshair.utils.GeometryUtils.*;
 import static de.embl.cba.crosshair.utils.GeometryUtils.calculateTrianglesFromPoints;
 
