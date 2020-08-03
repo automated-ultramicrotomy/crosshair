@@ -3,6 +3,7 @@ package de.embl.cba.crosshair;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import customnode.CustomTriangleMesh;
+import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
@@ -103,7 +104,7 @@ public class PlaneManager {
 
     public void nameSelectedVertex(String name) {
         if (!selectedVertex.containsKey("selected")) {
-            System.out.println("No vertex selected");
+            IJ.log("No vertex selected");
         } else {
 
             RealPoint selectedPointCopy = new RealPoint(selectedVertex.get("selected"));
@@ -317,7 +318,7 @@ public class PlaneManager {
             boolean pointInPlane = distanceToPlane < 1E-10;
 
             if (normalsParallel & pointInPlane) {
-                System.out.println("Already at that plane");
+                IJ.log("Already at that plane");
             } else {
                 double[] targetNormal = new double[3];
                 planeNormals.get(name).get(targetNormal);
@@ -347,7 +348,7 @@ public class PlaneManager {
             if (distanceToPlane < 1E-10) {
                 addRemovePointFromPointList(blockVertices, point);
             } else {
-                System.out.println("Vertex points must lie on the block plane");
+                IJ.log("Vertex points must lie on the block plane");
             }
         }
 

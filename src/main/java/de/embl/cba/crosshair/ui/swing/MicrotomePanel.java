@@ -4,6 +4,7 @@ import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
 import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import de.embl.cba.crosshair.PlaneManager;
+import ij.IJ;
 
 import javax.swing.*;
 import java.awt.*;
@@ -374,7 +375,7 @@ public class MicrotomePanel extends JPanel {
             pointsPanel.activateMicrotomeButtons();
             parentFrame.pack();
         } else {
-            System.out.println("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
+            IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
         }
     }
 

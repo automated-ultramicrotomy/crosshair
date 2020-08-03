@@ -3,6 +3,7 @@ package de.embl.cba.crosshair.ui.swing;
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
 import de.embl.cba.crosshair.PlaneManager;
+import ij.IJ;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,17 +44,17 @@ import java.awt.*;
                         if (planeManager.checkNamedPlaneExists("target")) {
                             planeManager.setTargetPlaneColour(colour);
                         } else {
-                            System.out.println("Target plane not initialised");
+                            IJ.log("Target plane not initialised");
                         }
                     } else if (planeName == "block") {
                         if (planeManager.checkNamedPlaneExists("block")) {
                             planeManager.setBlockPlaneColour(colour);
                         } else {
-                            System.out.println("Block plane not initialised");
+                            IJ.log("Block plane not initialised");
                         }
                     }
                 } else {
-                    System.out.println("Can only change colour, when not tracking a plane");
+                    IJ.log("Can only change colour, when not tracking a plane");
                 }
 
             });
@@ -73,10 +74,10 @@ import java.awt.*;
                     if (planeManager.checkNamedPlaneExists(planeName)) {
                         planeManager.moveViewToNamedPlane(planeName);
                     } else {
-                        System.out.println("Plane not initialised");
+                        IJ.log("Plane not initialised");
                     }
                 } else {
-                    System.out.println("Can only go to plane, when not tracking a plane");
+                    IJ.log("Can only go to plane, when not tracking a plane");
                 }
             });
 
@@ -96,17 +97,17 @@ import java.awt.*;
                         if (planeManager.checkNamedPlaneExists("target")) {
                             planeManager.toggleTargetVisbility();
                         } else {
-                            System.out.println("Target plane not initialised");
+                            IJ.log("Target plane not initialised");
                         }
                     } else if (planeName == "block") {
                         if (planeManager.checkNamedPlaneExists("block")) {
                             planeManager.toggleBlockVisbility();
                         } else {
-                            System.out.println("Block plane not initialised");
+                            IJ.log("Block plane not initialised");
                         }
                     }
                 } else {
-                    System.out.println("Can only toggle visiblity, when not tracking a plane");
+                    IJ.log("Can only toggle visiblity, when not tracking a plane");
                 }
             });
 
@@ -159,13 +160,13 @@ import java.awt.*;
                         if (planeManager.checkNamedPlaneExists("target")) {
                             currentTransparency = planeManager.getTargetTransparency();
                         } else {
-                            System.out.println("Target plane not initialised");
+                            IJ.log("Target plane not initialised");
                         }
                     } else if (planeName.equals("block")) {
                         if (planeManager.checkNamedPlaneExists("block")) {
                             currentTransparency = planeManager.getBlockTransparency();
                         } else {
-                            System.out.println("Block plane not initialised");
+                            IJ.log("Block plane not initialised");
                         }
                     }
 
@@ -197,7 +198,7 @@ import java.awt.*;
                     frame.pack();
                     frame.setVisible(true);
                 } else {
-                    System.out.println("Can only change transparency of plane, when not tracking a plane");
+                    IJ.log("Can only change transparency of plane, when not tracking a plane");
                 }
             });
 

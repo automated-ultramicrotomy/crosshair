@@ -3,6 +3,7 @@ package de.embl.cba.crosshair.bdv;
 import bdv.util.BdvHandle;
 import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import de.embl.cba.crosshair.PlaneManager;
+import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 import org.scijava.ui.behaviour.ClickBehaviour;
@@ -52,7 +53,7 @@ public class BdvBehaviours {
             } else if (planeManager.getTrackPlane() == 1) {
                 planeManager.setTrackPlane(0);
             } else {
-                System.out.println("Microtome mode must be inactive, and plane visible, to track");
+                IJ.log("Microtome mode must be inactive, and plane visible, to track");
             }
         }, "toggle crosshair plane update", "shift T" );
 
@@ -75,7 +76,7 @@ public class BdvBehaviours {
             } else if (planeManager.getTrackPlane() == 2) {
                 planeManager.setTrackPlane(0);
             } else {
-                System.out.println("Microtome mode must be inactive, and plane visible, to track");
+                IJ.log("Microtome mode must be inactive, and plane visible, to track");
             }
         }, "toggle block plane update", "shift F" );
 
@@ -83,7 +84,7 @@ public class BdvBehaviours {
             if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0) {
                 planeManager.addRemoveCurrentPositionPoints();
             } else {
-                System.out.println("Microtome mode must be inactive, and not tracking plane, to change points");
+                IJ.log("Microtome mode must be inactive, and not tracking plane, to change points");
             }
         }, "add point", "P" );
 
@@ -103,7 +104,7 @@ public class BdvBehaviours {
                     planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
                 }
             } else {
-                System.out.println("Can only fit to points, when not tracking a plane and microtome mode is inactive");
+                IJ.log("Can only fit to points, when not tracking a plane and microtome mode is inactive");
             }
         }, "fit to points", "K" );
 
@@ -111,7 +112,7 @@ public class BdvBehaviours {
             if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0 & planeManager.checkNamedPlaneExists("block")) {
                 planeManager.addRemoveCurrentPositionBlockVertices();
             } else {
-                System.out.println("Microtome mode must be inactive, block plane must exit, and not tracking plane, to change points");
+                IJ.log("Microtome mode must be inactive, block plane must exit, and not tracking plane, to change points");
             }
         }, "add block vertex", "V" );
 

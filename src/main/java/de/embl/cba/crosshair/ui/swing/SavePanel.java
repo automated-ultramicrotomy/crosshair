@@ -7,6 +7,7 @@ import de.embl.cba.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.cba.crosshair.io.SettingsToSave;
 import de.embl.cba.crosshair.io.SolutionToSave;
 import de.embl.cba.crosshair.microtome.MicrotomeManager;
+import ij.IJ;
 import ij3d.Content;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
@@ -240,7 +241,7 @@ public class SavePanel extends JPanel {
                 pointOverlay.toggleShowPoints();
             }
         } else {
-            System.out.println("Cant load settings when tracking a plane");
+            IJ.log("Cant load settings when tracking a plane");
         }
 
     }

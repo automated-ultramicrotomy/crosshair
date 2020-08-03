@@ -2,6 +2,7 @@ package de.embl.cba.crosshair.io;
 
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;
+import ij.IJ;
 import org.scijava.vecmath.Point3f;
 
 import java.io.*;
@@ -25,7 +26,7 @@ public class STLResourceLoader {
             try {
                 sl.parse(name);
             } catch (RuntimeException var3) {
-                System.out.println("error reading " + sl.name);
+                IJ.log("error reading " + sl.name);
                 throw var3;
             }
 
