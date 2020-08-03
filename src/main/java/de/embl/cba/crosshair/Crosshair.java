@@ -1,6 +1,7 @@
 package de.embl.cba.crosshair;
 
 import bdv.util.*;
+import bdv.viewer.ViewerFrame;
 import de.embl.cba.crosshair.bdv.BdvBehaviours;
 import de.embl.cba.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.cba.crosshair.microtome.MicrotomeManager;
@@ -10,6 +11,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.View;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 
@@ -27,7 +29,6 @@ import javax.swing.*;
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
 // TODO - check angle updates - wrote very quickly
-// TODO - orient cutting simulation so edge vector at bottom
 //TODO - colour change on alignment, only set, if not already that colour?
 // TODO - align microtome view when enter
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
@@ -35,9 +36,9 @@ import javax.swing.*;
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plane their runs)
 // TODO - command for loading bdv files
 //TODO - view changes if change planes after exit micrtome mode
-//TODO - take relevant T functions and put in main code
 // TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
 // not out of it, like our target normals are set?
+
 public class Crosshair {
 
 	public Crosshair (ImagePlus imagePlus) {
@@ -79,7 +80,19 @@ public class Crosshair {
 		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
-		new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle);
+		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle);
+
+		// Space out windows like here:
+		// https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
+		// https://github.com/tischi/table-utils/blob/master/src/main/java/de/embl/cba/tables/ij3d/UniverseUtils.java
+		ViewerFrame viewFrame =(ViewerFrame) bdvHandle.getViewerPanel().getParent().getParent().getParent().getParent();
+		viewFrame.setLocation(
+						crosshairFrame.getLocationOnScreen().x + crosshairFrame.getWidth(),
+						crosshairFrame.getLocationOnScreen().y );
+
+		universe.getWindow().setLocation(viewFrame.getLocationOnScreen().x + viewFrame.getWidth(),
+				viewFrame.getLocation().y);
+
 	}
 
 	public static void main( String[] args )
