@@ -362,7 +362,7 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     private void enterMicrotomeMode () {
-        if (planeManager.checkAllPlanesPointsDefined() & planeManager.getTrackPlane() == 0) {
+        if (planeManager.checkAllPlanesPointsDefined()) {
             enterMicrotomeModeButton.setEnabled(false);
             exitMicrotomeModeButton.setEnabled(true);
             enterCuttingModeButton.setVisible(true);
@@ -382,7 +382,7 @@ public class MicrotomePanel extends CrosshairPanel {
             pointsPanel.activateMicrotomeButtons();
             crosshairFrame.pack();
         } else {
-            IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
+            IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined.");
         }
     }
 

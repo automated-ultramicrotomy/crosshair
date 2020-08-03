@@ -160,7 +160,7 @@ import java.util.Map;
             if (planeManager.getTrackPlane() == 0) {
                 // check if there are already vertex points
                 if (planeManager.getBlockVertices().size() > 0) {
-                    int result = JOptionPane.showConfirmDialog(null, "If you track the block plane, you will lose all current vertex points", "Are you sure?",
+                    int result = JOptionPane.showConfirmDialog(null, "If you track the block plane, you will lose all current vertex points. Continue?", "Are you sure?",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                     if (result == JOptionPane.YES_OPTION) {

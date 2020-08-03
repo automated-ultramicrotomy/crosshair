@@ -47,17 +47,23 @@ public class BdvBehaviours {
         });
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0) {
-                planeManager.addRemoveCurrentPositionPoints();
+            if (microtomeManager.isMicrotomeModeActive()) {
+                IJ.log("Can't change points when in microtome mode");
+            } else if (planeManager.getTrackPlane() != 0) {
+                IJ.log("Can't change points when tracking a plane");
             } else {
-                IJ.log("Microtome mode must be inactive, and not tracking plane, to change points");
+                planeManager.addRemoveCurrentPositionPoints();
             }
         }, "add point", "P" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (planeManager.getTrackPlane() == 0 & !microtomeManager.isMicrotomeModeActive()) {
+            if (microtomeManager.isMicrotomeModeActive()) {
+                IJ.log("Can't fit to points when in microtome mode");
+            } else if (planeManager.getTrackPlane() == 2) {
+                IJ.log("Can't fit to points when tracking block plane");
+            } else {
                 if (planeManager.getBlockVertices().size() > 0) {
-                    int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points", "Are you sure?",
+                    int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                     if (result == JOptionPane.YES_OPTION) {
@@ -69,17 +75,20 @@ public class BdvBehaviours {
                     ArrayList<Vector3d> planeDefinition = fitPlaneToPoints(planeManager.getPoints());
                     planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
                 }
-            } else {
-                IJ.log("Can only fit to points, when not tracking a plane and microtome mode is inactive");
             }
         }, "fit to points", "K" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0 & planeManager.checkNamedPlaneExists("block")) {
-                planeManager.addRemoveCurrentPositionBlockVertices();
+            if (microtomeManager.isMicrotomeModeActive()) {
+                IJ.log("Can't change points when in microtome mode");
+            } else if (planeManager.getTrackPlane() != 0) {
+                IJ.log("Can't change points when tracking a plane");
+            } else if (!planeManager.checkNamedPlaneExists("block")) {
+                IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
             } else {
-                IJ.log("Microtome mode must be inactive, block plane must exit, and not tracking plane, to change points");
+                planeManager.addRemoveCurrentPositionBlockVertices();
             }
+
         }, "add block vertex", "V" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
