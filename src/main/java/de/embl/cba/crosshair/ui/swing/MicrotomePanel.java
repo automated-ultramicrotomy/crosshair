@@ -61,6 +61,7 @@ public class MicrotomePanel extends CrosshairPanel {
         vertexAssignmentPanel = crosshairFrame.getVertexAssignmentPanel();
         planeManager = crosshairFrame.getPlaneManager();
         planePanel = crosshairFrame.getPlanePanel();
+        savePanel = crosshairFrame.getSavePanel();
 
         sliderPanels = new HashMap<>();
 
