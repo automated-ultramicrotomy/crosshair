@@ -121,6 +121,10 @@ class Cutting {
                 microtome.getCurrentKnifeNormal(), verticesMicrotomeCoordsV,"min");
         firstTouchPointCutting = verticesMicrotomeCoordsV.get(indexMinDist);
 
+        System.out.println("touch");
+        System.out.println(vertexNames.get(indexMinDist));
+        System.out.println(firstTouchPointCutting.toString());
+
         // Need the coordinate where a plane identical to teh knife plane, but centred on the first touch point (imagine
         // what the knife would look like as it just touches the block) - where this intersects the midline of the microtome (NS).
         // This will be our 0, at this level of approach NS, our knife will just touch the first touch point.
@@ -131,11 +135,7 @@ class Cutting {
         } else {
             double oppositeLength = tan(convertToRadians(knife)) * firstTouchPointCutting.getX();
 
-            if (oppositeLength > 0) {
-                NSZeroY = firstTouchPointCutting.getY() - oppositeLength;
-            } else {
-                NSZeroY = firstTouchPointCutting.getY() + oppositeLength;
-            }
+            NSZeroY = firstTouchPointCutting.getY() - oppositeLength;
         }
 
         NSZero = new Vector3d(0, NSZeroY,0);
