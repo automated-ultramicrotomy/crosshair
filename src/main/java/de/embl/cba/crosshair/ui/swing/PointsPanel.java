@@ -1,6 +1,7 @@
 package de.embl.cba.crosshair.ui.swing;
 
 import bdv.util.BdvHandle;
+import de.embl.cba.crosshair.Crosshair;
 import de.embl.cba.crosshair.bdv.PointsOverlaySizeChange;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -11,21 +12,25 @@ import java.util.ArrayList;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
-public class PointsPanel extends JPanel {
+public class PointsPanel extends CrosshairPanel {
 
     private Content imageContent;
-    private final Image3DUniverse universe;
+    private Image3DUniverse universe;
     private boolean threeDPointsVisible;
     private PointsOverlaySizeChange pointOverlay;
     private BdvHandle bdvHandle;
     private ArrayList<JButton> microtomeVisibilityButtons;
+    private CrosshairFrame crosshairFrame;
 
-    public PointsPanel(Image3DUniverse universe, Content imageContent, PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle) {
+    public PointsPanel(CrosshairFrame crosshairFrame) {
+        this.crosshairFrame = crosshairFrame;
+    }
 
-        this.imageContent = imageContent;
-        this.universe = universe;
-        this.pointOverlay = pointOverlay;
-        this.bdvHandle = bdvHandle;
+    public void initialisePanel () {
+        imageContent = crosshairFrame.getImageContent();
+        universe = crosshairFrame.getUniverse();
+        pointOverlay = crosshairFrame.getPointOverlay();
+        bdvHandle = crosshairFrame.getBdvHandle();
         threeDPointsVisible = true;
         microtomeVisibilityButtons = new ArrayList<>();
 
@@ -40,7 +45,6 @@ public class PointsPanel extends JPanel {
         addPointToPanel("2d points ", "2D");
         addPointToPanel("Holder", "holder");
         deactivateMicrotomeButtons();
-
     }
 
     public boolean check3DPointsVisible() {

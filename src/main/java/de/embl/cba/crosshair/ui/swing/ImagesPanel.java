@@ -2,6 +2,7 @@ package de.embl.cba.crosshair.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BoundedValueDouble;
+import de.embl.cba.crosshair.Crosshair;
 import ij3d.Content;
 import org.scijava.vecmath.Color3f;
 
@@ -10,15 +11,20 @@ import java.awt.*;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
-public class ImagesPanel extends JPanel {
+public class ImagesPanel extends CrosshairPanel {
 
+    private CrosshairFrame crosshairFrame;
     private Content imageContent;
     private PointsPanel pointsPanel;
     private Color3f imageColour;
 
-    public ImagesPanel(Content imageContent, PointsPanel pointsPanel) {
-        this.imageContent = imageContent;
-        this.pointsPanel = pointsPanel;
+    public ImagesPanel(CrosshairFrame crosshairFrame) {
+        this.crosshairFrame = crosshairFrame;
+    }
+
+    public void initialisePanel () {
+        this.imageContent = crosshairFrame.getImageContent();
+        this.pointsPanel = crosshairFrame.getPointsPanel();
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Images"),

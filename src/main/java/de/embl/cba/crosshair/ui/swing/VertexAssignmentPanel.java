@@ -9,13 +9,18 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VertexAssignmentPanel extends JPanel {
+public class VertexAssignmentPanel extends CrosshairPanel {
 
-    private final PlaneManager planeManager;
-    private final Map<String, JButton> buttons;
+    private PlaneManager planeManager;
+    private Map<String, JButton> buttons;
+    private CrosshairFrame crosshairFrame;
 
-    public VertexAssignmentPanel(PlaneManager planeManager) {
-        this.planeManager = planeManager;
+    public VertexAssignmentPanel(CrosshairFrame crosshairFrame) {
+        this.crosshairFrame = crosshairFrame;
+    }
+
+    public void initialisePanel () {
+        this.planeManager = crosshairFrame.getPlaneManager();
         buttons = new HashMap<>();
 
         setBorder(BorderFactory.createCompoundBorder(

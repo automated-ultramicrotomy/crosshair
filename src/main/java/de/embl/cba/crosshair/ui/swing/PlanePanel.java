@@ -2,23 +2,43 @@ package de.embl.cba.crosshair.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
+import de.embl.cba.crosshair.Crosshair;
 import de.embl.cba.crosshair.PlaneManager;
 import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import ij.IJ;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
-    public class PlanePanel extends JPanel {
+    public class PlanePanel extends CrosshairPanel {
 
-        private final PlaneManager planeManager;
-        private final MicrotomeManager microtomeManager;
+        private PlaneManager planeManager;
+        private MicrotomeManager microtomeManager;
+        private Map<String, JButton> trackingButtons;
+        private MicrotomePanel microtomePanel;
+        private SavePanel savePanel;
+        private CrosshairFrame crosshairFrame;
+        private ArrayList<JButton> buttonsAffectedByBlockTracking;
+        private ArrayList<JButton> buttonsAffectedByTargetTracking;
 
-        public PlanePanel(PlaneManager planeManager, MicrotomeManager microtomeManager) {
-            this.planeManager = planeManager;
-            this.microtomeManager = microtomeManager;
+        public PlanePanel(CrosshairFrame crosshairFrame) {
+            this.crosshairFrame = crosshairFrame;
+        }
+
+        public void initialisePanel () {
+            planeManager = crosshairFrame.getPlaneManager();
+            microtomeManager = crosshairFrame.getMicrotomeManager();
+            savePanel = crosshairFrame.getSavePanel();
+            microtomePanel = crosshairFrame.getMicrotomePanel();
+
+            trackingButtons = new HashMap<>();
+            buttonsAffectedByTargetTracking = new ArrayList<>();
+            buttonsAffectedByBlockTracking = new ArrayList<>();
 
             setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder("Planes"),
@@ -29,7 +49,6 @@ import java.awt.*;
             addPlaneToPanel("block");
         }
 
-
         private void addColorButton(JPanel panel, int[] buttonDimensions, String planeName) {
             JButton colorButton;
             colorButton = new JButton("C");
@@ -38,30 +57,30 @@ import java.awt.*;
                     new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
             colorButton.addActionListener(e -> {
-                if (planeManager.getTrackPlane() == 0) {
-                    Color colour = JColorChooser.showDialog(null, "", null);
+                Color colour = JColorChooser.showDialog(null, "", null);
 
-                    if (colour == null) return;
+                if (colour == null) return;
 
-                    if (planeName == "target") {
-                        if (planeManager.checkNamedPlaneExists("target")) {
-                            planeManager.setTargetPlaneColour(colour);
-                        } else {
-                            IJ.log("Target plane not initialised");
-                        }
-                    } else if (planeName == "block") {
-                        if (planeManager.checkNamedPlaneExists("block")) {
-                            planeManager.setBlockPlaneColour(colour);
-                        } else {
-                            IJ.log("Block plane not initialised");
-                        }
+                if (planeName == "target") {
+                    if (planeManager.checkNamedPlaneExists("target")) {
+                        planeManager.setTargetPlaneColour(colour);
+                    } else {
+                        IJ.log("Target plane not initialised");
                     }
-                } else {
-                    IJ.log("Can only change colour, when not tracking a plane");
+                } else if (planeName == "block") {
+                    if (planeManager.checkNamedPlaneExists("block")) {
+                        planeManager.setBlockPlaneColour(colour);
+                    } else {
+                        IJ.log("Block plane not initialised");
+                    }
                 }
 
             });
-
+            if (planeName.equals("target")) {
+                buttonsAffectedByTargetTracking.add(colorButton);
+            } else if (planeName.equals("block")) {
+                buttonsAffectedByBlockTracking.add(colorButton);
+            }
             panel.add(colorButton);
         }
 
@@ -73,16 +92,18 @@ import java.awt.*;
                     new Dimension(2*buttonDimensions[0], buttonDimensions[1]));
 
             goToButton.addActionListener(e -> {
-                if (planeManager.getTrackPlane() == 0) {
-                    if (planeManager.checkNamedPlaneExists(planeName)) {
-                        planeManager.moveViewToNamedPlane(planeName);
-                    } else {
-                        IJ.log("Plane not initialised");
-                    }
+                if (planeManager.checkNamedPlaneExists(planeName)) {
+                    planeManager.moveViewToNamedPlane(planeName);
                 } else {
-                    IJ.log("Can only go to plane, when not tracking a plane");
+                    IJ.log("Plane not initialised");
                 }
             });
+
+            if (planeName.equals("target")) {
+                buttonsAffectedByTargetTracking.add(goToButton);
+            } else if (planeName.equals("block")) {
+                buttonsAffectedByBlockTracking.add(goToButton);
+            }
 
             panel.add(goToButton);
         }
@@ -95,7 +116,6 @@ import java.awt.*;
                     new Dimension(2*buttonDimensions[0], buttonDimensions[1]));
 
             trackButton.addActionListener(e -> {
-                        // TODO - move checks to just making buttons inactive
                     if (planeName == "block") {
                         toggleBlockTracking(trackButton);
                     } else if (planeName == "target") {
@@ -103,11 +123,41 @@ import java.awt.*;
                     }
             });
 
+            trackingButtons.put(planeName, trackButton);
+            if (planeName.equals("target")) {
+                buttonsAffectedByBlockTracking.add(trackButton);
+            } else if (planeName.equals("block")) {
+                buttonsAffectedByTargetTracking.add(trackButton);
+            }
             panel.add(trackButton);
         }
 
+        private void disableButtonsAffectedByBlockTracking () {
+            for (JButton button : buttonsAffectedByBlockTracking) {
+                button.setEnabled(false);
+            }
+        }
+
+        private void enableButtonsAffectedByBlockTracking () {
+            for (JButton button : buttonsAffectedByBlockTracking) {
+                button.setEnabled(true);
+            }
+        }
+
+        private void disableButtonsAffectedByTargetTracking () {
+            for (JButton button : buttonsAffectedByTargetTracking) {
+                button.setEnabled(false);
+            }
+        }
+
+        private void enableButtonsAffectedByTargetTracking () {
+            for (JButton button : buttonsAffectedByTargetTracking) {
+                button.setEnabled(true);
+            }
+        }
+
         private void toggleBlockTracking (JButton trackButton) {
-            if (planeManager.getTrackPlane() == 0 & !microtomeManager.isMicrotomeModeActive()) {
+            if (planeManager.getTrackPlane() == 0) {
                 // check if there are already vertex points
                 if (planeManager.getBlockVertices().size() > 0) {
                     int result = JOptionPane.showConfirmDialog(null, "If you track the block plane, you will lose all current vertex points", "Are you sure?",
@@ -118,26 +168,46 @@ import java.awt.*;
                         planeManager.setTrackPlane(2);
                         planeManager.updatePlaneCurrentView("block");
                         trackButton.setBackground(new Color (255, 0,0));
+                        microtomePanel.disableEnterMicrotomeMode();
+                        savePanel.disableLoadSettings();
+                        savePanel.disableSaveSettings();
+                        disableButtonsAffectedByBlockTracking();
                     }
                 } else {
                     planeManager.setTrackPlane(2);
                     planeManager.updatePlaneCurrentView("block");
                     trackButton.setBackground(new Color (255, 0,0));
+                    microtomePanel.disableEnterMicrotomeMode();
+                    savePanel.disableLoadSettings();
+                    savePanel.disableSaveSettings();
+                    disableButtonsAffectedByBlockTracking();
                 }
             } else if (planeManager.getTrackPlane() == 2) {
                 planeManager.setTrackPlane(0);
                 trackButton.setBackground(null);
+                microtomePanel.enableEnterMicrotomeButton();
+                savePanel.enableLoadSettings();
+                savePanel.enableSaveSettings();
+                enableButtonsAffectedByBlockTracking();
             }
         }
 
         private void toggleTargetTracking (JButton trackButton) {
-            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target") & !microtomeManager.isMicrotomeModeActive()) {
+            if (planeManager.getTrackPlane() == 0) {
                 planeManager.setTrackPlane(1);
                 planeManager.updatePlaneCurrentView("target");
                 trackButton.setBackground(new Color (255, 0,0));
+                microtomePanel.disableEnterMicrotomeMode();
+                savePanel.disableLoadSettings();
+                savePanel.disableSaveSettings();
+                disableButtonsAffectedByTargetTracking();
             } else if (planeManager.getTrackPlane() == 1) {
                 planeManager.setTrackPlane(0);
                 trackButton.setBackground(null);
+                microtomePanel.enableEnterMicrotomeButton();
+                savePanel.enableLoadSettings();
+                savePanel.enableSaveSettings();
+                enableButtonsAffectedByTargetTracking();
             }
         }
 
@@ -149,24 +219,26 @@ import java.awt.*;
                     new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
             visbilityButton.addActionListener(e -> {
-                if (planeManager.getTrackPlane() == 0) {
-                    if (planeName == "target") {
-                        if (planeManager.checkNamedPlaneExists("target")) {
-                            planeManager.toggleTargetVisbility();
-                        } else {
-                            IJ.log("Target plane not initialised");
-                        }
-                    } else if (planeName == "block") {
-                        if (planeManager.checkNamedPlaneExists("block")) {
-                            planeManager.toggleBlockVisbility();
-                        } else {
-                            IJ.log("Block plane not initialised");
-                        }
+                if (planeName == "target") {
+                    if (planeManager.checkNamedPlaneExists("target")) {
+                        planeManager.toggleTargetVisbility();
+                    } else {
+                        IJ.log("Target plane not initialised");
                     }
-                } else {
-                    IJ.log("Can only toggle visiblity, when not tracking a plane");
+                } else if (planeName == "block") {
+                    if (planeManager.checkNamedPlaneExists("block")) {
+                        planeManager.toggleBlockVisbility();
+                    } else {
+                        IJ.log("Block plane not initialised");
+                    }
                 }
             });
+
+            if (planeName.equals("target")) {
+                buttonsAffectedByTargetTracking.add(visbilityButton);
+            } else if (planeName.equals("block")) {
+                buttonsAffectedByBlockTracking.add(visbilityButton);
+            }
 
             panel.add(visbilityButton);
         }
@@ -200,6 +272,7 @@ import java.awt.*;
             this.repaint();
         }
 
+        // TODO - make it so transparncy panel doesn't appera if plane not initialised
         public void addTransparencyButton(JPanel panel, int[] buttonDimensions,
                                                 String planeName) {
             JButton button = new JButton("T");
@@ -209,58 +282,72 @@ import java.awt.*;
 
             button.addActionListener(e ->
             {
-                if (planeManager.getTrackPlane() == 0) {
-                    JFrame frame = new JFrame("Transparency");
-                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                JFrame frame = new JFrame("Transparency");
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-                    float currentTransparency = 0.7f;
-                    if (planeName.equals("target")) {
-                        if (planeManager.checkNamedPlaneExists("target")) {
-                            currentTransparency = planeManager.getTargetTransparency();
-                        } else {
-                            IJ.log("Target plane not initialised");
-                        }
-                    } else if (planeName.equals("block")) {
-                        if (planeManager.checkNamedPlaneExists("block")) {
-                            currentTransparency = planeManager.getBlockTransparency();
-                        } else {
-                            IJ.log("Block plane not initialised");
-                        }
+                float currentTransparency = 0.7f;
+                if (planeName.equals("target")) {
+                    if (planeManager.checkNamedPlaneExists("target")) {
+                        currentTransparency = planeManager.getTargetTransparency();
+                    } else {
+                        IJ.log("Target plane not initialised");
                     }
+                } else if (planeName.equals("block")) {
+                    if (planeManager.checkNamedPlaneExists("block")) {
+                        currentTransparency = planeManager.getBlockTransparency();
+                    } else {
+                        IJ.log("Block plane not initialised");
+                    }
+                }
 
 //                as here https://github.com/tischi/imagej-utils/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
-                    final BoundedValueDouble transparencyValue =
-                            new BoundedValueDouble(
-                                    0,
-                                    1,
-                                    currentTransparency);
+                final BoundedValueDouble transparencyValue =
+                        new BoundedValueDouble(
+                                0,
+                                1,
+                                currentTransparency);
 
-                    double spinnerStepSize = 0.1;
+                double spinnerStepSize = 0.1;
 
-                    JPanel transparencyPanel = new JPanel();
-                    transparencyPanel.setLayout(new BoxLayout(transparencyPanel, BoxLayout.PAGE_AXIS));
-                    final SliderPanelDouble transparencySlider = new SliderPanelDouble("Transparency", transparencyValue, spinnerStepSize);
-                    transparencySlider.setNumColummns(7);
-                    transparencySlider.setDecimalFormat("####E0");
-                    transparencyValue.setUpdateListener(new TransparencyUpdateListener(transparencyValue,
-                            transparencySlider, planeName, planeManager));
+                JPanel transparencyPanel = new JPanel();
+                transparencyPanel.setLayout(new BoxLayout(transparencyPanel, BoxLayout.PAGE_AXIS));
+                final SliderPanelDouble transparencySlider = new SliderPanelDouble("Transparency", transparencyValue, spinnerStepSize);
+                transparencySlider.setNumColummns(7);
+                transparencySlider.setDecimalFormat("####E0");
+                transparencyValue.setUpdateListener(new TransparencyUpdateListener(transparencyValue,
+                        transparencySlider, planeName, planeManager));
 
-                    transparencyPanel.add(transparencySlider);
-                    frame.setContentPane(transparencyPanel);
+                transparencyPanel.add(transparencySlider);
+                frame.setContentPane(transparencyPanel);
 
-                    //Display the window.
-                    frame.setBounds(MouseInfo.getPointerInfo().getLocation().x,
-                            MouseInfo.getPointerInfo().getLocation().y,
-                            120, 10);
-                    frame.setResizable(false);
-                    frame.pack();
-                    frame.setVisible(true);
-                } else {
-                    IJ.log("Can only change transparency of plane, when not tracking a plane");
-                }
+                //Display the window.
+                frame.setBounds(MouseInfo.getPointerInfo().getLocation().x,
+                        MouseInfo.getPointerInfo().getLocation().y,
+                        120, 10);
+                frame.setResizable(false);
+                frame.pack();
+                frame.setVisible(true);
             });
 
+            if (planeName.equals("target")) {
+                buttonsAffectedByTargetTracking.add(button);
+            } else if (planeName.equals("block")) {
+                buttonsAffectedByBlockTracking.add(button);
+            }
+
             panel.add(button);
+        }
+
+        public void disableAllTracking () {
+            for (String key : trackingButtons.keySet()) {
+                trackingButtons.get(key).setEnabled(false);
+            }
+        }
+
+        public void enableAllTracking () {
+            for (String key : trackingButtons.keySet()) {
+                trackingButtons.get(key).setEnabled(true);
+            }
         }
 
         public class TransparencyUpdateListener implements BoundedValueDouble.UpdateListener {

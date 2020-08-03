@@ -23,7 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-public class SavePanel extends JPanel {
+public class SavePanel extends CrosshairPanel {
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
     private Content imageContent;
@@ -31,16 +31,22 @@ public class SavePanel extends JPanel {
     private PointsPanel pointsPanel;
     private PointsOverlaySizeChange pointOverlay;
     private JButton saveSolution;
+    private JButton saveSettings;
+    private JButton loadSettings;
+    private CrosshairFrame crosshairFrame;
 
 
-    public SavePanel(PlaneManager planeManager, MicrotomeManager microtomeManager, Content imageContent, MicrotomePanel microtomePanel, PointsPanel pointsPanel,
-                     PointsOverlaySizeChange pointOverlay) {
-        this.planeManager = planeManager;
-        this.microtomeManager = microtomeManager;
-        this.imageContent = imageContent;
-        this.microtomePanel = microtomePanel;
-        this.pointsPanel = pointsPanel;
-        this.pointOverlay = pointOverlay;
+    public SavePanel(CrosshairFrame crosshairFrame) {
+        this.crosshairFrame = crosshairFrame;
+    }
+
+    public void initialisePanel () {
+        this.planeManager = crosshairFrame.getPlaneManager();
+        this.microtomeManager = crosshairFrame.getMicrotomeManager();
+        this.imageContent = crosshairFrame.getImageContent();
+        this.microtomePanel = crosshairFrame.getMicrotomePanel();
+        this.pointsPanel = crosshairFrame.getPointsPanel();
+        this.pointOverlay = crosshairFrame.getPointOverlay();
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Save and Load"),
@@ -50,12 +56,12 @@ public class SavePanel extends JPanel {
 
         ActionListener saveLoadListener = new saveLoadListener();
 
-        JButton saveSettings = new JButton("Save Settings");
+        saveSettings = new JButton("Save Settings");
         saveSettings.setActionCommand("save_settings");
         saveSettings.addActionListener(saveLoadListener);
         add(saveSettings);
 
-        JButton loadSettings = new JButton("Load Settings");
+        loadSettings = new JButton("Load Settings");
         loadSettings.setActionCommand("load_settings");
         loadSettings.addActionListener(saveLoadListener);
         add(loadSettings);
@@ -65,8 +71,6 @@ public class SavePanel extends JPanel {
         saveSolution.addActionListener(saveLoadListener);
         saveSolution.setEnabled(false);
         add(saveSolution);
-
-
     }
 
     void enableSaveSolution() {
@@ -76,6 +80,14 @@ public class SavePanel extends JPanel {
     void disableSaveSolution() {
         saveSolution.setEnabled(false);
     }
+
+    void enableSaveSettings() { saveSettings.setEnabled(true); }
+
+    void disableSaveSettings() {saveSettings.setEnabled(false);}
+
+    void enableLoadSettings() {loadSettings.setEnabled(true);}
+
+    void disableLoadSettings() {loadSettings.setEnabled(false);}
 
     class saveLoadListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {

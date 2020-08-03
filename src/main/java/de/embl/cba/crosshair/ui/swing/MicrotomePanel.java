@@ -15,10 +15,10 @@ import java.util.*;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
-public class MicrotomePanel extends JPanel {
+public class MicrotomePanel extends CrosshairPanel {
 
-    private final MicrotomeManager microtomeManager;
-    private final PlaneManager planeManager;
+    private MicrotomeManager microtomeManager;
+    private PlaneManager planeManager;
 
     private BoundedValueDouble initialKnifeAngle;
     private BoundedValueDouble initialTiltAngle;
@@ -28,7 +28,7 @@ public class MicrotomePanel extends JPanel {
     private BoundedValueDouble rotationSolution;
     private BoundedValueDouble cuttingDepth;
 
-    private final Map<String, JPanel> sliderPanels;
+    private Map<String, JPanel> sliderPanels;
 
     private JLabel firstTouchLabel;
     private JLabel distanceToCutLabel;
@@ -44,18 +44,23 @@ public class MicrotomePanel extends JPanel {
 
     private JPanel cuttingControlsPanel;
     private JPanel currentSettingsPanel;
+    private PlanePanel planePanel;
     private SavePanel savePanel;
     private PointsPanel pointsPanel;
     private VertexAssignmentPanel vertexAssignmentPanel;
 
-    private JFrame parentFrame;
+    private CrosshairFrame crosshairFrame;
 
-    public MicrotomePanel(MicrotomeManager microtomeManager, PlaneManager planeManager, PointsPanel pointsPanel,
-                          VertexAssignmentPanel vertexAssignmentPanel) {
-        this.microtomeManager = microtomeManager;
-        this.pointsPanel = pointsPanel;
-        this.vertexAssignmentPanel = vertexAssignmentPanel;
-        this.planeManager = planeManager;
+    public MicrotomePanel(CrosshairFrame crosshairFrame) {
+        this.crosshairFrame = crosshairFrame;
+    }
+
+    public void initialisePanel () {
+        microtomeManager = crosshairFrame.getMicrotomeManager();
+        pointsPanel = crosshairFrame.getPointsPanel();
+        vertexAssignmentPanel = crosshairFrame.getVertexAssignmentPanel();
+        planeManager = crosshairFrame.getPlaneManager();
+        planePanel = crosshairFrame.getPlanePanel();
 
         sliderPanels = new HashMap<>();
 
@@ -65,14 +70,6 @@ public class MicrotomePanel extends JPanel {
         addMicrotomeControlsPanel(this);
         addCuttingControlsPanel(this);
         addCurrentSettingsPanel(this);
-    }
-
-    public void setSavePanel (SavePanel savePanel) {
-        this.savePanel = savePanel;
-    }
-
-    public void setParentFrame(JFrame jFrame) {
-        parentFrame = jFrame;
     }
 
     public BoundedValueDouble getKnifeAngle() {
@@ -136,6 +133,14 @@ public class MicrotomePanel extends JPanel {
                 addSliderToPanel(initialMicrotomeSetup, "Initial Tilt", -20, 20, 0);
 
         panel.add(initialMicrotomeSetup);
+    }
+
+    public void disableEnterMicrotomeMode () {
+        enterMicrotomeModeButton.setEnabled(false);
+    }
+
+    public void enableEnterMicrotomeButton () {
+        enterMicrotomeModeButton.setEnabled(true);
     }
 
     private void addMicrotomeControlsPanel (JPanel panel) {
@@ -372,8 +377,9 @@ public class MicrotomePanel extends JPanel {
             cuttingControlsPanel.setVisible(true);
             currentSettingsPanel.setVisible(true);
             savePanel.enableSaveSolution();
+            planePanel.disableAllTracking();
             pointsPanel.activateMicrotomeButtons();
-            parentFrame.pack();
+            crosshairFrame.pack();
         } else {
             IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined. Or you are currently tracking a plane");
         }
@@ -394,13 +400,14 @@ public class MicrotomePanel extends JPanel {
         tiltAngle.setCurrentValue(0);
         rotationAngle.setCurrentValue(0);
         microtomeManager.exitMicrotomeMode();
+        planePanel.enableAllTracking();
 
         // inactivate sliders
         disableSliders();
         vertexAssignmentPanel.enableButtons();
         savePanel.disableSaveSolution();
         pointsPanel.activateMicrotomeButtons();
-        parentFrame.pack();
+        crosshairFrame.pack();
     }
 
     private void enterCuttingMode () {
@@ -411,7 +418,7 @@ public class MicrotomePanel extends JPanel {
         cuttingDepth.setCurrentValue(0);
         enterCuttingModeButton.setEnabled(false);
         exitCuttingModeButton.setEnabled(true);
-        parentFrame.pack();
+        crosshairFrame.pack();
 
     }
 
@@ -421,7 +428,7 @@ public class MicrotomePanel extends JPanel {
         microtomeManager.exitCuttingMode();
         enterCuttingModeButton.setEnabled(true);
         exitCuttingModeButton.setEnabled(false);
-        parentFrame.pack();
+        crosshairFrame.pack();
     }
 
     abstract class MicrotomeListener implements BoundedValueDouble.UpdateListener {
