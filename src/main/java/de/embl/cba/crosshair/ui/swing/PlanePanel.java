@@ -3,6 +3,7 @@ package de.embl.cba.crosshair.ui.swing;
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
 import de.embl.cba.crosshair.PlaneManager;
+import de.embl.cba.crosshair.microtome.MicrotomeManager;
 import ij.IJ;
 
 import javax.swing.*;
@@ -13,9 +14,11 @@ import java.awt.*;
     public class PlanePanel extends JPanel {
 
         private final PlaneManager planeManager;
+        private final MicrotomeManager microtomeManager;
 
-        public PlanePanel(PlaneManager planeManager) {
+        public PlanePanel(PlaneManager planeManager, MicrotomeManager microtomeManager) {
             this.planeManager = planeManager;
+            this.microtomeManager = microtomeManager;
 
             setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder("Planes"),
@@ -84,6 +87,60 @@ import java.awt.*;
             panel.add(goToButton);
         }
 
+        private void addTrackingButton(JPanel panel, int[] buttonDimensions, String planeName) {
+            JButton trackButton;
+            trackButton = new JButton("TRACK");
+
+            trackButton.setPreferredSize(
+                    new Dimension(2*buttonDimensions[0], buttonDimensions[1]));
+
+            trackButton.addActionListener(e -> {
+                        // TODO - move checks to just making buttons inactive
+                    if (planeName == "block") {
+                        toggleBlockTracking(trackButton);
+                    } else if (planeName == "target") {
+                        toggleTargetTracking(trackButton);
+                    }
+            });
+
+            panel.add(trackButton);
+        }
+
+        private void toggleBlockTracking (JButton trackButton) {
+            if (planeManager.getTrackPlane() == 0 & !microtomeManager.isMicrotomeModeActive()) {
+                // check if there are already vertex points
+                if (planeManager.getBlockVertices().size() > 0) {
+                    int result = JOptionPane.showConfirmDialog(null, "If you track the block plane, you will lose all current vertex points", "Are you sure?",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                    if (result == JOptionPane.YES_OPTION) {
+                        planeManager.removeAllBlockVertices();
+                        planeManager.setTrackPlane(2);
+                        planeManager.updatePlaneCurrentView("block");
+                        trackButton.setBackground(new Color (255, 0,0));
+                    }
+                } else {
+                    planeManager.setTrackPlane(2);
+                    planeManager.updatePlaneCurrentView("block");
+                    trackButton.setBackground(new Color (255, 0,0));
+                }
+            } else if (planeManager.getTrackPlane() == 2) {
+                planeManager.setTrackPlane(0);
+                trackButton.setBackground(null);
+            }
+        }
+
+        private void toggleTargetTracking (JButton trackButton) {
+            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target") & !microtomeManager.isMicrotomeModeActive()) {
+                planeManager.setTrackPlane(1);
+                planeManager.updatePlaneCurrentView("target");
+                trackButton.setBackground(new Color (255, 0,0));
+            } else if (planeManager.getTrackPlane() == 1) {
+                planeManager.setTrackPlane(0);
+                trackButton.setBackground(null);
+            }
+        }
+
         private void addVisibilityButton (JPanel panel, int[] buttonDimensions, String planeName) {
             JButton visbilityButton;
             visbilityButton = new JButton("V");
@@ -131,6 +188,7 @@ import java.awt.*;
             addColorButton(panel, buttonDimensions, planeName);
             addTransparencyButton(panel, buttonDimensions, planeName);
             addVisibilityButton(panel, buttonDimensions, planeName);
+            addTrackingButton(panel, buttonDimensions, planeName);
             addGOTOButton(panel, buttonDimensions, planeName);
 
             add(panel);

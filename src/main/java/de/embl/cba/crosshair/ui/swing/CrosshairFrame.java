@@ -24,7 +24,7 @@ public class CrosshairFrame extends JFrame {
         mainPane.setOpaque(true);
         this.setContentPane(mainPane);
 
-        PlanePanel planePanel = new PlanePanel(planeManager);
+        PlanePanel planePanel = new PlanePanel(planeManager, microtomeManager);
         PointsPanel pointsPanel = new PointsPanel(universe, imageContent, pointOverlay, bdvHandle);
         ImagesPanel imagesPanel = new ImagesPanel(imageContent, pointsPanel);
         VertexAssignmentPanel vertexAssignmentPanel = new VertexAssignmentPanel(planeManager);

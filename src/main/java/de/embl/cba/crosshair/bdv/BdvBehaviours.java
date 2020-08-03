@@ -46,40 +46,6 @@ public class BdvBehaviours {
             }
         });
 
-        behaviours.behaviour( (ClickBehaviour) (x, y ) -> {
-            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("target") & !microtomeManager.isMicrotomeModeActive()) {
-                planeManager.setTrackPlane(1);
-                // TODO - update plane here
-            } else if (planeManager.getTrackPlane() == 1) {
-                planeManager.setTrackPlane(0);
-            } else {
-                IJ.log("Microtome mode must be inactive, and plane visible, to track");
-            }
-        }, "toggle crosshair plane update", "shift T" );
-
-        behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (planeManager.getTrackPlane() == 0 & planeManager.getVisiblityNamedPlane("block") & !microtomeManager.isMicrotomeModeActive()) {
-                // check if there are already vertex points
-                if (planeManager.getBlockVertices().size() > 0) {
-                    int result = JOptionPane.showConfirmDialog(null,"If you track the block plane, you will lose all current vertex points", "Are you sure?",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE);
-                    if(result == JOptionPane.YES_OPTION){
-                        planeManager.removeAllBlockVertices();
-                        planeManager.setTrackPlane(2);
-                        //TODO - update plane here
-                    }
-                } else {
-                    planeManager.setTrackPlane(2);
-                    //TODO - update plane here
-                }
-            } else if (planeManager.getTrackPlane() == 2) {
-                planeManager.setTrackPlane(0);
-            } else {
-                IJ.log("Microtome mode must be inactive, and plane visible, to track");
-            }
-        }, "toggle block plane update", "shift F" );
-
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             if (!microtomeManager.isMicrotomeModeActive() & planeManager.getTrackPlane() == 0) {
                 planeManager.addRemoveCurrentPositionPoints();
