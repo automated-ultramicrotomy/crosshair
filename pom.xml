@@ -48,14 +48,14 @@
 		</mailingList>
 	</mailingLists>
 	<scm>
-		<connection>scm:git:git://github.com/tischi/imagej-utils</connection>
-		<developerConnection>scm:git:git@github.com/tischi/imagej-utils</developerConnection>
+		<connection>scm:git:git://github.com/K-Meech/crosshair</connection>
+		<developerConnection>scm:git:git@github.com/K-Meech/crosshair</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/tischi/imagej-utils</url>
+		<url>https://github.com/K-Meech/crosshair</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/imglib/imagej-utils/issues</url>
+		<url>https://github.com/K-Meech/crosshaircorr/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>None</system>

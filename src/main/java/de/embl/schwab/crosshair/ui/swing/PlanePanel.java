@@ -299,7 +299,7 @@ import java.util.Map;
                     }
                 }
 
-//                as here https://github.com/tischi/imagej-utils/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
+//                as here https://github.com/K-Meech/crosshair/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
                 final BoundedValueDouble transparencyValue =
                         new BoundedValueDouble(
                                 0,
