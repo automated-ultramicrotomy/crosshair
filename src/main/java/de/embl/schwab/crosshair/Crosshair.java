@@ -5,7 +5,6 @@ import bdv.viewer.ViewerFrame;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.cba.crosshair.ui.swing.*;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
 import ij.IJ;
 import ij.ImagePlus;

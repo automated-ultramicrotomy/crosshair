@@ -2,7 +2,6 @@ package de.embl.schwab.crosshair.ui.swing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.embl.cba.crosshair.*;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.io.SolutionToSave;
