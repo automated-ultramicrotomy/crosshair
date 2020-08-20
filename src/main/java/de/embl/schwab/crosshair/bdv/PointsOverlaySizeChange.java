@@ -13,7 +13,7 @@ import java.util.Map;
 public class PointsOverlaySizeChange extends BdvOverlay {
     // same as https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/PointsOverlay.java
     // but sets size to zero after certain distance
-    // could make it nicer like in teh bdv workshop, where they make the size taper off in a sphere
+    // could make it nicer like in the bdv workshop, where they make the size taper off in a sphere
         private List< ? extends RealLocalizable> points;
         private List<? extends RealLocalizable> vertexPoints;
         private Map<String, RealPoint> selectedPoint;

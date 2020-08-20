@@ -20,14 +20,10 @@ import static java.lang.Math.*;
 
 public final class GeometryUtils {
 
-
-
-
-
     public static ArrayList<Vector3d> fitPlaneToPoints(ArrayList<RealPoint> points) {
         // Solution as here: https://math.stackexchange.com/questions/99299/best-fitting-plane-given-a-set-of-points
         // good explanation of svds: https://en.wikipedia.org/wiki/Singular_value_decomposition
-//        convert to a real matrix
+        //        convert to a real matrix
         double [] [] pointArray = new double [points.size()][3];
         for (int i=0; i<points.size(); i++) {
             double[] position = new double[3];
@@ -39,7 +35,7 @@ public final class GeometryUtils {
 
 
 
-//        Convert to real matrix as here: http://commons.apache.org/proper/commons-math/userguide/linear.html
+        //        Convert to real matrix as here: http://commons.apache.org/proper/commons-math/userguide/linear.html
         RealMatrix pointMatrix = MatrixUtils.createRealMatrix(pointArray);
 
         //        Calculate centroid
@@ -108,7 +104,7 @@ public final class GeometryUtils {
         centroidToPoint.sub(intersections.get(0), centroid);
 
         Double[] signedAngles = new Double[intersections.size()];
-//		angle of point to itself is zero
+        //		angle of point to itself is zero
         signedAngles[0] = 0.0;
         for (int i=1; i<intersections.size(); i++) {
             Vector3d centroidToCurrentPoint = new Vector3d();
@@ -145,7 +141,7 @@ public final class GeometryUtils {
         return newPoint;
     }
 
-//    Note angle in radians
+    //    Note angle in radians
     public static double calculateSignedAngle(Vector3d vector1, Vector3d vector2, Vector3d planeNormal) {
         double unsignedAngle = vector1.angle(vector2);
         Vector3d crossVector1Vector2 = new Vector3d();
@@ -159,19 +155,19 @@ public final class GeometryUtils {
         }
     }
 
-//    Signed angle between two vectors (disregarding the orientations of the vectors) - so
-//    signed angle from initial line to target line. From a viewpoint vector perpendicular to both.
+    //    Signed angle between two vectors (disregarding the orientations of the vectors) - so
+    //    signed angle from initial line to target line. From a viewpoint vector perpendicular to both.
     public static double calculateSignedAngleLines (Vector3d view, Vector3d targetVector, Vector3d initialVector) {
-//        Make vectors point in same general direction
+    //        Make vectors point in same general direction
         Vector3d targetVectorCopy = new Vector3d(targetVector);
         if (targetVectorCopy.dot(initialVector) < 0) {
             targetVectorCopy.negate();
         }
-//TODO - convert to degrees?
+    //TODO - convert to degrees?
         double angle = targetVector.angle(initialVector);
 
-//        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
-//        the viewpoint vector. Anticlockwise is positive; clockwise is negative
+        //        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
+        //        the viewpoint vector. Anticlockwise is positive; clockwise is negative
         Vector3d initialCrossTarget = new Vector3d();
         initialCrossTarget.cross(initialVector, targetVector);
         if (initialCrossTarget.dot(view) < 0) {
@@ -182,28 +178,28 @@ public final class GeometryUtils {
 
     }
 
-//    General eq for signed angle of rotation about a viewpoint vector, to get from an initial plane
-//    to a target plane.
+    //    General eq for signed angle of rotation about a viewpoint vector, to get from an initial plane
+    //    to a target plane.
     public static double rotationPlaneToPlane (Vector3d view, Vector3d targetNormal, Vector3d initialNormal) {
-//         Line of intersection of target plane and plane perpendicular to viewpoint
+        //         Line of intersection of target plane and plane perpendicular to viewpoint
         Vector3d intersectionTarget = new Vector3d();
         intersectionTarget.cross(targetNormal, view);
 
-//        Line of intersection of initial plane and plane perpendicular to viewpoint
+        //        Line of intersection of initial plane and plane perpendicular to viewpoint
         Vector3d intersectionInitial = new Vector3d();
         intersectionInitial.cross(initialNormal, view);
 
-//        Issue that as we don't know which direction the normals point in, towards or away, we don't
-//        know which direction the intersections will point in
-//        Here I force both vectors to point in the same general direction
+        //        Issue that as we don't know which direction the normals point in, towards or away, we don't
+        //        know which direction the intersections will point in
+        //        Here I force both vectors to point in the same general direction
         if (intersectionTarget.dot(intersectionInitial) < 0) {
             intersectionTarget.negate();
         }
 
         double angle = convertToDegrees(intersectionTarget.angle(intersectionInitial));
 
-//        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
-//        the viewpoint vector. Anticlockwise is positive; clockwise is negative
+        //        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
+        //        the viewpoint vector. Anticlockwise is positive; clockwise is negative
         Vector3d initialCrossTarget = new Vector3d();
         initialCrossTarget.cross(intersectionInitial, intersectionTarget);
         if (initialCrossTarget.dot(view) < 0) {

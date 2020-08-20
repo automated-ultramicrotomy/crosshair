@@ -218,7 +218,7 @@ public class SavePanel extends CrosshairPanel {
                 planeManager.addRemovePointFromPointList(planeManager.getPoints(), point);
             }
 
-//            TODO - should do this still with checks that it lies on teh plane
+            // TODO - should do this still with checks that it lies on teh plane
             for (RealPoint point : settingsToSave.getBlockVertices()) {
                 planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
             }
@@ -230,13 +230,13 @@ public class SavePanel extends CrosshairPanel {
             imageContent.setColor(settingsToSave.getImageColour());
             imageContent.setTransparency(settingsToSave.getImageTransparency());
 
-//            TODO - if null, set to teh default lut, need to look up what this is and recreate it
+            // TODO - if null, set to the default lut, need to look up what this is and recreate it
             if (settingsToSave.getRedLut() != null & settingsToSave.getBlueLut() != null & settingsToSave.getGreenLut() != null & settingsToSave.getAlphaLut() != null) {
-//            transfer function
+            // transfer function
                 imageContent.setLUT(settingsToSave.getRedLut(), settingsToSave.getGreenLut(), settingsToSave.getBlueLut(), settingsToSave.getAlphaLut());
             }
 
-//        Set everything to be visible if not already
+            // Set everything to be visible if not already
             if (!planeManager.getVisiblityNamedPlane("target")) {
                 planeManager.toggleTargetVisbility();
             }

@@ -6,12 +6,12 @@
 		<artifactId>pom-scijava</artifactId>
 		<version>29.2.1</version>
 	</parent>
-	<artifactId>targeting3d</artifactId>
-	<url>TODO</url>
+	<artifactId>crosshair</artifactId>
+	<url>https://github.com/K-Meech/crosshair</url>
 	<version>0.1.0</version>
-	<name>TODO</name>
-	<description>TODO</description>
-	<inceptionYear>TODO</inceptionYear>
+	<name>Crosshair</name>
+	<description>Assisted 3D targeting via an ultramicrotome</description>
+	<inceptionYear>2020</inceptionYear>
 	<organization>
 		<name>EMBL</name>
 		<url>http://embl.de/</url>
@@ -23,6 +23,18 @@
 		</license>
 	</licenses>
 	<developers>
+		<developer>
+			<id>K-Meech</id>
+			<name>Kimberly Meechan</name>
+			<roles>
+				<role>lead</role>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
 		<developer>
 			<id>tischi</id>
 			<name>Christian Tischer</name>
@@ -55,7 +67,7 @@
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/K-Meech/crosshaircorr/issues</url>
+		<url>https://github.com/K-Meech/crosshair/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>None</system>

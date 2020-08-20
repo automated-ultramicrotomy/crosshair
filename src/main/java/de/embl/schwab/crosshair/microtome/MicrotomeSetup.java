@@ -205,7 +205,7 @@ class MicrotomeSetup {
         // location of min holder front is approximate from original blender file
         Point3d minHolderFront = new Point3d(0, 3, 0);
 
-        // hodler front after scaling
+        // holder front after scaling
         Point3d holderFrontAfter = new Point3d(minHolderFront.getX(), minHolderFront.getY(), minHolderFront.getZ());
         trans.transform(holderFrontAfter);
         double yHolderFront = holderFrontAfter.getY();

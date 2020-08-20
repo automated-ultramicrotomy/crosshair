@@ -120,11 +120,7 @@ class Cutting {
                 microtome.getCurrentKnifeNormal(), verticesMicrotomeCoordsV,"min");
         firstTouchPointCutting = verticesMicrotomeCoordsV.get(indexMinDist);
 
-        System.out.println("touch");
-        System.out.println(vertexNames.get(indexMinDist));
-        System.out.println(firstTouchPointCutting.toString());
-
-        // Need the coordinate where a plane identical to teh knife plane, but centred on the first touch point (imagine
+        // Need the coordinate where a plane identical to the knife plane, but centred on the first touch point (imagine
         // what the knife would look like as it just touches the block) - where this intersects the midline of the microtome (NS).
         // This will be our 0, at this level of approach NS, our knife will just touch the first touch point.
         double NSZeroY;
@@ -161,10 +157,10 @@ class Cutting {
 
         universe.getContent("CuttingPlane").setTransform(new Transform3D(translateCuttingPlane));
 
-//        Convert to microtome space coordinates - not adjusted for intial point == 0
+        // Convert to microtome space coordinates - not adjusted for intial point == 0
         Point3d knifePoint = new Point3d(0, depthMicrotomeCoords, 0);
 
-//        Convert knife plane to image coordinates
+        // Convert knife plane to image coordinates
         Transform3D inverseBlockTransform = new Transform3D();
         inverseBlockTransform.invert(new Transform3D( microtome.getCurrentBlockTransform() ));
         inverseBlockTransform.transform(knifePoint);
@@ -181,17 +177,17 @@ class Cutting {
         Vector3d currentPlaneNormal = planeDefinition.get(0);
         Vector3d currentPlanePoint = planeDefinition.get(1);
 
-//        Check if already at that plane
+        // Check if already at that plane
         boolean normalsParallel = GeometryUtils.checkVectorsParallel(knifeNormal, currentPlaneNormal);
         double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
-//        System.out.println(Arrays.toString(knifePointDouble));
+        // System.out.println(Arrays.toString(knifePointDouble));
         if (distanceToPlane > 1E-10) {
-//            Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
+        // Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
             Vector3d currentViewCentreGlobal = new Vector3d(planeManager.getGlobalViewCentre());
             Vector3d knifePointV = new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ());
             double distanceCurrentToFinal = GeometryUtils.distanceFromPointToPlane(currentViewCentreGlobal, knifeNormal, knifePointV);
 
-//            Check unit normal points from the current view point to the plane
+        // Check unit normal points from the current view point to the plane
             Vector3d finalNormalCopy = new Vector3d(knifeNormal);
             finalNormalCopy.normalize();
             Vector3d pointToPlane = new Vector3d();
@@ -205,7 +201,7 @@ class Cutting {
             double[] currentViewCentreDouble = {currentViewCentreGlobal.getX(), currentViewCentreGlobal.getY(), currentViewCentreGlobal.getZ()};
             BdvUtils.moveToPosition(microtome.getBdvStackSource(), currentViewCentreDouble, 0);
         }
-//        System.out.println(Arrays.toString(knifeNormalDouble));
+
         // TODO - broader check, and not rotated properly
         if (!normalsParallel) {
             GeometryUtils.levelCurrentViewNormalandHorizontal(microtome.getBdvStackSource(), knifeNormalDouble, edgeVectorDouble);

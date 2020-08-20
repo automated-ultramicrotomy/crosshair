@@ -50,8 +50,6 @@ public class VertexAssignmentPanel extends CrosshairPanel {
 
     private void addButton(JPanel panel, String pointAssignment, ActionListener vertexListener) {
         JButton b = new JButton(pointAssignment);
-//        b.setPreferredSize(
-//                new Dimension(200, 100));
         b.setActionCommand(pointAssignment);
         b.addActionListener(vertexListener);
         panel.add(b);

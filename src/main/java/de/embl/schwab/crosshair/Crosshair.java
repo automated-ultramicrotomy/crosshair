@@ -18,11 +18,11 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 //TODO - make plane update as efficient as possible
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //check points are on block plane
-//TODO need extra requiremnt that that they the out of block normal points towards knife
+//TODO need extra requirement that that the the out of block normal points towards knife
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
-//TODO stop view shiting when you move the microtome
+//TODO stop view shifting when you move the microtome
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
 // TODO - check angle updates - wrote very quickly
