@@ -20,7 +20,7 @@ public class SettingsToSave {
     private float blockTransparency;
     private float imageTransparency;
     private Color3f imageColour;
-//    Transfer function
+    // 3D Viewer Transfer function
     private int[] redLut;
     private int[] greenLut;
     private int[] blueLut;

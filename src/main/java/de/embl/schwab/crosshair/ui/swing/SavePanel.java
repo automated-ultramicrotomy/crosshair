@@ -140,7 +140,7 @@ public class SavePanel extends CrosshairPanel {
                     filePath = chooser.getSelectedFile().getAbsolutePath();
                 }
 
-                if (filePath != "") {
+                if (!filePath.equals("")) {
                     Gson gson = new Gson();
                     try {
                         FileReader fileReader = new FileReader(filePath);
@@ -218,7 +218,7 @@ public class SavePanel extends CrosshairPanel {
                 planeManager.addRemovePointFromPointList(planeManager.getPoints(), point);
             }
 
-            // TODO - should do this still with checks that it lies on teh plane
+            // TODO - should do this still with checks that it lies on the plane
             for (RealPoint point : settingsToSave.getBlockVertices()) {
                 planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
             }

@@ -23,6 +23,7 @@ public final class GeometryUtils {
     public static ArrayList<Vector3d> fitPlaneToPoints(ArrayList<RealPoint> points) {
         // Solution as here: https://math.stackexchange.com/questions/99299/best-fitting-plane-given-a-set-of-points
         // good explanation of svds: https://en.wikipedia.org/wiki/Singular_value_decomposition
+
         //        convert to a real matrix
         double [] [] pointArray = new double [points.size()][3];
         for (int i=0; i<points.size(); i++) {
@@ -31,9 +32,6 @@ public final class GeometryUtils {
 
             pointArray[i] = position;
         }
-        System.out.println(pointArray.toString());
-
-
 
         //        Convert to real matrix as here: http://commons.apache.org/proper/commons-math/userguide/linear.html
         RealMatrix pointMatrix = MatrixUtils.createRealMatrix(pointArray);
@@ -75,7 +73,7 @@ public final class GeometryUtils {
 
         // return plane normal and centroid as vector 3d
         Vector3d finalPlaneNormal = new Vector3d(planeNormal.toArray());
-        // normalie just in case
+        // normalise just in case
         finalPlaneNormal.normalize();
         Vector3d finalPlanePoint = new Vector3d(centroid.toArray());
         ArrayList<Vector3d> result = new ArrayList<>();
@@ -153,29 +151,6 @@ public final class GeometryUtils {
         } else {
             return unsignedAngle;
         }
-    }
-
-    //    Signed angle between two vectors (disregarding the orientations of the vectors) - so
-    //    signed angle from initial line to target line. From a viewpoint vector perpendicular to both.
-    public static double calculateSignedAngleLines (Vector3d view, Vector3d targetVector, Vector3d initialVector) {
-    //        Make vectors point in same general direction
-        Vector3d targetVectorCopy = new Vector3d(targetVector);
-        if (targetVectorCopy.dot(initialVector) < 0) {
-            targetVectorCopy.negate();
-        }
-    //TODO - convert to degrees?
-        double angle = targetVector.angle(initialVector);
-
-        //        Now I figure out if the direction will be anticlockwise or clockwise (relative to looking down on
-        //        the viewpoint vector. Anticlockwise is positive; clockwise is negative
-        Vector3d initialCrossTarget = new Vector3d();
-        initialCrossTarget.cross(initialVector, targetVector);
-        if (initialCrossTarget.dot(view) < 0) {
-            angle = -angle;
-        }
-
-        return angle;
-
     }
 
     //    General eq for signed angle of rotation about a viewpoint vector, to get from an initial plane
@@ -285,16 +260,15 @@ public final class GeometryUtils {
 
         ArrayList<Vector3d> intersectionPoints = new ArrayList<>();
 
-        // check for intersection of plane with all points - if four intersect, return these as teh four points
+        // check for intersection of plane with all points - if four intersect, return these as the four points
         // deals with case where plane is on the bounding box edges
         for (Vector3d[] v: boundingBoxEdges) {
             if (checkVectorLiesInPlane(v[0], v[1], planeNormal, planePoint)) {
                 intersectionPoints.add(v[0]);
                 intersectionPoints.add(v[1]);
-                continue;
                 // parallel but doesn't lie in plane so no intersections
             } else if (checkVectorPlaneParallel(v[0], v[1], planeNormal)) {
-                continue;
+                ;
             } else {
                 Vector3d intersection = calculateVectorPlaneIntersection(v[0], v[1], planeNormal, planePoint);
                 if (intersection.length() > 0) {
@@ -311,6 +285,7 @@ public final class GeometryUtils {
         return intersectionPoints;
 
     }
+
     //	https://stackoverflow.com/questions/5666222/3d-line-plane-intersection
     public static Vector3d calculateVectorPlaneIntersection(Vector3d point1, Vector3d point2, Vector3d planeNormal, Vector3d planePoint) {
         Vector3d pointToPoint = new Vector3d();
@@ -338,10 +313,8 @@ public final class GeometryUtils {
     public static boolean checkVectorsParallel (Vector3d vector1, Vector3d vector2) {
         double unsignedAngle = vector1.angle(vector2);
         if (unsignedAngle == 0 | unsignedAngle == PI) {
-            System.out.println("true");
             return true;
         } else {
-            System.out.println("false");
             return false;
         }
     }
@@ -354,7 +327,6 @@ public final class GeometryUtils {
         double planeEquation = (planeNormalCopy.getX()*(point.getX() - planePoint.getX())) +
                 (planeNormalCopy.getY()*(point.getY() - planePoint.getY())) +
                 (planeNormalCopy.getZ()*(point.getZ() - planePoint.getZ()));
-        System.out.println(planeEquation);
 
         // ideally this should be 0 to lie on plane, I set to a very small epsilon here to give wriggle room
         // for precision errors in the doubles

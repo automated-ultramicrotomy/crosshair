@@ -98,7 +98,44 @@ public class PlaneManager {
     public Color3f getTargetPlaneColour() {return targetPlaneColour;}
     public Color3f getBlockPlaneColour() {return blockPlaneColour;}
     public int getTrackPlane() {return trackPlane;}
+
     public void setTrackPlane(int track) {trackPlane = track;}
+
+    public void setTargetPlaneColour (Color colour) {
+        targetPlaneColour.set(colour);
+        if (checkNamedPlaneExists("target")) {
+            universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+        }
+    }
+
+    public void setTargetPlaneAlignedColour () {
+        universe.getContent("target").setColor(new Color3f(alignedPlaneColour));
+    }
+
+    public void setTargetPlaneNotAlignedColour() {
+        universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+    }
+
+    public void setBlockPlaneColour (Color colour) {
+        blockPlaneColour.set(colour);
+        if (checkNamedPlaneExists("block")) {
+            universe.getContent("block").setColor(new Color3f(blockPlaneColour));
+        }
+    }
+
+    public void setTargetTransparency (float transparency) {
+        targetTransparency = transparency;
+        if (checkNamedPlaneExists("target")) {
+            universe.getContent("target").setTransparency(targetTransparency);
+        }
+    }
+
+    public void setBlockTransparency (float transparency) {
+        blockTransparency = transparency;
+        if (checkNamedPlaneExists("block")) {
+            universe.getContent("block").setTransparency(blockTransparency);
+        }
+    }
 
     public void nameSelectedVertex(String name) {
         if (!selectedVertex.containsKey("selected")) {
@@ -229,13 +266,11 @@ public class PlaneManager {
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {
 
         //TODO - shift to use bounding box of image itself
-        // Get bounding box of image, account for any transformation of teh image
+        // Get bounding box of image, account for any transformation of the image
         Point3d min = new Point3d();
         Point3d max = new Point3d();
         imageContent.getMax(max);
         imageContent.getMin(min);
-//        System.out.println(min.toString());
-//        System.out.println(max.toString());
         double[] minCoord = new double[3];
         double[] maxCoord = new double[3];
         min.get(minCoord);
@@ -256,7 +291,7 @@ public class PlaneManager {
             imageContent.getLocalRotate(rotate);
 
             for (Vector3d point : intersectionPoints) {
-                // convert to point > transfrom affects vectors differently
+                // convert to point > transform affects vectors differently
                 Point3d intersect = new Point3d(point.getX(), point.getY(), point.getZ());
                 rotate.transform(intersect);
                 translate.transform(intersect);
@@ -268,7 +303,6 @@ public class PlaneManager {
             Vector3d transformedNormal = new Vector3d(planeNormal.getX(), planeNormal.getY(), planeNormal.getZ());
             rotate.transform(transformedNormal);
 
-            System.out.println(intersectionPoints.size());
             ArrayList<Point3f> vectorPoints = new ArrayList<>();
             for (Vector3d d : intersectionPoints) {
                 vectorPoints.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
@@ -299,7 +333,7 @@ public class PlaneManager {
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
             meshContent.setLocked(true);
-            // TODO - check for current visiblity
+            // TODO - check for current visibility
             meshContent.setVisible(true);
 
         }
@@ -313,8 +347,7 @@ public class PlaneManager {
 
             boolean normalsParallel = GeometryUtils.checkVectorsParallel(planeNormals.get(name), currentPlaneNormal);
             double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, planeNormals.get(name), planePoints.get(name));
-            System.out.println("distance");
-            System.out.println(distanceToPlane);
+
             // TODO - make this threshold user definable - e.g. this makes sense for microns, but for different
             // units may want to be more or less strict
             // necessary due to double precision, will very rarely get exactly the same value
@@ -407,8 +440,8 @@ public class PlaneManager {
 
     public void removeNamedPlane (String name) {
         if (checkNamedPlaneExists(name)) {
-//        remove block vertices as these are tied to a particular plane (unlike the points)
-            if (name == "block") {
+        //        remove block vertices as these are tied to a particular plane (unlike the points)
+            if (name.equals("block")) {
                 removeAllBlockVertices();
             }
 
@@ -429,10 +462,10 @@ public class PlaneManager {
         int pointIndex = imageContent.getPointList().indexOfPointAt(chosenPointCoord[0], chosenPointCoord[1], chosenPointCoord[2], imageContent.getLandmarkPointSize());
         imageContent.getPointList().remove(pointIndex);
 
-//					There's a bug in how the 3D viewer displays points after one is removed. Currently, it just stops
-//					displaying the first point added (rather than the one you actually removed).
-//					Therefore here I remove all points and re-add them, to get the viewer to reset how it draws
-//					the points. Perhaps there's a more efficient way to get around this?
+        //		There's a bug in how the 3D viewer displays points after one is removed. Currently, it just stops
+        //		displaying the first point added (rather than the one you actually removed).
+        //		Therefore here I remove all points and re-add them, to get the viewer to reset how it draws
+        //		the points. Perhaps there's a more efficient way to get around this?
         PointList currentPointList = imageContent.getPointList().duplicate();
         imageContent.getPointList().clear();
         for (Iterator<BenesNamedPoint> it = currentPointList.iterator(); it.hasNext(); ) {
@@ -495,42 +528,6 @@ public class PlaneManager {
                     break;
                 }
             }
-        }
-    }
-
-    public void setTargetPlaneColour (Color colour) {
-        targetPlaneColour.set(colour);
-        if (checkNamedPlaneExists("target")) {
-            universe.getContent("target").setColor(new Color3f(targetPlaneColour));
-        }
-    }
-
-    public void setTargetPlaneAlignedColour () {
-        universe.getContent("target").setColor(new Color3f(alignedPlaneColour));
-    }
-
-    public void setTargetPlaneNotAlignedColour() {
-        universe.getContent("target").setColor(new Color3f(targetPlaneColour));
-    }
-
-    public void setBlockPlaneColour (Color colour) {
-        blockPlaneColour.set(colour);
-        if (checkNamedPlaneExists("block")) {
-            universe.getContent("block").setColor(new Color3f(blockPlaneColour));
-        }
-    }
-
-    public void setTargetTransparency (float transparency) {
-        targetTransparency = transparency;
-        if (checkNamedPlaneExists("target")) {
-            universe.getContent("target").setTransparency(targetTransparency);
-        }
-    }
-
-    public void setBlockTransparency (float transparency) {
-        blockTransparency = transparency;
-        if (checkNamedPlaneExists("block")) {
-            universe.getContent("block").setTransparency(blockTransparency);
         }
     }
 

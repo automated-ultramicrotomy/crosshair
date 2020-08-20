@@ -61,6 +61,10 @@ public class MicrotomeManager {
 
     public boolean isMicrotomeModeActive() { return microtomeModeActive; }
 
+    public boolean isValidSolution () {
+        return solutions.isValidSolution();
+    }
+
     public void enterMicrotomeMode (double initialKnifeAngle, double initialTiltAngle) {
         if (!microtomeModeActive) {
             microtomeModeActive = true;
@@ -114,9 +118,7 @@ public class MicrotomeManager {
         }
     }
 
-    public boolean isValidSolution () {
-        return solutions.isValidSolution();
-    }
+
 
     public void setSolution (double rotationDegrees) {
         if (microtomeModeActive) {

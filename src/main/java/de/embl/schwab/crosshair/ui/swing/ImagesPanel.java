@@ -62,7 +62,7 @@ public class ImagesPanel extends CrosshairPanel {
         visbilityButton.addActionListener(e -> {
             if (imageContent.isVisible()) {
                imageContent.setVisible(false);
-//              Making image content invisible, also makes 3d points invisible, reverse this
+                // Making image content invisible, also makes 3d points invisible > reverse this
                 if (pointsPanel.check3DPointsVisible()) {
                     imageContent.showPointList(true);
                 }
@@ -116,7 +116,7 @@ public class ImagesPanel extends CrosshairPanel {
 
             float currentTransparency = imageContent.getTransparency();
 
-//                as here https://github.com/K-Meech/crosshair/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
+            // as here https://github.com/K-Meech/crosshair/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
             final BoundedValueDouble transparencyValue =
                     new BoundedValueDouble(
                             0,

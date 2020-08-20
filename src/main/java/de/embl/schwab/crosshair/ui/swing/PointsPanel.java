@@ -138,9 +138,9 @@ public class PointsPanel extends CrosshairPanel {
         int[] buttonDimensions = new int[]{50, 30};
 
         panel.add(sourceNameLabel);
-        if (pointType == "3D") {
+        if (pointType.equals("3D")) {
             add3DVisibilityButton(panel, buttonDimensions);
-        } else if (pointType == "2D") {
+        } else if (pointType.equals("2D")) {
             add2DVisibilityButton(panel, buttonDimensions);
         } else {
             addMicrotomeVisiblityButton(panel, buttonDimensions, pointType);

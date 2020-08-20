@@ -73,7 +73,6 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
                 final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
                 final int w = ( int ) size;
-                System.out.println(Arrays.toString(gPos));
                 graphics.setColor( getColor( gPos, colPoint) );
                 graphics.fillOval( x, y, w, w );
             }
@@ -105,7 +104,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
 
             }
 
-            // go through pointmap - add text labels
+            // add text for labelled vertices
             for (String key : namedVertices.keySet()) {
                 RealPoint keyPoint = namedVertices.get(key);
                 keyPoint.localize(lPos);

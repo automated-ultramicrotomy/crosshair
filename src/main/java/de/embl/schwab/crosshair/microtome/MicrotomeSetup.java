@@ -69,7 +69,6 @@ class MicrotomeSetup {
         //TODO - setup so doesn't reload scale if just change inital values
 
         for (String key : microtomeSTLs.keySet()) {
-            System.out.println(key);
             // TODO - set as locked - should probably set my other custom meshes to be locked too?
             if (!universe.contains(key)) {
                 universe.addCustomMesh(microtomeSTLs.get(key), key);
@@ -241,7 +240,7 @@ class MicrotomeSetup {
         currentInsideHolderBack = new Vector3d(insideHolderBack.getX(), insideHolderBack.getY(), insideHolderBack.getZ());
 
         // Set knife to same distance
-        // hodler front after scaling
+        // holder front after scaling
         Point3d knifeCentreAfter = new Point3d(initialKnifeCentre.getX(), initialKnifeCentre.getY(), initialKnifeCentre.getZ());
         trans.transform(knifeCentreAfter);
         double yKnife = knifeCentreAfter.getY();

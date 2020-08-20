@@ -180,7 +180,7 @@ class Cutting {
         // Check if already at that plane
         boolean normalsParallel = GeometryUtils.checkVectorsParallel(knifeNormal, currentPlaneNormal);
         double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
-        // System.out.println(Arrays.toString(knifePointDouble));
+
         if (distanceToPlane > 1E-10) {
         // Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
             Vector3d currentViewCentreGlobal = new Vector3d(planeManager.getGlobalViewCentre());

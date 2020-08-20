@@ -271,7 +271,7 @@ import java.util.Map;
             this.repaint();
         }
 
-        // TODO - make it so transparncy panel doesn't appera if plane not initialised
+        // TODO - make it so transparency panel doesn't appear if plane not initialised
         public void addTransparencyButton(JPanel panel, int[] buttonDimensions,
                                                 String planeName) {
             JButton button = new JButton("T");
@@ -299,7 +299,7 @@ import java.util.Map;
                     }
                 }
 
-//                as here https://github.com/K-Meech/crosshair/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
+                // as here https://github.com/K-Meech/crosshair/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
                 final BoundedValueDouble transparencyValue =
                         new BoundedValueDouble(
                                 0,
