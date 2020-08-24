@@ -16,6 +16,7 @@ import org.scijava.vecmath.Vector3d;
 import java.util.*;
 import java.util.stream.DoubleStream;
 
+import static de.embl.cba.bdv.utils.BdvUtils.*;
 import static java.lang.Math.*;
 
 public final class GeometryUtils {
@@ -432,10 +433,10 @@ public final class GeometryUtils {
 
         // apply transformation (rotating around current viewer centre position)
         final AffineTransform3D translateCenterToOrigin = new AffineTransform3D();
-        translateCenterToOrigin.translate( DoubleStream.of( BdvUtils.getBdvWindowCentre( bdv )).map(x -> -x ).toArray() );
+        translateCenterToOrigin.translate( DoubleStream.of( getBdvWindowCentre( bdv )).map(x -> -x ).toArray() );
 
         final AffineTransform3D translateCenterBack = new AffineTransform3D();
-        translateCenterBack.translate( BdvUtils.getBdvWindowCentre( bdv ) );
+        translateCenterBack.translate( getBdvWindowCentre( bdv ) );
 
         ArrayList< AffineTransform3D > viewerTransforms = new ArrayList<>(  );
 
@@ -444,7 +445,7 @@ public final class GeometryUtils {
                 .preConcatenate( rotation )
                 .preConcatenate( translateCenterBack ) );
 
-        BdvUtils.changeBdvViewerTransform( bdv, viewerTransforms, 300 );
+        changeBdvViewerTransform( bdv, viewerTransforms, 300 );
 
     }
 
@@ -482,24 +483,6 @@ public final class GeometryUtils {
         trans.add(origin);
 
         ret.setTranslation(trans);
-    }
-
-    // from Christian Tischer BdvUtils
-    public static AffineTransform3D quaternionToAffineTransform3D( double[] rotationQuaternion )
-    {
-        double[][] rotationMatrix = new double[ 3 ][ 3 ];
-        LinAlgHelpers.quaternionToR( rotationQuaternion, rotationMatrix );
-        return matrixAsAffineTransform3D( rotationMatrix );
-    }
-
-    // from Christian Tischer BdvUtils
-    public static AffineTransform3D matrixAsAffineTransform3D( double[][] rotationMatrix )
-    {
-        final AffineTransform3D rotation = new AffineTransform3D();
-        for ( int row = 0; row < 3; ++row )
-            for ( int col = 0; col < 3; ++ col)
-                rotation.set( rotationMatrix[ row ][ col ], row, col);
-        return rotation;
     }
 
 }

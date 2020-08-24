@@ -21,6 +21,9 @@ import vib.PointList;
 import java.awt.*;
 import java.util.*;
 
+import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
+import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
+
 public class PlaneManager {
 
     private int trackPlane = 0;
@@ -256,7 +259,7 @@ public class PlaneManager {
     public double[] getGlobalViewCentre () {
         final AffineTransform3D transform = new AffineTransform3D();
         bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
-        double[] centrePointView = BdvUtils.getBdvWindowCentre(bdvStackSource);
+        double[] centrePointView = getBdvWindowCentre(bdvStackSource);
         double[] centrePointGlobal = new double[3];
         transform.inverse().apply(centrePointView, centrePointGlobal);
 
@@ -361,7 +364,7 @@ public class PlaneManager {
 
                 double[] targetCentroid = new double[3];
                 planeCentroids.get(name).get(targetCentroid);
-                BdvUtils.moveToPosition(bdvStackSource, targetCentroid, 0);
+                moveToPosition(bdvStackSource, targetCentroid, 0, 0);
                 if (!normalsParallel) {
                     BdvUtils.levelCurrentView(bdvStackSource, targetNormal);
                 }

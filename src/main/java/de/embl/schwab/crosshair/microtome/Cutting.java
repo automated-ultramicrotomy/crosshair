@@ -13,6 +13,7 @@ import org.scijava.vecmath.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
 import static java.lang.Math.*;
 
 class Cutting {
@@ -199,7 +200,7 @@ class Cutting {
                     finalNormalCopy.getZ()*distanceCurrentToFinal);
             currentViewCentreGlobal.add(toAdd);
             double[] currentViewCentreDouble = {currentViewCentreGlobal.getX(), currentViewCentreGlobal.getY(), currentViewCentreGlobal.getZ()};
-            BdvUtils.moveToPosition(microtome.getBdvStackSource(), currentViewCentreDouble, 0);
+            moveToPosition(microtome.getBdvStackSource(), currentViewCentreDouble, 0,  0);
         }
 
         // TODO - broader check, and not rotated properly

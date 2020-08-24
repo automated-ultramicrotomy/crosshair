@@ -2,69 +2,23 @@ package de.embl.schwab.crosshair.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
-import bdv.viewer.animate.AbstractTransformAnimator;
-import bdv.viewer.animate.SimilarityTransformAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
 import java.util.ArrayList;
 import java.util.stream.DoubleStream;
 
-import static de.embl.schwab.crosshair.utils.GeometryUtils.quaternionToAffineTransform3D;
+import static de.embl.cba.bdv.utils.BdvUtils.*;
 
 public class BdvUtils {
 
-    // from MOBIE
-    public static void moveToPosition(Bdv bdv, double[] xyz, long durationMillis )
-    {
 
-        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
-
-        AffineTransform3D newViewerTransform = currentViewerTransform.copy();
-
-        // ViewerTransform
-        // applyInverse: coordinates in viewer => coordinates in image
-        // apply: coordinates in image => coordinates in viewer
-
-        final double[] locationOfTargetCoordinatesInCurrentViewer = new double[ 3 ];
-        currentViewerTransform.apply( xyz, locationOfTargetCoordinatesInCurrentViewer );
-
-        for ( int d = 0; d < 3; d++ )
-        {
-            locationOfTargetCoordinatesInCurrentViewer[ d ] *= -1;
-        }
-
-        newViewerTransform.translate( locationOfTargetCoordinatesInCurrentViewer );
-
-        newViewerTransform.translate( getBdvWindowCentre( bdv ) );
-
-        if ( durationMillis <= 0 )
-        {
-            bdv.getBdvHandle().getViewerPanel().setCurrentViewerTransform( newViewerTransform );
-            return;
-        }
-        else
-        {
-            final SimilarityTransformAnimator similarityTransformAnimator =
-                    new SimilarityTransformAnimator(
-                            currentViewerTransform,
-                            newViewerTransform,
-                            0,
-                            0,
-                            durationMillis );
-
-            bdv.getBdvHandle().getViewerPanel().setTransformAnimator( similarityTransformAnimator );
-            bdv.getBdvHandle().getViewerPanel().transformChanged( currentViewerTransform );
-        }
-    }
-
-
-    // from MOBIE
+    // from https://github.com/tischi/imagej-utils/blob/f9b84aae6b3bd922ed723fd6b24ac510f86af8eb/src/main/java/de/embl/cba/bdv/utils/BdvUtils.java#L422
+    // TODO - I change the duration of the move - ask T for an option to do this, then can remove and use one from imagej-utils
     public static void levelCurrentView( Bdv bdv, double[] targetNormalVector )
     {
 
-        double[] currentNormalVector = BdvUtils.getCurrentViewNormalVector( bdv );
+        double[] currentNormalVector = getCurrentViewNormalVector( bdv );
 
         AffineTransform3D currentViewerTransform = new AffineTransform3D();
         bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
@@ -107,96 +61,6 @@ public class BdvUtils {
                 .preConcatenate( translateCenterBack ) );
 
         changeBdvViewerTransform( bdv, viewerTransforms, 500 );
-
-    }
-
-    // from Christian Tischer BdvUtils
-    public static double[] getBdvWindowCentre( Bdv bdv )
-    {
-        int[] bdvWindowDimensions = new int[ 3 ];
-        bdvWindowDimensions[ 0 ] = bdv.getBdvHandle().getViewerPanel().getWidth();
-        bdvWindowDimensions[ 1 ] = bdv.getBdvHandle().getViewerPanel().getHeight();
-
-        double[] centerBdvWindowTranslation = new double[ 3 ];
-        for( int d = 0; d < 3; ++d )
-        {
-            centerBdvWindowTranslation[ d ] = + bdvWindowDimensions[ d ] / 2.0;
-        }
-        return centerBdvWindowTranslation;
-    }
-
-    // from Christian Tischer BdvUtils
-    public static double[] getCurrentViewNormalVector( Bdv bdv )
-    {
-        AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
-
-        final double[] viewerC = new double[]{ 0, 0, 0 };
-        final double[] viewerX = new double[]{ 1, 0, 0 };
-        final double[] viewerY = new double[]{ 0, 1, 0 };
-
-        final double[] dataC = new double[ 3 ];
-        final double[] dataX = new double[ 3 ];
-        final double[] dataY = new double[ 3 ];
-
-        final double[] dataV1 = new double[ 3 ];
-        final double[] dataV2 = new double[ 3 ];
-        final double[] currentNormalVector = new double[ 3 ];
-
-        currentViewerTransform.inverse().apply( viewerC, dataC );
-        currentViewerTransform.inverse().apply( viewerX, dataX );
-        currentViewerTransform.inverse().apply( viewerY, dataY );
-
-        LinAlgHelpers.subtract( dataX, dataC, dataV1 );
-        LinAlgHelpers.subtract( dataY, dataC, dataV2 );
-
-        LinAlgHelpers.cross( dataV1, dataV2, currentNormalVector );
-
-        LinAlgHelpers.normalize( currentNormalVector );
-
-        return currentNormalVector;
-    }
-
-    // from Christian Tischer BdvUtils
-    public static void changeBdvViewerTransform(
-            Bdv bdv,
-            ArrayList< AffineTransform3D > transforms,
-            long duration)
-    {
-
-        AffineTransform3D currentTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentTransform );
-
-        ArrayList< SimilarityTransformAnimator > animators = new ArrayList<>(  );
-
-        final SimilarityTransformAnimator firstAnimator =
-                new SimilarityTransformAnimator(
-                        currentTransform.copy(),
-                        transforms.get( 0 ).copy(),
-                        0 ,
-                        0,
-                        duration );
-
-        animators.add( firstAnimator );
-
-        for ( int i = 1; i < transforms.size(); i++ )
-        {
-            final SimilarityTransformAnimator animator =
-                    new SimilarityTransformAnimator(
-                            transforms.get( i - 1 ).copy(),
-                            transforms.get( i ).copy(),
-                            0 ,
-                            0,
-                            duration );
-
-            animators.add( animator );
-        }
-
-
-        AbstractTransformAnimator transformAnimator = new ConcatenatedTransformAnimator( duration, animators );
-
-        bdv.getBdvHandle().getViewerPanel().setTransformAnimator( transformAnimator );
-        //bdv.getBdvHandle().getViewerPanel().transformChanged( currentTransform.copy() );
 
     }
 }
