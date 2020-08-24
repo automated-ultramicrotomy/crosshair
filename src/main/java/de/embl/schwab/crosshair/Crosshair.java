@@ -41,36 +41,16 @@ import java.awt.*;
 
 public class Crosshair {
 
-	public Crosshair (ImagePlus imagePlus) {
+	public Crosshair (BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
 
-		Image3DUniverse universe = new Image3DUniverse();
-		Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
-
-		imageContent.setTransparency(0.7F);
+		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
-
-		universe.show();
 
 		// the global min of the image is often not (0,0,0), looks like this is calculated only from pixels != 0
 		// as here: https://github.com/fiji/3D_Viewer/blob/ed05e4b2275ad6ad7c94b0e22f4789ebd3472f4d/src/main/java/voltex/VoltexGroup.java
 		// Still places so (0,0) of image == (0,0) in global coordinate system, just bounding box is wrapped tight to
 		// only regions of the image > 0
-
-		// want this to take scaling of image into account like the open current image command does for bdv - see load method
-		// https://github.com/bigdataviewer/bigdataviewer_fiji/blob/62926d53664c156d7bda925fd74c7f1d7f7a603c/src/main/java/bdv/ij/OpenImagePlusPlugIn.java
-		// set scaling as here: https://github.com/bigdataviewer/bigdataviewer-workshop/blob/master/src/main/java/bdv/workshop/E03MultipleSources.java
-		// source transform method here: https://github.com/bigdataviewer/bigdataviewer-vistools/blob/df9405e4bf3fe156d6ab60152b9a62f0e21e63bf/src/main/java/bdv/util/BdvOptions.java
-		final double pw = imagePlus.getCalibration().pixelWidth;
-		final double ph = imagePlus.getCalibration().pixelHeight;
-		final double pd = imagePlus.getCalibration().pixelDepth;
-
-		final Img wrap = ImageJFunctions.wrap(imagePlus);
-		BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
-				.sourceTransform(pw, ph, pd));
-		// TODO - make generic? Not just 8 bit - see open current image bdv command
-		bdvStackSource.setDisplayRange(0, 255);
-		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
 
 		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
 		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource);
@@ -92,23 +72,5 @@ public class Crosshair {
 		universe.getWindow().setLocation(viewFrame.getLocationOnScreen().x + viewFrame.getWidth(),
 				viewFrame.getLocation().y);
 
-	}
-
-	public static void main( String[] args )
-	{
-		//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
-		//	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
-//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d_larger_isotropic";
-		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
-//		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_sparse_image\\yu.tif";
-		//	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
-//		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
-
-		ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
-		imagePlus.show();
-
-		final ImagePlus currImage = WindowManager.getCurrentImage();
-		new Crosshair(currImage);
 	}
 }
