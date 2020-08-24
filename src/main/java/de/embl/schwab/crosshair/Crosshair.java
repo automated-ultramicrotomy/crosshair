@@ -14,6 +14,9 @@ import ij3d.Image3DUniverse;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 
+import javax.swing.*;
+import java.awt.*;
+
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
@@ -80,9 +83,8 @@ public class Crosshair {
 		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle);
 
 		// Space out windows like here:
-		// https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
-		// https://github.com/tischi/table-utils/blob/master/src/main/java/de/embl/cba/tables/ij3d/UniverseUtils.java
-		ViewerFrame viewFrame =(ViewerFrame) bdvHandle.getViewerPanel().getParent().getParent().getParent().getParent();
+		// https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java#L369
+		Window viewFrame = SwingUtilities.getWindowAncestor(bdvHandle.getViewerPanel());
 		viewFrame.setLocation(
 						crosshairFrame.getLocationOnScreen().x + crosshairFrame.getWidth(),
 						crosshairFrame.getLocationOnScreen().y );
