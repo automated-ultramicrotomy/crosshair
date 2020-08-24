@@ -79,7 +79,7 @@
 		<imagej.app.directory>/Applications/Fiji.app/</imagej.app.directory>
 		<enforcer.skip>true</enforcer.skip>
 
-		<imagej-utils.version>0.5.3</imagej-utils.version>
+		<imagej-utils.version>0.5.3-SNAPSHOT</imagej-utils.version>
 	</properties>
 
 	<repositories>
