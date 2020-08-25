@@ -145,8 +145,8 @@ public class MicrotomeManager {
     public void enterCuttingMode () {
         if (microtomeModeActive & !cuttingModeActive) {
             cutting.initialiseCuttingPlane();
-            microtomePanel.setCuttingRange( cutting.getCuttingDepthMin(), cutting.getCuttingDepthMax() );
             cuttingModeActive = true;
+            microtomePanel.setCuttingRange( cutting.getCuttingDepthMin(), cutting.getCuttingDepthMax() );
         } else {
             IJ.log("Microtome mode inactive, or cutting mode already active");
         }
