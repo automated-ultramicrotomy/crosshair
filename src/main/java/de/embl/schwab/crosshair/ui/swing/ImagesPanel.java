@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.ui.swing;
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BoundedValueDouble;
 import ij3d.Content;
+import ij3d.Image3DUniverse;
 import org.scijava.vecmath.Color3f;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ import java.awt.Color;
 public class ImagesPanel extends CrosshairPanel {
 
     private CrosshairFrame crosshairFrame;
+    private Image3DUniverse universe;
     private Content imageContent;
     private PointsPanel pointsPanel;
     private Color3f imageColour;
@@ -26,6 +28,7 @@ public class ImagesPanel extends CrosshairPanel {
     public void initialisePanel () {
         this.imageContent = crosshairFrame.getImageContent();
         this.pointsPanel = crosshairFrame.getPointsPanel();
+        this.universe = crosshairFrame.getUniverse();
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Images"),
@@ -67,6 +70,7 @@ public class ImagesPanel extends CrosshairPanel {
                 // Making image content invisible, also makes 3d points invisible > reverse this
                 if (pointsPanel.check3DPointsVisible()) {
                     imageContent.showPointList(true);
+                    universe.getPointListDialog().setVisible(false);
                 }
             } else {
                 imageContent.setVisible(true);
