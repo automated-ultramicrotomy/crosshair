@@ -15,7 +15,6 @@ import java.awt.Window;
 //TODO - make plane update as efficient as possible
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //check points are on block plane
-//TODO need extra requirement that that the out of block normal points towards knife
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing
@@ -28,10 +27,10 @@ import java.awt.Window;
 // TODO - perhaps add another plane entry for cutting plane so can change colour / visiblity etc
 // TODO -make sure selected point deselected in all removals
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
-// TODO - command for loading bdv files
 //TODO - view changes if change planes after exit microtome mode
 // TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
 // not out of it, like our target normals are set?
+// TODO - check speed loading full sized files as command, or from bdv
 
 public class Crosshair {
 
