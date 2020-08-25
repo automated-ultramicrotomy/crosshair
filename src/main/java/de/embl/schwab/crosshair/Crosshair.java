@@ -1,21 +1,15 @@
 package de.embl.schwab.crosshair;
 
 import bdv.util.*;
-import bdv.viewer.ViewerFrame;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.WindowManager;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Window;
 
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible

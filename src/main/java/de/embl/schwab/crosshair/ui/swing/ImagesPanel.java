@@ -6,7 +6,9 @@ import ij3d.Content;
 import org.scijava.vecmath.Color3f;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.MouseInfo;
+import java.awt.Dimension;
+import java.awt.Color;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 

@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.ui.swing;
 import de.embl.schwab.crosshair.PlaneManager;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;

@@ -7,7 +7,9 @@ import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import ij.IJ;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.MouseInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

@@ -18,7 +18,7 @@ import org.scijava.vecmath.Vector3d;
 import vib.BenesNamedPoint;
 import vib.PointList;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.*;
 
 import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;

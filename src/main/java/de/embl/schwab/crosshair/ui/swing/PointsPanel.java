@@ -6,7 +6,8 @@ import ij3d.Content;
 import ij3d.Image3DUniverse;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java

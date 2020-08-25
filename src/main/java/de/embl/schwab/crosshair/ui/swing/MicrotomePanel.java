@@ -7,9 +7,10 @@ import de.embl.schwab.crosshair.PlaneManager;
 import ij.IJ;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.GridLayout;
+import java.awt.Dimension;
 import java.util.*;
 
 
