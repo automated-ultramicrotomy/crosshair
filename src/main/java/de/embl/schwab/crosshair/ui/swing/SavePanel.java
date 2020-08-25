@@ -114,7 +114,7 @@ public class SavePanel extends CrosshairPanel {
                     imageContent.getAlphaLUT(alphaLut);
 
                     SettingsToSave settingsToSave = new SettingsToSave(planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
-                            planeManager.getNamedVertices(), planeManager.getPoints(),
+                            planeManager.getNamedVertices(), planeManager.getPointsToFitPlane(),
                             planeManager.getBlockVertices(), planeManager.getTargetPlaneColour(), planeManager.getBlockPlaneColour(),
                             planeManager.getTargetTransparency(), planeManager.getBlockTransparency(),
                             imageContent.getTransparency(), imageContent.getColor(), redLut, greenLut, blueLut, alphaLut
@@ -195,7 +195,7 @@ public class SavePanel extends CrosshairPanel {
 
         if (planeManager.getTrackPlane() == 0) {
             planeManager.removeAllBlockVertices();
-            planeManager.removeAllPoints();
+            planeManager.removeAllPointsToFitPlane();
 
             Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
             for (String planeName : settingsPlaneNormals.keySet()) {
@@ -215,7 +215,7 @@ public class SavePanel extends CrosshairPanel {
             planeManager.setBlockTransparency(settingsToSave.getBlockTransparency());
 
             for (RealPoint point : settingsToSave.getPoints()) {
-                planeManager.addRemovePointFromPointList(planeManager.getPoints(), point);
+                planeManager.addRemovePointFromPointList(planeManager.getPointsToFitPlane(), point);
             }
 
             // TODO - should do this still with checks that it lies on the plane

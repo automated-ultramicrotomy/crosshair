@@ -18,7 +18,7 @@ import java.io.File;
 
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
 
-@Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Open Bdv File" )
+@Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Target Bdv File" )
 public class OpenCrosshairFromBdvXmlCommand implements Command {
 
     private BdvStackSource bdvStackSource;

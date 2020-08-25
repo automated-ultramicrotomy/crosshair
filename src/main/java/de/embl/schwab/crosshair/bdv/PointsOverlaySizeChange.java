@@ -15,7 +15,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
     // same as https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/PointsOverlay.java
     // but sets size to zero after certain distance
     // could make it nicer like in the bdv workshop, where they make the size taper off in a sphere
-        private List< ? extends RealLocalizable> points;
+        private List< ? extends RealLocalizable> pointsToFitPlane;
         private List<? extends RealLocalizable> vertexPoints;
         private Map<String, RealPoint> selectedPoint;
         private Map<String, RealPoint> namedVertices;
@@ -30,7 +30,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                                                             final Map<String, RealPoint> selectedPoint,
                                                             final Map<String, RealPoint> namedVertices)
         {
-            this.points = points;
+            this.pointsToFitPlane = points;
             this.vertexPoints = vertexPoints;
             this.selectedPoint = selectedPoint;
             this.namedVertices = namedVertices;
@@ -52,7 +52,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         @Override
         protected void draw( final Graphics2D graphics )
         {
-            if ( (points == null & vertexPoints == null) | !showPoints )
+            if ( (pointsToFitPlane == null & vertexPoints == null) | !showPoints )
                 return;
 
             colPoint = new Color( 51, 255, 51);
@@ -63,7 +63,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             getCurrentTransform3D( transform );
             final double[] lPos = new double[ 3 ];
             final double[] gPos = new double[ 3 ];
-            for ( final RealLocalizable p : points )
+            for ( final RealLocalizable p : pointsToFitPlane)
             {
                 // get point position (in microns etc)
                 p.localize( lPos );
@@ -74,7 +74,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
                 final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
                 final int w = ( int ) size;
-                graphics.setColor( getColor( gPos, colPoint) );
+                graphics.setColor( colPoint );
                 graphics.fillOval( x, y, w, w );
             }
 
@@ -97,9 +97,9 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
                 final int w = ( int ) size;
                 if (lposSelected != null & Arrays.equals(lPos, lposSelected)) {
-                    graphics.setColor(getColor(gPos, colSelected));
+                    graphics.setColor(colSelected);
                 } else {
-                    graphics.setColor(getColor(gPos, colVertex));
+                    graphics.setColor(colVertex);
                 }
                 graphics.fillOval( x, y, w, w );
 
@@ -110,7 +110,7 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 RealPoint keyPoint = namedVertices.get(key);
                 keyPoint.localize(lPos);
                 transform.apply( lPos, gPos );
-                graphics.setColor(getColor(gPos, colVertex));
+                graphics.setColor(colVertex);
                 if (Math.abs(gPos[2]) < 5) {
                     graphics.drawString(key, (int) gPos[0], (int) gPos[1]);
                 }
@@ -118,17 +118,6 @@ public class PointsOverlaySizeChange extends BdvOverlay {
 
 
 
-        }
-
-        /** screen pixels [x,y,z] **/
-        private Color getColor( final double[] gPos, Color col )
-        {
-            int alpha = 255 - ( int ) Math.round( Math.abs( gPos[ 2 ] ) );
-
-            if ( alpha < 64 )
-                alpha = 64;
-
-            return new Color( col.getRed(), col.getGreen(), col.getBlue(), alpha );
         }
 
         private double getPointSize (final double[] gPos)

@@ -34,7 +34,7 @@ public class PlaneManager {
     private final Map<String, RealPoint> namedVertices;
     private final Map<String, RealPoint> selectedVertex;
 
-    private final ArrayList<RealPoint> points;
+    private final ArrayList<RealPoint> pointsToFitPlane;
     private final ArrayList<RealPoint> blockVertices;
 
 
@@ -62,7 +62,7 @@ public class PlaneManager {
         selectedVertex = new HashMap<>();
 
         namedVertices = new HashMap<>();
-        points = new ArrayList<>();
+        pointsToFitPlane = new ArrayList<>();
         blockVertices = new ArrayList<>();
 
         this.bdvStackSource = bdvStackSource;
@@ -94,7 +94,7 @@ public class PlaneManager {
         return namedVertices;
     }
 
-    public ArrayList<RealPoint> getPoints() {return points;}
+    public ArrayList<RealPoint> getPointsToFitPlane() {return pointsToFitPlane;}
     public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
     public float getTargetTransparency() {return targetTransparency;}
     public float getBlockTransparency() {return blockTransparency;}
@@ -371,9 +371,9 @@ public class PlaneManager {
             }
         }
 
-        public void addRemoveCurrentPositionPoints () {
+        public void addRemoveCurrentPositionPointsToFitPlane() {
             RealPoint point = getCurrentPosition();
-            addRemovePointFromPointList(points, point);
+            addRemovePointFromPointList(pointsToFitPlane, point);
         }
 
         public void addRemoveCurrentPositionBlockVertices () {
@@ -433,11 +433,11 @@ public class PlaneManager {
         bdvHandle.getViewerPanel().requestRepaint();
     }
 
-    public void removeAllPoints() {
-        for (RealPoint point : points) {
+    public void removeAllPointsToFitPlane() {
+        for (RealPoint point : pointsToFitPlane) {
             removePointFrom3DViewer(point);
         }
-        points.clear();
+        pointsToFitPlane.clear();
         bdvHandle.getViewerPanel().requestRepaint();
     }
 

@@ -49,7 +49,7 @@ public class Crosshair {
 		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
 		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource);
 		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
-		pointOverlay.setPoints(planeManager.getPoints(), planeManager.getBlockVertices(),
+		pointOverlay.setPoints(planeManager.getPointsToFitPlane(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
 		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);

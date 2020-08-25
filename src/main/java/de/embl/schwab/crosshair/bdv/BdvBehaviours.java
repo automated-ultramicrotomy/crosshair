@@ -51,9 +51,9 @@ public class BdvBehaviours {
             } else if (planeManager.getTrackPlane() != 0) {
                 IJ.log("Can't change points when tracking a plane");
             } else {
-                planeManager.addRemoveCurrentPositionPoints();
+                planeManager.addRemoveCurrentPositionPointsToFitPlane();
             }
-        }, "add point", "P" );
+        }, "add point", "X" );
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             if (microtomeManager.isMicrotomeModeActive()) {
@@ -67,11 +67,11 @@ public class BdvBehaviours {
                             JOptionPane.QUESTION_MESSAGE);
                     if (result == JOptionPane.YES_OPTION) {
                         planeManager.removeAllBlockVertices();
-                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPoints());
+                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
                         planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
                     }
                 } else {
-                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPoints());
+                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
                     planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
                 }
             }
