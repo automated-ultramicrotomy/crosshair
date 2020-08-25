@@ -112,14 +112,15 @@ class MicrotomeSetup {
         calculateTargetOffsetTilt();
 
         // similar to this https://github.com/fiji/3D_Viewer/blob/c1cba02d475a05c94aebe322c2d5d76790907d6b/src/main/java/ij3d/Image3DUniverse.java#L1531
-        // Rotate view so look down right side of microtome
+        // Rotate view so look down right side of microtome, and resize to fit microtome pieces
         universe.fireTransformationStarted();
         universe.getRotationTG().setTransform(new Transform3D());
         universe.waitForNextFrame();
         universe.rotateUniverse(new Vector3d(0, 1, 0), Math.PI / 2);
         universe.rotateUniverse(new Vector3d(1, 0, 0), Math.PI / 2);
 
-        // TODO - would be nice to adjust zoom also, but using universe.adjustView() errors - some bug in the source code
+        universe.waitForNextFrame();
+        universe.adjustView();
     }
 
     private void calculateTargetOffsetTilt() {
