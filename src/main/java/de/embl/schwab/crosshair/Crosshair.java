@@ -40,6 +40,7 @@ public class Crosshair {
 		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
+		universe.getPointListDialog().setVisible(false);
 
 		// the global min of the image is often not (0,0,0), looks like this is calculated only from pixels != 0
 		// as here: https://github.com/fiji/3D_Viewer/blob/ed05e4b2275ad6ad7c94b0e22f4789ebd3472f4d/src/main/java/voltex/VoltexGroup.java

@@ -71,6 +71,7 @@ public class PointsPanel extends CrosshairPanel {
             threeDPointsVisible = false;
         } else {
             imageContent.showPointList(true);
+            universe.getPointListDialog().setVisible(false);
             threeDPointsVisible = true;
         }
     }
