@@ -1,6 +1,8 @@
 package de.embl.schwab.crosshair.io;
 
 
+import org.apache.commons.math3.util.Precision;
+
 public class SolutionToSave {
 
     private double initialKnifeAngle;
@@ -10,16 +12,18 @@ public class SolutionToSave {
     private double rotation;
     private String firstTouch;
     private double distanceToCut;
+    private int saveDecimalPlaces;
 
     public SolutionToSave(double initialKnifeAngle, double initialTiltAngle, double knife, double tilt,
                           double rotation, String firstTouch, double distanceToCut) {
-        this.initialKnifeAngle = initialKnifeAngle;
-        this.initialTiltAngle = initialTiltAngle;
-        this.knife = knife;
-        this.tilt = tilt;
-        this.rotation = rotation;
+        saveDecimalPlaces = 4;
+        this.initialKnifeAngle = Precision.round(initialKnifeAngle, saveDecimalPlaces);
+        this.initialTiltAngle = Precision.round(initialTiltAngle, saveDecimalPlaces);
+        this.knife = Precision.round(knife,saveDecimalPlaces);
+        this.tilt = Precision.round(tilt, saveDecimalPlaces);
+        this.rotation = Precision.round(rotation, saveDecimalPlaces);
         this.firstTouch = firstTouch;
-        this.distanceToCut = distanceToCut;
+        this.distanceToCut = Precision.round(distanceToCut, saveDecimalPlaces);
     }
 
     public double getInitialKnifeAngle() {

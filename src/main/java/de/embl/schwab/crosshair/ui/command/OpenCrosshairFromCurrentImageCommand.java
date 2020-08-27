@@ -11,6 +11,7 @@ import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import org.apache.commons.math3.util.Precision;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -68,8 +69,6 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
                 .sourceTransform(pw, ph, pd));
         // TODO - make generic? Not just 8 bit - see open current image bdv command
         bdvStackSource.setDisplayRange(0, 255);
-
-        System.out.println(imageContent.getColor());
 
         new Crosshair(bdvStackSource, universe, imageContent);
 

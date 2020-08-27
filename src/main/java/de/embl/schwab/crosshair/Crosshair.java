@@ -14,7 +14,6 @@ import java.awt.Window;
 //TODO - more sensible placement of varibles / structure
 //TODO - make plane update as efficient as possible
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
-//check points are on block plane
 //TODO - no plane updates when they aren't visible
 //TODO - maybe explicitly round in microtome manager to 4dp (otherwise a longer number typed is transmitted, but isn't
 // displayed - could be confusing

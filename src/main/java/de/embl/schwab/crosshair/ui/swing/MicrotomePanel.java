@@ -5,6 +5,7 @@ import bdv.util.*;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.PlaneManager;
 import ij.IJ;
+import org.apache.commons.math3.util.Precision;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -52,6 +53,8 @@ public class MicrotomePanel extends CrosshairPanel {
 
     private CrosshairFrame crosshairFrame;
 
+    private int displayDecimalPlaces;
+
     public MicrotomePanel(CrosshairFrame crosshairFrame) {
         this.crosshairFrame = crosshairFrame;
     }
@@ -63,6 +66,8 @@ public class MicrotomePanel extends CrosshairPanel {
         planeManager = crosshairFrame.getPlaneManager();
         planePanel = crosshairFrame.getPlanePanel();
         savePanel = crosshairFrame.getSavePanel();
+
+        displayDecimalPlaces = 4;
 
         sliderPanels = new HashMap<>();
 
@@ -95,23 +100,23 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     public void setDistanceToCutLabel (double distance) {
-        distanceToCutLabel.setText("Distance to  cut:    " + distance+"");
+        distanceToCutLabel.setText("Distance to  cut:    " + Precision.round(distance, displayDecimalPlaces) +"");
     }
 
     public void setRotationLabel (double rotation) {
-        currentRotationLabel.setText("Rotation:    " + rotation+"");
+        currentRotationLabel.setText("Rotation:    " + Precision.round(rotation, displayDecimalPlaces) +"");
     }
 
     public void setTiltLabel (double tilt) {
-        currentTiltLabel.setText("Tilt:    " + tilt+"");
+        currentTiltLabel.setText("Tilt:    " + Precision.round(tilt, displayDecimalPlaces) +"");
     }
 
     public void setKnifeLabel (double knife) {
-        currentKnifeLabel.setText("Knife:    " + knife+"");
+        currentKnifeLabel.setText("Knife:    " + Precision.round(knife, displayDecimalPlaces) +"");
     }
 
     public void setKnifeTargetAngleLabel (double angle) {
-        currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + angle+"");
+        currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + Precision.round(angle, displayDecimalPlaces) +"");
     }
 
     public void setCuttingRange (double min, double max) {
