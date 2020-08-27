@@ -194,6 +194,14 @@ public class PlaneManager {
         }
     }
 
+    private void removeMatchingSelectdVertices (RealPoint point) {
+        if (selectedVertex.containsKey("selected")) {
+            if (GeometryUtils.checkTwoRealPointsSameLocation(selectedVertex.get("selected"), point)) {
+                selectedVertex.remove("selected");
+            }
+        }
+    }
+
     private void renamePoint3D(Content content, RealPoint point, String name) {
         // rename any points with that name to "" to enforce only one point with each name
         BenesNamedPoint existingPointWithName = content.getPointList().get(name);
@@ -413,6 +421,8 @@ public class PlaneManager {
                     removePointFrom3DViewer(currentPoint);
                     // remove matching points from named vertices
                     removeMatchingNamedVertices(currentPoint);
+                    // remove matching points from selected vertices
+                    removeMatchingSelectdVertices(currentPoint);
                     points.remove(i);
                     bdvHandle.getViewerPanel().requestRepaint();
 
@@ -438,6 +448,7 @@ public class PlaneManager {
         }
         namedVertices.clear();
         blockVertices.clear();
+        selectedVertex.clear();
         bdvHandle.getViewerPanel().requestRepaint();
     }
 
