@@ -67,6 +67,8 @@ class Microtome {
     private double angleKnifeTarget;
     private String[] microtomeObjectNames;
 
+    private double knifeTargetAngleThreshold;
+
     Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
         this.universe = universe;
         this.planeManager = planeManager;
@@ -80,6 +82,8 @@ class Microtome {
         currentKnifeNormal = new Vector3d(0, -1, 0);
         initialEdgeVector = new Vector3d(1, 0, 0);
         currentEdgeVector = new Vector3d(1, 0,0);
+
+        knifeTargetAngleThreshold = 0.1;
 
     }
 
@@ -293,8 +297,7 @@ class Microtome {
         angleKnifeTarget = angle;
 
         // check angle - do colour change
-        //TODO - make threshold adjustable
-        if (angleKnifeTarget < 0.1) {
+        if (angleKnifeTarget < knifeTargetAngleThreshold) {
             planeManager.setTargetPlaneAlignedColour();
         } else {
             planeManager.setTargetPlaneNotAlignedColour();
