@@ -112,11 +112,19 @@ public class PlaneManager {
     }
 
     public void setTargetPlaneAlignedColour () {
-        universe.getContent("target").setColor(new Color3f(alignedPlaneColour));
+        Color3f currentColour = universe.getContent("target").getColor();
+        Color3f alignedColour = new Color3f(alignedPlaneColour);
+        if (currentColour != alignedColour) {
+            universe.getContent("target").setColor(alignedColour);
+        }
     }
 
     public void setTargetPlaneNotAlignedColour() {
-        universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+        Color3f currentColour = universe.getContent("target").getColor();
+        Color3f notAlignedColour = new Color3f(targetPlaneColour);
+        if (currentColour != notAlignedColour) {
+            universe.getContent("target").setColor(notAlignedColour);
+        }
     }
 
     public void setBlockPlaneColour (Color colour) {

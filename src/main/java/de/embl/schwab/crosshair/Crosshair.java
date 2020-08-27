@@ -16,7 +16,6 @@ import java.awt.Window;
 //Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
-//TODO - colour change on alignment, only set, if not already that colour?
 // TODO -make sure selected point deselected in all removals
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
 //TODO - view changes if change planes after exit microtome mode
