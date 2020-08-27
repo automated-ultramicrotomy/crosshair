@@ -28,7 +28,7 @@ public class SavePanel extends CrosshairPanel {
     private MicrotomeManager microtomeManager;
     private Content imageContent;
     private MicrotomePanel microtomePanel;
-    private PointsPanel pointsPanel;
+    private OtherPanel otherPanel;
     private PointsOverlaySizeChange pointOverlay;
     private JButton saveSolution;
     private JButton saveSettings;
@@ -45,7 +45,7 @@ public class SavePanel extends CrosshairPanel {
         this.microtomeManager = crosshairFrame.getMicrotomeManager();
         this.imageContent = crosshairFrame.getImageContent();
         this.microtomePanel = crosshairFrame.getMicrotomePanel();
-        this.pointsPanel = crosshairFrame.getPointsPanel();
+        this.otherPanel = crosshairFrame.getPointsPanel();
         this.pointOverlay = crosshairFrame.getPointOverlay();
 
         setBorder(BorderFactory.createCompoundBorder(
@@ -245,8 +245,8 @@ public class SavePanel extends CrosshairPanel {
                 planeManager.toggleBlockVisbility();
             }
 
-            if (!pointsPanel.check3DPointsVisible()) {
-                pointsPanel.toggleVisiblity3DPoints();
+            if (!otherPanel.check3DPointsVisible()) {
+                otherPanel.toggleVisiblity3DPoints();
             }
 
             if (!pointOverlay.checkPointsVisible()) {

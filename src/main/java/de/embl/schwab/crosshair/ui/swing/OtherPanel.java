@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
-public class PointsPanel extends CrosshairPanel {
+public class OtherPanel extends CrosshairPanel {
 
     private Content imageContent;
     private Image3DUniverse universe;
@@ -22,7 +22,7 @@ public class PointsPanel extends CrosshairPanel {
     private ArrayList<JButton> microtomeVisibilityButtons;
     private CrosshairFrame crosshairFrame;
 
-    public PointsPanel(CrosshairFrame crosshairFrame) {
+    public OtherPanel(CrosshairFrame crosshairFrame) {
         this.crosshairFrame = crosshairFrame;
     }
 

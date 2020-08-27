@@ -21,7 +21,7 @@ public class CrosshairFrame extends JFrame {
 
     private ImagesPanel imagesPanel;
     private PlanePanel planePanel;
-    private PointsPanel pointsPanel;
+    private OtherPanel otherPanel;
     private VertexAssignmentPanel vertexAssignmentPanel;
     private MicrotomePanel microtomePanel;
     private SavePanel savePanel;
@@ -51,8 +51,8 @@ public class CrosshairFrame extends JFrame {
 
         planePanel = new PlanePanel(this);
         allPanels.add(planePanel);
-        pointsPanel = new PointsPanel(this);
-        allPanels.add(pointsPanel);
+        otherPanel = new OtherPanel(this);
+        allPanels.add(otherPanel);
         imagesPanel = new ImagesPanel( this);
         allPanels.add(imagesPanel);
         vertexAssignmentPanel = new VertexAssignmentPanel(this);
@@ -72,7 +72,7 @@ public class CrosshairFrame extends JFrame {
 
         mainPane.add(imagesPanel);
         mainPane.add(planePanel);
-        mainPane.add(pointsPanel);
+        mainPane.add(otherPanel);
         mainPane.add(vertexAssignmentPanel);
         mainPane.add(microtomePanel);
         mainPane.add(savePanel);
@@ -94,8 +94,8 @@ public class CrosshairFrame extends JFrame {
         return planePanel;
     }
 
-    public PointsPanel getPointsPanel() {
-        return pointsPanel;
+    public OtherPanel getPointsPanel() {
+        return otherPanel;
     }
 
     public SavePanel getSavePanel() {

@@ -12,17 +12,17 @@ import javax.swing.*;
 import java.awt.Window;
 
 //TODO - more sensible placement of varibles / structure
-//TODO - make plane update as efficient as possible
-//Add some buttons for e.g. reset view, cnetre view for microtome, centre view for sample etc
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
-// TODO -make sure selected point deselected in all removals
 // TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
 // not out of it, like our target normals are set?
 // TODO - check speed loading full sized files as command, or from bdv
+// TODO - remove keyboard shortcuts?
 
 // Possible improvements to add
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
+// TODO - make plane update as efficient as possible
+// TODO - Add some buttons for e.g. reset view, centre view for microtome, centre view for sample etc
 
 
 public class Crosshair {

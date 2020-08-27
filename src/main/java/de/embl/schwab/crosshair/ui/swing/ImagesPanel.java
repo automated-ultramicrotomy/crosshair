@@ -18,7 +18,7 @@ public class ImagesPanel extends CrosshairPanel {
     private CrosshairFrame crosshairFrame;
     private Image3DUniverse universe;
     private Content imageContent;
-    private PointsPanel pointsPanel;
+    private OtherPanel otherPanel;
     private Color3f imageColour;
 
     public ImagesPanel(CrosshairFrame crosshairFrame) {
@@ -27,7 +27,7 @@ public class ImagesPanel extends CrosshairPanel {
 
     public void initialisePanel () {
         this.imageContent = crosshairFrame.getImageContent();
-        this.pointsPanel = crosshairFrame.getPointsPanel();
+        this.otherPanel = crosshairFrame.getPointsPanel();
         this.universe = crosshairFrame.getUniverse();
 
         setBorder(BorderFactory.createCompoundBorder(
@@ -68,7 +68,7 @@ public class ImagesPanel extends CrosshairPanel {
             if (imageContent.isVisible()) {
                imageContent.setVisible(false);
                 // Making image content invisible, also makes 3d points invisible > reverse this
-                if (pointsPanel.check3DPointsVisible()) {
+                if (otherPanel.check3DPointsVisible()) {
                     imageContent.showPointList(true);
                     universe.getPointListDialog().setVisible(false);
                 }

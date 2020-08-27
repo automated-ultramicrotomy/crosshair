@@ -48,7 +48,7 @@ public class MicrotomePanel extends CrosshairPanel {
     private JPanel currentSettingsPanel;
     private PlanePanel planePanel;
     private SavePanel savePanel;
-    private PointsPanel pointsPanel;
+    private OtherPanel otherPanel;
     private VertexAssignmentPanel vertexAssignmentPanel;
 
     private CrosshairFrame crosshairFrame;
@@ -61,7 +61,7 @@ public class MicrotomePanel extends CrosshairPanel {
 
     public void initialisePanel () {
         microtomeManager = crosshairFrame.getMicrotomeManager();
-        pointsPanel = crosshairFrame.getPointsPanel();
+        otherPanel = crosshairFrame.getPointsPanel();
         vertexAssignmentPanel = crosshairFrame.getVertexAssignmentPanel();
         planeManager = crosshairFrame.getPlaneManager();
         planePanel = crosshairFrame.getPlanePanel();
@@ -385,7 +385,7 @@ public class MicrotomePanel extends CrosshairPanel {
             currentSettingsPanel.setVisible(true);
             savePanel.enableSaveSolution();
             planePanel.disableAllTracking();
-            pointsPanel.activateMicrotomeButtons();
+            otherPanel.activateMicrotomeButtons();
             crosshairFrame.pack();
         } else {
             IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined.");
@@ -413,7 +413,7 @@ public class MicrotomePanel extends CrosshairPanel {
         disableSliders();
         vertexAssignmentPanel.enableButtons();
         savePanel.disableSaveSolution();
-        pointsPanel.activateMicrotomeButtons();
+        otherPanel.activateMicrotomeButtons();
         crosshairFrame.pack();
     }
 

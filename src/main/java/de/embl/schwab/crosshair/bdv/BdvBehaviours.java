@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.bdv;
 
 import bdv.util.BdvHandle;
+import de.embl.cba.swing.PopupMenu;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
@@ -93,6 +94,11 @@ public class BdvBehaviours {
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             planeManager.toggleSelectedVertexCurrentPosition();
         }, "select point", "button1" );
+
+        // behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+        //     PopupMenu popup = new PopupMenu();
+        //     popup.show(x, y);
+        // }, "Point pop up", "button2" );
 
     }
 }
