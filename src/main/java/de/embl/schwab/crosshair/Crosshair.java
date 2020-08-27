@@ -17,11 +17,14 @@ import java.awt.Window;
 //TODO - initial point - not general to case where target plane intersects with block face e.g. you're just chipping off a
 // corner - some vertex points above, some below. Need to think about approaching from a distance.
 // TODO -make sure selected point deselected in all removals
-// TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
 //TODO - view changes if change planes after exit microtome mode
 // TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
 // not out of it, like our target normals are set?
 // TODO - check speed loading full sized files as command, or from bdv
+
+// Possible improvements to add
+// TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
+
 
 public class Crosshair {
 
