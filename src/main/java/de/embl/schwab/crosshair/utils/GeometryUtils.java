@@ -2,6 +2,7 @@ package de.embl.schwab.crosshair.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
+import de.embl.schwab.crosshair.PlaneManager;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.stream.DoubleStream;
 
 import static de.embl.cba.bdv.utils.BdvUtils.*;
+import static de.embl.schwab.crosshair.utils.Utils.findIndexOfMaxMin;
 import static java.lang.Math.*;
 
 public final class GeometryUtils {
@@ -186,31 +188,25 @@ public final class GeometryUtils {
 
     }
 
-    public static int indexMinMaxPointsToPlane (Vector3d planePoint, Vector3d planeNormal, ArrayList<Vector3d> points, String MinMax) {
-        Vector3d planeNormalCopy = new Vector3d(planeNormal);
-        planeNormalCopy.normalize(); // just in case
-
+    public static int indexSignedMinMaxPointsToPlane (Vector3d planePoint, Vector3d planeNormal, ArrayList<Vector3d> points, Vector3d positiveDirection, String MinMax) {
         ArrayList<Double> allDists = new ArrayList<>();
         for (Vector3d point: points) {
-            double distance = distanceFromPointToPlane(planePoint, planeNormalCopy, point);
+            double distance = signedDistanceFromPointToPlane(point, planeNormal, planePoint, positiveDirection);
             allDists.add(distance);
         }
 
-        double chosenDist = 0;
-        if (MinMax.equals("max")) {
-            chosenDist = Collections.max(allDists);
-        } else if (MinMax.equals("min")) {
-            chosenDist = Collections.min(allDists);
+        return findIndexOfMaxMin(allDists, MinMax);
+
+    }
+
+    public static int indexMinMaxPointsToPlane (Vector3d planePoint, Vector3d planeNormal, ArrayList<Vector3d> points, String MinMax) {
+        ArrayList<Double> allDists = new ArrayList<>();
+        for (Vector3d point: points) {
+            double distance = distanceFromPointToPlane(planePoint, planeNormal, point);
+            allDists.add(distance);
         }
 
-        int result = 0;
-        for (int i=0; i<allDists.size(); i++) {
-            if (allDists.get(i) == chosenDist) {
-                result = i;
-                break;
-            }
-        }
-        return result;
+        return findIndexOfMaxMin(allDists, MinMax);
     }
 
     public static Vector3d calculateNormalFromPoints(ArrayList<double[]> points) {
@@ -355,6 +351,53 @@ public final class GeometryUtils {
         pointToPlaneVector.sub(planePoint, point);
 
         return abs(pointToPlaneVector.dot(planeNormalCopy));
+    }
+
+    public static Vector3d findClosestPointOnPlane (Vector3d planeNormal, Vector3d planePoint, Vector3d point) {
+        Vector3d planeNormalCopy = new Vector3d(planeNormal);
+        planeNormalCopy.normalize();
+
+        double distancePointToPlane = GeometryUtils.distanceFromPointToPlane(point, planeNormalCopy, planePoint);
+
+        // Check unit normal points from the point to the plane
+        Vector3d pointToPlane = new Vector3d();
+        pointToPlane.sub(planePoint, point);
+        if (pointToPlane.dot(planeNormalCopy) < 0) {
+            planeNormalCopy.negate();
+        }
+
+        Vector3d toAdd = new Vector3d(planeNormalCopy.getX()*distancePointToPlane, planeNormalCopy.getY()*distancePointToPlane,
+                planeNormalCopy.getZ()*distancePointToPlane);
+
+        Vector3d closestPoint = new Vector3d();
+        closestPoint.add(point, toAdd);
+
+        return closestPoint;
+    }
+
+    public static double signedDistanceFromPointToPlane (Vector3d point, Vector3d planeNormal, Vector3d planePoint, Vector3d positiveDirection) {
+        Vector3d planeNormalCopy = new Vector3d(planeNormal);
+        planeNormalCopy.normalize(); // just in case
+        Vector3d positiveDirectionCopy = new Vector3d(positiveDirection);
+        positiveDirectionCopy.normalize(); // just in case
+
+        // force plane normal to be in same general direction as positive direction
+        if (planeNormalCopy.dot(positiveDirectionCopy) < 0) {
+            planeNormalCopy.negate();
+        }
+
+        double distance = distanceFromPointToPlane(point, planeNormal, planePoint);
+        Vector3d nearestPointOnPlane = findClosestPointOnPlane(planeNormal, planePoint, point);
+        Vector3d nearestPointOnPlaneToPoint = new Vector3d();
+        nearestPointOnPlaneToPoint.sub(point, nearestPointOnPlane);
+
+        // If vector from nearest point on plane to point is in the general direction of the plane normal = positive,
+        // otherwise negative
+        if ( nearestPointOnPlaneToPoint.dot(planeNormalCopy) < 0) {
+            distance *= -1;
+        }
+
+        return distance;
     }
 
     public static boolean checkVectorLiesInPlane(Vector3d point1, Vector3d point2, Vector3d planeNormal, Vector3d planePoint) {

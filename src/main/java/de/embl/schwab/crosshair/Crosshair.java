@@ -18,11 +18,14 @@ import java.awt.Window;
 // not out of it, like our target normals are set?
 // TODO - check speed loading full sized files as command, or from bdv
 // TODO - remove keyboard shortcuts?
+// TODO - check any .dot() >/< 0 checks. Position of point on plane is arbitrary, can easily be below or above. Might have to use point on plane that is shortest distance away.
 
 // Possible improvements to add
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
 // TODO - make plane update as efficient as possible
 // TODO - Add some buttons for e.g. reset view, centre view for microtome, centre view for sample etc
+// TODO - Add a check that target plane is behind block face (or intersects it)
+// TODO - check against original blender solution. Make mock file for case of interseciton with block face - check how two solutions compare
 
 
 public class Crosshair {

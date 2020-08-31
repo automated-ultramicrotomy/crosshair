@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
+import static de.embl.schwab.crosshair.utils.GeometryUtils.findClosestPointOnPlane;
 import static java.lang.Math.*;
 
 class Cutting {
@@ -183,24 +184,14 @@ class Cutting {
         double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
 
         if (distanceToPlane > 1E-10) {
-        // Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
+            // Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
             Vector3d currentViewCentreGlobal = new Vector3d(planeManager.getGlobalViewCentre());
             Vector3d knifePointV = new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ());
-            double distanceCurrentToFinal = GeometryUtils.distanceFromPointToPlane(currentViewCentreGlobal, knifeNormal, knifePointV);
 
-        // Check unit normal points from the current view point to the plane
-            Vector3d finalNormalCopy = new Vector3d(knifeNormal);
-            finalNormalCopy.normalize();
-            Vector3d pointToPlane = new Vector3d();
-            pointToPlane.sub(knifePointV, currentViewCentreGlobal);
-            if (pointToPlane.dot(finalNormalCopy) < 0) {
-                finalNormalCopy.negate();
-            }
-            Vector3d toAdd = new Vector3d(finalNormalCopy.getX()*distanceCurrentToFinal, finalNormalCopy.getY()*distanceCurrentToFinal,
-                    finalNormalCopy.getZ()*distanceCurrentToFinal);
-            currentViewCentreGlobal.add(toAdd);
-            double[] currentViewCentreDouble = {currentViewCentreGlobal.getX(), currentViewCentreGlobal.getY(), currentViewCentreGlobal.getZ()};
-            moveToPosition(microtome.getBdvStackSource(), currentViewCentreDouble, 0,  0);
+            Vector3d pointToMoveTo = findClosestPointOnPlane(new Vector3d(knifeNormal), knifePointV, currentViewCentreGlobal);
+
+            double[] pointToMoveToDouble = {pointToMoveTo.getX(), pointToMoveTo.getY(), pointToMoveTo.getZ()};
+            moveToPosition(microtome.getBdvStackSource(), pointToMoveToDouble, 0,  0);
         }
 
         // TODO - broader check, and not rotated properly

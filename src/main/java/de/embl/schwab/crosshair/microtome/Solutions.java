@@ -107,19 +107,39 @@ class Solutions {
         namedVertices.get("Bottom Left").localize(bottomLeft);
         namedVertices.get("Bottom Right").localize(bottomRight);
 
-        // Calculate first point touched on block face, done by calculating perpendicular distance
-        // from target to each point, and returning that with the largest.
+        // Calculate first point touched on block face
+        // Originally I did this by calculating perpendicular distance from target to each point (unsigned),
+        // and returning that with the largest. This fails for edge case where the target plane intersects the block
+        // plane within teh bounds of teh block face. e.g. you're chipping a corner off the block, or not going particularly deep
+        // so some of the block face remains. In this case, some vertices can be in front of the target plane and some behind,
+        // so absolute distance no longer works.
+        // To get around this, we calculate the signed distance (+ve in direction of normal pointing out of block face), and
+        // return the maximum.
 
-        // Calculate perpendicular distance to each point
+        // all points as vectors
         targetNormal.normalize();
+        Vector3d topLeftV = new Vector3d(topLeft);
+        Vector3d topRightV = new Vector3d(topRight);
+        Vector3d bottomLeftV = new Vector3d(bottomLeft);
+        Vector3d bottomRightV = new Vector3d(bottomRight);
+
+        // Normal pointing out of block face
+        Vector3d edgeVector = new Vector3d();
+        edgeVector.sub(bottomRightV, bottomLeftV);
+
+        Vector3d upVector = new Vector3d();
+        upVector.sub(topLeftV, bottomLeftV);
+
+        Vector3d normalOutBlock = new Vector3d();
+        normalOutBlock.cross(edgeVector, upVector);
+
+        // Signed distance
         ArrayList<Vector3d> allVertices = new ArrayList<>();
-        allVertices.add(new Vector3d(topLeft));
-        allVertices.add(new Vector3d(topRight));
-        allVertices.add(new Vector3d(bottomLeft));
-        allVertices.add( new Vector3d(bottomRight));
-
-        int maxDistanceIndex = GeometryUtils.indexMinMaxPointsToPlane(targetPoint, targetNormal, allVertices, "max");
-
+        allVertices.add(topLeftV);
+        allVertices.add(topRightV);
+        allVertices.add(bottomLeftV);
+        allVertices.add(bottomRightV);
+        int maxDistanceIndex = GeometryUtils.indexSignedMinMaxPointsToPlane(targetPoint, targetNormal, allVertices, normalOutBlock, "max");
 
         //  Assign first touch to point with maximum distance
         if (maxDistanceIndex == 0) {
