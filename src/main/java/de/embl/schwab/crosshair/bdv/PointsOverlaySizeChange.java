@@ -5,8 +5,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 
-import java.awt.Graphics2D;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +22,21 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         private Color colPoint;
         private Color colVertex;
         private Color colSelected;
+        private Color colModeText;
 
         private boolean showPoints;
+        private boolean pointMode;
+        private boolean vertexMode;
+
+        public PointsOverlaySizeChange () {
+            colPoint = new Color( 51, 255, 51);
+            colVertex = new Color(0, 255, 255);
+            colSelected = new Color(153, 0, 76);
+            colModeText = new Color(255, 255, 255);
+            this.showPoints = true;
+            this.pointMode = false;
+            this.vertexMode = false;
+        }
 
         public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertexPoints,
                                                             final Map<String, RealPoint> selectedPoint,
@@ -34,7 +46,6 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             this.vertexPoints = vertexPoints;
             this.selectedPoint = selectedPoint;
             this.namedVertices = namedVertices;
-            this.showPoints = true;
         }
 
         public boolean checkPointsVisible () {
@@ -49,15 +60,27 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             }
         }
 
+    public void togglePointMode () {
+        if (pointMode) {
+            pointMode = false;
+        } else {
+            pointMode = true;
+        }
+    }
+
+    public void toggleVertexMode () {
+        if (vertexMode) {
+            vertexMode = false;
+        } else {
+            vertexMode = true;
+        }
+    }
+
         @Override
         protected void draw( final Graphics2D graphics )
         {
             if ( (pointsToFitPlane == null & vertexPoints == null) | !showPoints )
                 return;
-
-            colPoint = new Color( 51, 255, 51);
-            colVertex = new Color(0, 255, 255);
-            colSelected = new Color(153, 0, 76);
 
             final AffineTransform3D transform = new AffineTransform3D();
             getCurrentTransform3D( transform );
@@ -116,7 +139,17 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 }
             }
 
+            // add text for any active modes
+            graphics.setColor(colModeText);
 
+
+            if (pointMode) {
+                String text = "Point Mode";
+                drawModeText(graphics, text);
+            } else if (vertexMode) {
+                String text = "Vertex Mode";
+                drawModeText(graphics, text);
+            }
 
         }
 
@@ -126,6 +159,12 @@ public class PointsOverlaySizeChange extends BdvOverlay {
                 return 5.0;
             else
                 return 0.0;
+        }
+
+        private void drawModeText (Graphics2D graphics, String text) {
+            graphics.setFont( new Font( "Monospaced", Font.PLAIN, 16 ) );
+            int text_width = graphics.getFontMetrics().stringWidth(text);
+            graphics.drawString( text, (int) graphics.getClipBounds().getWidth() - text_width - 10, (int)graphics.getClipBounds().getHeight() - 16 );
         }
 
 }

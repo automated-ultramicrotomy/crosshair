@@ -27,6 +27,8 @@ import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
 public class PlaneManager {
 
     private int trackPlane = 0;
+    private int pointMode = 0;
+    private int vertexMode = 0;
 
     private final Map<String, Vector3d> planeNormals;
     private final Map<String, Vector3d> planePoints;
@@ -101,8 +103,23 @@ public class PlaneManager {
     public Color3f getTargetPlaneColour() {return targetPlaneColour;}
     public Color3f getBlockPlaneColour() {return blockPlaneColour;}
     public int getTrackPlane() {return trackPlane;}
-
     public void setTrackPlane(int track) {trackPlane = track;}
+
+    public int getPointMode() {
+        return pointMode;
+    }
+
+    public void setPointMode(int pointMode) {
+        this.pointMode = pointMode;
+    }
+
+    public int getVertexMode() {
+        return vertexMode;
+    }
+
+    public void setVertexMode(int vertexMode) {
+        this.vertexMode = vertexMode;
+    }
 
     public void setTargetPlaneColour (Color colour) {
         targetPlaneColour.set(colour);

@@ -26,6 +26,7 @@ import java.awt.Window;
 // TODO - Add some buttons for e.g. reset view, centre view for microtome, centre view for sample etc
 // TODO - Add a check that target plane is behind block face (or intersects it)
 // TODO - check against original blender solution. Make mock file for case of interseciton with block face - check how two solutions compare
+// TODO - proper checks for in and out of point mode - what can't you do while in these modes? WHen enter microtome mode - kick out etc?
 
 
 public class Crosshair {
@@ -48,7 +49,7 @@ public class Crosshair {
 		pointOverlay.setPoints(planeManager.getPointsToFitPlane(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
 		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
-		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
+		new BdvBehaviours(bdvHandle, planeManager, microtomeManager, pointOverlay);
 
 		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle);
 

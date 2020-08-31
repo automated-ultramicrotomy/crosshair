@@ -1,6 +1,8 @@
 package de.embl.schwab.crosshair.bdv;
 
 import bdv.util.BdvHandle;
+import bdv.util.BdvStackSource;
+import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
 import de.embl.cba.swing.PopupMenu;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.PlaneManager;
@@ -21,13 +23,59 @@ public class BdvBehaviours {
     private BdvHandle bdvHandle;
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
+    private PointsOverlaySizeChange pointOverlay;
 
-    public BdvBehaviours (BdvHandle bdvHandle, PlaneManager planeManager, MicrotomeManager microtomeManager) {
+    public BdvBehaviours (BdvHandle bdvHandle, PlaneManager planeManager, MicrotomeManager microtomeManager, PointsOverlaySizeChange pointOverlay) {
         this.bdvHandle = bdvHandle;
         this.planeManager = planeManager;
         this.microtomeManager = microtomeManager;
+        this.pointOverlay = pointOverlay;
 
         installBehaviours();
+    }
+
+    private void addVertexBehaviour() {
+        if (microtomeManager.isMicrotomeModeActive()) {
+            IJ.log("Can't change points when in microtome mode");
+        } else if (planeManager.getTrackPlane() != 0) {
+            IJ.log("Can't change points when tracking a plane");
+        } else if (!planeManager.checkNamedPlaneExists("block")) {
+            IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
+        } else {
+            planeManager.addRemoveCurrentPositionBlockVertices();
+        }
+    }
+
+    private void addPointBehaviour() {
+        if (microtomeManager.isMicrotomeModeActive()) {
+            IJ.log("Can't change points when in microtome mode");
+        } else if (planeManager.getTrackPlane() != 0) {
+            IJ.log("Can't change points when tracking a plane");
+        } else {
+            planeManager.addRemoveCurrentPositionPointsToFitPlane();
+        }
+    }
+
+    private void addFitToPointsBehaviour() {
+        if (microtomeManager.isMicrotomeModeActive()) {
+            IJ.log("Can't fit to points when in microtome mode");
+        } else if (planeManager.getTrackPlane() == 2) {
+            IJ.log("Can't fit to points when tracking block plane");
+        } else {
+            if (planeManager.getBlockVertices().size() > 0) {
+                int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    planeManager.removeAllBlockVertices();
+                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
+                    planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+                }
+            } else {
+                ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
+                planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+            }
+        }
     }
 
     private void installBehaviours() {
@@ -47,58 +95,56 @@ public class BdvBehaviours {
         });
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (microtomeManager.isMicrotomeModeActive()) {
-                IJ.log("Can't change points when in microtome mode");
-            } else if (planeManager.getTrackPlane() != 0) {
-                IJ.log("Can't change points when tracking a plane");
-            } else {
-                planeManager.addRemoveCurrentPositionPointsToFitPlane();
+            if (planeManager.getPointMode() == 0 & planeManager.getVertexMode() == 0) {
+                planeManager.toggleSelectedVertexCurrentPosition();
+            } else if (planeManager.getPointMode() == 1) {
+                addPointBehaviour();
+            } else if (planeManager.getVertexMode() == 1) {
+                addVertexBehaviour();
             }
-        }, "add point", "X" );
+        }, "Left Click behaviours", "button1" );
 
-        behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (microtomeManager.isMicrotomeModeActive()) {
-                IJ.log("Can't fit to points when in microtome mode");
-            } else if (planeManager.getTrackPlane() == 2) {
-                IJ.log("Can't fit to points when tracking block plane");
-            } else {
-                if (planeManager.getBlockVertices().size() > 0) {
-                    int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE);
-                    if (result == JOptionPane.YES_OPTION) {
-                        planeManager.removeAllBlockVertices();
-                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
-                        planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
-                    }
-                } else {
-                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
-                    planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+        BdvPopupMenus.addAction(bdvHandle, "Toggle Point Mode", ( x, y ) ->
+        {
+            if (planeManager.getPointMode() == 0) {
+                if (planeManager.getVertexMode() == 1) {
+                    // TODO -move to planemanager?
+                    planeManager.setVertexMode(0);
+                    pointOverlay.toggleVertexMode();
                 }
-            }
-        }, "fit to points", "K" );
-
-        behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (microtomeManager.isMicrotomeModeActive()) {
-                IJ.log("Can't change points when in microtome mode");
-            } else if (planeManager.getTrackPlane() != 0) {
-                IJ.log("Can't change points when tracking a plane");
-            } else if (!planeManager.checkNamedPlaneExists("block")) {
-                IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
+                planeManager.setPointMode(1);
+                pointOverlay.togglePointMode();
             } else {
-                planeManager.addRemoveCurrentPositionBlockVertices();
+                planeManager.setPointMode(0);
+                pointOverlay.togglePointMode();
             }
+        });
 
-        }, "add block vertex", "V" );
+        BdvPopupMenus.addAction(bdvHandle, "Toggle Vertex Mode", ( x, y ) ->
+        {
+            if (planeManager.getVertexMode() == 0) {
+                if (planeManager.getPointMode() == 1) {
+                    planeManager.setPointMode(0);
+                    pointOverlay.togglePointMode();
+                }
+                planeManager.setVertexMode(1);
+                pointOverlay.toggleVertexMode();
+            } else {
+                planeManager.setVertexMode(0);
+                pointOverlay.toggleVertexMode();
+            }
+        });
 
-        behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            planeManager.toggleSelectedVertexCurrentPosition();
-        }, "select point", "button1" );
-
-        // behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-        //     PopupMenu popup = new PopupMenu();
-        //     popup.show(x, y);
-        // }, "Point pop up", "button2" );
+        BdvPopupMenus.addAction(bdvHandle, "Fit To Points", ( x, y ) ->
+        {
+            if (planeManager.getVertexMode() == 1) {
+                IJ.log("Can't fit to points while in vertex mode");
+            } else if (planeManager.getPointMode() == 1) {
+                IJ.log("Can't fit to points while in point mode");
+            } else {
+                addFitToPointsBehaviour();
+            }
+        });
 
     }
 }
