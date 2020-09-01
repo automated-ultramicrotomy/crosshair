@@ -53,7 +53,8 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
 //		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_sparse_image\\yu.tif";
         //	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
 //		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
-        final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
+//         final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
+        final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\temp\\PLATY2C_downsampled_xray.tif";
         ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
         Image3DUniverse universe = new Image3DUniverse();
         Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
