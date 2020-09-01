@@ -245,7 +245,6 @@ public class MicrotomePanel extends CrosshairPanel {
 
         JPanel leftSettingsPanel = new JPanel();
         leftSettingsPanel.setLayout(new BoxLayout(leftSettingsPanel, BoxLayout.PAGE_AXIS));
-        // TODO - round the distance values
         currentRotationLabel = new JLabel("Rotation:");
         currentTiltLabel = new JLabel("Tilt:");
         currentKnifeLabel = new JLabel("Knife:");

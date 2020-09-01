@@ -65,10 +65,8 @@ class MicrotomeSetup {
 
     public void initialiseMicrotome () {
         int microtomePiecesAdded = 0;
-        //TODO - setup so doesn't reload scale if just change inital values
 
         for (String key : microtomeSTLs.keySet()) {
-            // TODO - set as locked - should probably set my other custom meshes to be locked too?
             if (!universe.contains(key)) {
                 universe.addCustomMesh(microtomeSTLs.get(key), key);
                 universe.getContent(key).setLocked(true);
@@ -320,7 +318,6 @@ class MicrotomeSetup {
         bottomEdgeVector.normalize();
 
         // what is transform to bring block normal to be end block normal & edge vector to be end edge vector?
-        //TODO - maybe translate so centre of edge vector == centre of knife location
         Rotation endRotation = new Rotation(new Vector3D(blockNormal.getX(), blockNormal.getY(), blockNormal.getZ()),
                 new Vector3D(bottomEdgeVector.getX(), bottomEdgeVector.getY(), bottomEdgeVector.getZ()),
                 new Vector3D(endBlockNormal.getX(), endBlockNormal.getY(), endBlockNormal.getZ()),

@@ -273,7 +273,7 @@ import java.util.Map;
             this.repaint();
         }
 
-        // TODO - make it so transparency panel doesn't appear if plane not initialised
+
         public void addTransparencyButton(JPanel panel, int[] buttonDimensions,
                                                 String planeName) {
             JButton button = new JButton("T");

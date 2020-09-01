@@ -37,7 +37,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
         final Img wrap = ImageJFunctions.wrap(imagePlus);
         BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
                 .sourceTransform(pw, ph, pd));
-        // TODO - make generic? Not just 8 bit - see open current image bdv command
+        // TODO - make generic? Not just 8 bit
         bdvStackSource.setDisplayRange(0, 255);
 
         new Crosshair(bdvStackSource, universe, imageContent);
@@ -67,7 +67,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
         final Img wrap = ImageJFunctions.wrap(imagePlus);
         BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
                 .sourceTransform(pw, ph, pd));
-        // TODO - make generic? Not just 8 bit - see open current image bdv command
+        // TODO - make generic? Not just 8 bit
         bdvStackSource.setDisplayRange(0, 255);
 
         new Crosshair(bdvStackSource, universe, imageContent);

@@ -91,7 +91,6 @@ class Solutions {
     }
 
     private void calculateDistance () {
-        //TODO - calculate once then only update for the knife angle interactively???
         Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
         Map<String, Vector3d> planeNormals = planeManager.getPlaneNormals();
         Map<String, Vector3d> planePoints = planeManager.getPlanePoints();

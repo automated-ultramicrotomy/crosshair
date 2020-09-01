@@ -22,6 +22,9 @@ import java.awt.Window;
 // TODO - Add a check that target plane is behind block face (or intersects it)
 // TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
 // not out of it, like our target normals are set?
+// TODO - make generic for any bit depth - currently only accepts 8 bit
+// TODO - make it so transparency panel doesn't appear if plane not initialised
+// TODO - do checks for legitimacy of values when load from settings? e.g. that vertices lie on the block plane
 
 
 

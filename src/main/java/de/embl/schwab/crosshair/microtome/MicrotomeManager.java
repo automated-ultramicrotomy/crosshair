@@ -9,9 +9,6 @@ import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 
-//TODO - add all sliders up here?
-//TODO - some variable for block has been initialised at least once before can control it with sliders
-
 public class MicrotomeManager {
 
     private final PlaneManager planeManager;

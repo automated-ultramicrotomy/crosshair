@@ -31,6 +31,8 @@ public class PlaneManager {
     private int pointMode = 0;
     private int vertexMode = 0;
 
+    private double distanceBetweenPlanesThreshold;
+
     private final Map<String, Vector3d> planeNormals;
     private final Map<String, Vector3d> planePoints;
     private final Map<String, Vector3d> planeCentroids;
@@ -82,6 +84,9 @@ public class PlaneManager {
 
         targetVisible = true;
         blockVisible = true;
+
+        // TODO - make this threshold user definable - makes sense for microns, but possibly not for other units
+        distanceBetweenPlanesThreshold = 1E-10;
     }
 
     public Map<String, RealPoint>getSelectedVertex() {
@@ -309,8 +314,6 @@ public class PlaneManager {
 
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {
 
-        //TODO - shift to use bounding box of image itself
-        // Get bounding box of image, account for any transformation of the image
         Point3d min = new Point3d();
         Point3d max = new Point3d();
         imageContent.getMax(max);
@@ -377,8 +380,11 @@ public class PlaneManager {
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
             meshContent.setLocked(true);
-            // TODO - check for current visibility
-            meshContent.setVisible(true);
+            if (planeName.equals("target")) {
+                meshContent.setVisible(targetVisible);
+            } else if (planeName.equals("block")) {
+                meshContent.setVisible(blockVisible);
+            }
 
         }
     }
@@ -392,10 +398,9 @@ public class PlaneManager {
             boolean normalsParallel = GeometryUtils.checkVectorsParallel(planeNormals.get(name), currentPlaneNormal);
             double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, planeNormals.get(name), planePoints.get(name));
 
-            // TODO - make this threshold user definable - e.g. this makes sense for microns, but for different
             // units may want to be more or less strict
             // necessary due to double precision, will very rarely get exactly the same value
-            boolean pointInPlane = distanceToPlane < 1E-10;
+            boolean pointInPlane = distanceToPlane < distanceBetweenPlanesThreshold;
 
             if (normalsParallel & pointInPlane) {
                 IJ.log("Already at that plane");
@@ -423,9 +428,9 @@ public class PlaneManager {
             double[] position = new double[3];
             point.localize(position);
             double distanceToPlane = GeometryUtils.distanceFromPointToPlane(new Vector3d(position), planeNormals.get("block"), planePoints.get("block"));
-            // TODO - make this threshold user definable - e.g. this makes sense for microns, but for different
+
             // units may want to be more or less strict
-            if (distanceToPlane < 1E-10) {
+            if (distanceToPlane < distanceBetweenPlanesThreshold) {
                 addRemovePointFromPointList(blockVertices, point);
             } else {
                 IJ.log("Vertex points must lie on the block plane");
