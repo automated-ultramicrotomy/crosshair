@@ -25,8 +25,8 @@ public class PointsOverlaySizeChange extends BdvOverlay {
         private Color colModeText;
 
         private boolean showPoints;
-        private boolean pointMode;
-        private boolean vertexMode;
+        private int pointMode;
+        private int vertexMode;
 
         public PointsOverlaySizeChange () {
             colPoint = new Color( 51, 255, 51);
@@ -34,8 +34,8 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             colSelected = new Color(153, 0, 76);
             colModeText = new Color(255, 255, 255);
             this.showPoints = true;
-            this.pointMode = false;
-            this.vertexMode = false;
+            this.pointMode = 0;
+            this.vertexMode = 0;
         }
 
         public < T extends RealLocalizable > void setPoints(final List< T > points , final List <T> vertexPoints,
@@ -60,20 +60,12 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             }
         }
 
-    public void togglePointMode () {
-        if (pointMode) {
-            pointMode = false;
-        } else {
-            pointMode = true;
-        }
+    public void setPointMode (int value) {
+        pointMode = value;
     }
 
-    public void toggleVertexMode () {
-        if (vertexMode) {
-            vertexMode = false;
-        } else {
-            vertexMode = true;
-        }
+    public void setVertexMode (int value) {
+        vertexMode = value;
     }
 
         @Override
@@ -143,10 +135,10 @@ public class PointsOverlaySizeChange extends BdvOverlay {
             graphics.setColor(colModeText);
 
 
-            if (pointMode) {
+            if (pointMode == 1) {
                 String text = "Point Mode";
                 drawModeText(graphics, text);
-            } else if (vertexMode) {
+            } else if (vertexMode == 1) {
                 String text = "Vertex Mode";
                 drawModeText(graphics, text);
             }

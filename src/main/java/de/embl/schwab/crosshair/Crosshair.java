@@ -48,6 +48,7 @@ public class Crosshair {
 		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
 		pointOverlay.setPoints(planeManager.getPointsToFitPlane(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
+		planeManager.setPointOverlay(pointOverlay);
 		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager, pointOverlay);
 

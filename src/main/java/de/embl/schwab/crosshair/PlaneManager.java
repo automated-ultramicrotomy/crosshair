@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import customnode.CustomTriangleMesh;
+import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.utils.BdvUtils;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
@@ -45,6 +46,7 @@ public class PlaneManager {
     private final BdvStackSource bdvStackSource;
     private final Image3DUniverse universe;
     private final Content imageContent;
+    private PointsOverlaySizeChange pointOverlay;
 
     private Color3f targetPlaneColour;
     private Color3f blockPlaneColour;
@@ -105,12 +107,17 @@ public class PlaneManager {
     public int getTrackPlane() {return trackPlane;}
     public void setTrackPlane(int track) {trackPlane = track;}
 
+    public void setPointOverlay (PointsOverlaySizeChange pointOverlay) {
+        this.pointOverlay = pointOverlay;
+    }
+
     public int getPointMode() {
         return pointMode;
     }
 
     public void setPointMode(int pointMode) {
         this.pointMode = pointMode;
+        pointOverlay.setPointMode(pointMode);
     }
 
     public int getVertexMode() {
@@ -119,6 +126,7 @@ public class PlaneManager {
 
     public void setVertexMode(int vertexMode) {
         this.vertexMode = vertexMode;
+        pointOverlay.setVertexMode(vertexMode);
     }
 
     public void setTargetPlaneColour (Color colour) {

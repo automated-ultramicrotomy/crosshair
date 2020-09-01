@@ -386,6 +386,8 @@ public class MicrotomePanel extends CrosshairPanel {
             savePanel.enableSaveSolution();
             planePanel.disableAllTracking();
             otherPanel.activateMicrotomeButtons();
+            planeManager.setPointMode(0);
+            planeManager.setVertexMode(0);
             crosshairFrame.pack();
         } else {
             IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined.");

@@ -62,18 +62,22 @@ public class BdvBehaviours {
         } else if (planeManager.getTrackPlane() == 2) {
             IJ.log("Can't fit to points when tracking block plane");
         } else {
-            if (planeManager.getBlockVertices().size() > 0) {
-                int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
-                if (result == JOptionPane.YES_OPTION) {
-                    planeManager.removeAllBlockVertices();
+            if (planeManager.getPointsToFitPlane().size() >= 3) {
+                if (planeManager.getBlockVertices().size() > 0) {
+                    int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                    if (result == JOptionPane.YES_OPTION) {
+                        planeManager.removeAllBlockVertices();
+                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
+                        planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+                    }
+                } else {
                     ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
                     planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
                 }
             } else {
-                ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
-                planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+                IJ.log ("Need at least 3 points to fit plane");
             }
         }
     }
@@ -106,44 +110,39 @@ public class BdvBehaviours {
 
         BdvPopupMenus.addAction(bdvHandle, "Toggle Point Mode", ( x, y ) ->
         {
-            if (planeManager.getPointMode() == 0) {
-                if (planeManager.getVertexMode() == 1) {
-                    // TODO -move to planemanager?
-                    planeManager.setVertexMode(0);
-                    pointOverlay.toggleVertexMode();
+            if (!microtomeManager.isMicrotomeModeActive()) {
+                if (planeManager.getPointMode() == 0) {
+                    if (planeManager.getVertexMode() == 1) {
+                        planeManager.setVertexMode(0);
+                    }
+                    planeManager.setPointMode(1);
+                } else {
+                    planeManager.setPointMode(0);
                 }
-                planeManager.setPointMode(1);
-                pointOverlay.togglePointMode();
             } else {
-                planeManager.setPointMode(0);
-                pointOverlay.togglePointMode();
+                IJ.log("Can't change points while in microtome mode");
             }
         });
 
         BdvPopupMenus.addAction(bdvHandle, "Toggle Vertex Mode", ( x, y ) ->
         {
-            if (planeManager.getVertexMode() == 0) {
-                if (planeManager.getPointMode() == 1) {
-                    planeManager.setPointMode(0);
-                    pointOverlay.togglePointMode();
+            if (!microtomeManager.isMicrotomeModeActive()) {
+                if (planeManager.getVertexMode() == 0) {
+                    if (planeManager.getPointMode() == 1) {
+                        planeManager.setPointMode(0);
+                    }
+                    planeManager.setVertexMode(1);
+                } else {
+                    planeManager.setVertexMode(0);
                 }
-                planeManager.setVertexMode(1);
-                pointOverlay.toggleVertexMode();
             } else {
-                planeManager.setVertexMode(0);
-                pointOverlay.toggleVertexMode();
+                IJ.log("Can't change vertices while in microtome mode");
             }
         });
 
         BdvPopupMenus.addAction(bdvHandle, "Fit To Points", ( x, y ) ->
         {
-            if (planeManager.getVertexMode() == 1) {
-                IJ.log("Can't fit to points while in vertex mode");
-            } else if (planeManager.getPointMode() == 1) {
-                IJ.log("Can't fit to points while in point mode");
-            } else {
                 addFitToPointsBehaviour();
-            }
         });
 
     }
