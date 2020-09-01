@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.utils;
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import de.embl.schwab.crosshair.PlaneManager;
+import edu.mines.jtk.opt.Vect;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
@@ -445,6 +446,20 @@ public final class GeometryUtils {
         } else {
             return false;
         }
+    }
+    public static boolean checkVectorHorizontalInCurrentView (Bdv bdv, double[] vector) {
+        AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
+
+        // Convert everything to viewer coordinates
+        double[] qCurrentRotation = new double[ 4 ];
+        Affine3DHelpers.extractRotation( currentViewerTransform, qCurrentRotation );
+        final AffineTransform3D currentRotation = quaternionToAffineTransform3D( qCurrentRotation );
+
+        double[] vectorInViewerSystem = new double[3];
+        currentRotation.apply( vector, vectorInViewerSystem);
+
+        return checkVectorsParallel(new Vector3d(vectorInViewerSystem), new Vector3d(1, 0, 0));
     }
 
     public static void levelCurrentViewNormalandHorizontal( Bdv bdv, double[] targetNormalVector, double[] targetHorizontalVector)

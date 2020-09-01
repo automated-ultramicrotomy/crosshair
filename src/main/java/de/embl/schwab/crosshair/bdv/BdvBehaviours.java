@@ -23,13 +23,11 @@ public class BdvBehaviours {
     private BdvHandle bdvHandle;
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
-    private PointsOverlaySizeChange pointOverlay;
 
-    public BdvBehaviours (BdvHandle bdvHandle, PlaneManager planeManager, MicrotomeManager microtomeManager, PointsOverlaySizeChange pointOverlay) {
+    public BdvBehaviours (BdvHandle bdvHandle, PlaneManager planeManager, MicrotomeManager microtomeManager) {
         this.bdvHandle = bdvHandle;
         this.planeManager = planeManager;
         this.microtomeManager = microtomeManager;
-        this.pointOverlay = pointOverlay;
 
         installBehaviours();
     }
