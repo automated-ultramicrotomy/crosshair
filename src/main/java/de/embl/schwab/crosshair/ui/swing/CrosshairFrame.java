@@ -27,8 +27,10 @@ public class CrosshairFrame extends JFrame {
     private SavePanel savePanel;
     private ArrayList<CrosshairPanel> allPanels;
 
+    private String unit;
+
     public CrosshairFrame(Image3DUniverse universe, Content imageContent, PlaneManager planeManager, MicrotomeManager microtomeManager,
-                          PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle) {
+                          PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle, String unit) {
 
         this.universe = universe;
         this.imageContent = imageContent;
@@ -36,6 +38,7 @@ public class CrosshairFrame extends JFrame {
         this.microtomeManager = microtomeManager;
         this.pointOverlay = pointOverlay;
         this.bdvHandle = bdvHandle;
+        this.unit = unit;
 
         allPanels = new ArrayList<>();
 
@@ -129,4 +132,6 @@ public class CrosshairFrame extends JFrame {
     public PointsOverlaySizeChange getPointOverlay() {
         return pointOverlay;
     }
+
+    public String getUnit() { return unit; }
 }

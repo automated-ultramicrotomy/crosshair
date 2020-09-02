@@ -14,6 +14,7 @@ import java.awt.Window;
 //TODO - more sensible placement of varibles / structure
 // TODO - check against original blender solution. Make mock file for case of interseciton with block face - check how two solutions compare
 // TODO - update wiki to say only 8 bit
+// TODO - check degree symbols work on mac
 
 // Possible improvements to add
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
@@ -25,13 +26,14 @@ import java.awt.Window;
 // TODO - make generic for any bit depth - currently only accepts 8 bit
 // TODO - make it so transparency panel doesn't appear if plane not initialised
 // TODO - do checks for legitimacy of values when load from settings? e.g. that vertices lie on the block plane
-// TODO - read units from files directly, and display in ui for distances. Mark angles as being in degrees.
+// TODO - read units from files directly, and display in ui for distances. (easy for opening from current image - just imagePlus.getCalibration().getUnit(), harder
+//  for bdv file - perhaps ask T if there's a way to read from xml?) Mark angles as being in degrees.
 // TODO - make so doesn't show windows until all loaded?
 
 
 public class Crosshair {
 
-	public Crosshair (BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
+	public Crosshair (BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent, String unit) {
 
 		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
 		imageContent.setLocked(true);
@@ -44,7 +46,7 @@ public class Crosshair {
 		// only regions of the image > 0
 
 		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
-		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource);
+		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
 		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
 		pointOverlay.setPoints(planeManager.getPointsToFitPlane(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
@@ -52,7 +54,7 @@ public class Crosshair {
 		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
-		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle);
+		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle, unit);
 
 		// Space out windows like here:
 		// https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java#L369

@@ -8,10 +8,9 @@ import ij.IJ;
 import org.apache.commons.math3.util.Precision;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.GridLayout;
-import java.awt.Dimension;
 import java.util.*;
 
 
@@ -45,6 +44,7 @@ public class MicrotomePanel extends CrosshairPanel {
     private JButton exitCuttingModeButton;
 
     private JPanel cuttingControlsPanel;
+    private JPanel cuttingUnitsPanel;
     private JPanel currentSettingsPanel;
     private PlanePanel planePanel;
     private SavePanel savePanel;
@@ -54,6 +54,7 @@ public class MicrotomePanel extends CrosshairPanel {
     private CrosshairFrame crosshairFrame;
 
     private int displayDecimalPlaces;
+    private String unit;
 
     public MicrotomePanel(CrosshairFrame crosshairFrame) {
         this.crosshairFrame = crosshairFrame;
@@ -66,6 +67,7 @@ public class MicrotomePanel extends CrosshairPanel {
         planeManager = crosshairFrame.getPlaneManager();
         planePanel = crosshairFrame.getPlanePanel();
         savePanel = crosshairFrame.getSavePanel();
+        unit = crosshairFrame.getUnit();
 
         displayDecimalPlaces = 4;
 
@@ -100,23 +102,23 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     public void setDistanceToCutLabel (double distance) {
-        distanceToCutLabel.setText("Distance to  cut:    " + Precision.round(distance, displayDecimalPlaces) +"");
+        distanceToCutLabel.setText("Distance to  cut:    " + Precision.round(distance, displayDecimalPlaces) +" " + unit + " ");
     }
 
     public void setRotationLabel (double rotation) {
-        currentRotationLabel.setText("Rotation:    " + Precision.round(rotation, displayDecimalPlaces) +"");
+        currentRotationLabel.setText("Rotation:    " + Precision.round(rotation, displayDecimalPlaces) +"\u00B0 ");
     }
 
     public void setTiltLabel (double tilt) {
-        currentTiltLabel.setText("Tilt:    " + Precision.round(tilt, displayDecimalPlaces) +"");
+        currentTiltLabel.setText("Tilt:    " + Precision.round(tilt, displayDecimalPlaces) +"\u00B0  ");
     }
 
     public void setKnifeLabel (double knife) {
-        currentKnifeLabel.setText("Knife:    " + Precision.round(knife, displayDecimalPlaces) +"");
+        currentKnifeLabel.setText("Knife:    " + Precision.round(knife, displayDecimalPlaces) +"\u00B0  ");
     }
 
     public void setKnifeTargetAngleLabel (double angle) {
-        currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + Precision.round(angle, displayDecimalPlaces) +"");
+        currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + Precision.round(angle, displayDecimalPlaces) +"\u00B0  ");
     }
 
     public void setCuttingRange (double min, double max) {
@@ -230,6 +232,12 @@ public class MicrotomePanel extends CrosshairPanel {
         // holder after scaling
         cuttingDepth =
                 addSliderToPanel(cuttingControlsPanel, "Cutting Depth", 0, 100, 0, cuttingListener);
+
+        cuttingUnitsPanel = new JPanel();
+        cuttingUnitsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        cuttingUnitsPanel.add(new JLabel(unit, SwingConstants.LEFT));
+        cuttingUnitsPanel.setVisible(false);
+        cuttingControlsPanel.add(cuttingUnitsPanel);
 
         disableSliders();
         cuttingControlsPanel.setVisible(false);
@@ -420,6 +428,7 @@ public class MicrotomePanel extends CrosshairPanel {
 
     private void enterCuttingMode () {
         sliderPanels.get("Cutting Depth").setVisible(true);
+        cuttingUnitsPanel.setVisible(true);
         // Disable all other microtome sliders
         disableSliders("Cutting Depth");
         microtomeManager.enterCuttingMode();
@@ -432,6 +441,7 @@ public class MicrotomePanel extends CrosshairPanel {
 
     private void exitCuttingMode () {
         sliderPanels.get("Cutting Depth").setVisible(false);
+        cuttingUnitsPanel.setVisible(false);
         enableSliders();
         microtomeManager.exitCuttingMode();
         enterCuttingModeButton.setEnabled(true);

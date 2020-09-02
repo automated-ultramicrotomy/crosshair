@@ -31,6 +31,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
         final double pw = imagePlus.getCalibration().pixelWidth;
         final double ph = imagePlus.getCalibration().pixelHeight;
         final double pd = imagePlus.getCalibration().pixelDepth;
+        final String unit = imagePlus.getCalibration().getUnit();
 
         final Img wrap = ImageJFunctions.wrap(imagePlus);
         BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
@@ -38,7 +39,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
         // TODO - make generic? Not just 8 bit
         bdvStackSource.setDisplayRange(0, 255);
 
-        new Crosshair(bdvStackSource, universe, imageContent);
+        new Crosshair(bdvStackSource, universe, imageContent, unit);
 
     }
 
@@ -62,6 +63,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
         final double pw = imagePlus.getCalibration().pixelWidth;
         final double ph = imagePlus.getCalibration().pixelHeight;
         final double pd = imagePlus.getCalibration().pixelDepth;
+        final String unit = imagePlus.getCalibration().getUnit();
 
         final Img wrap = ImageJFunctions.wrap(imagePlus);
         BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
@@ -69,7 +71,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
         // TODO - make generic? Not just 8 bit
         bdvStackSource.setDisplayRange(0, 255);
 
-        new Crosshair(bdvStackSource, universe, imageContent);
+        new Crosshair(bdvStackSource, universe, imageContent, unit);
 
     }
 }

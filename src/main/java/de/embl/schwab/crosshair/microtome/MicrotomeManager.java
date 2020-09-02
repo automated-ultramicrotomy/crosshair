@@ -23,7 +23,9 @@ public class MicrotomeManager {
     private Solutions solutions;
     private Cutting cutting;
 
-    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource) {
+    private String unit;
+
+    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource, String unit) {
 
         this.planeManager = planeManager;
         microtomeModeActive = false;
@@ -33,13 +35,14 @@ public class MicrotomeManager {
         this.microtomeSetup = new MicrotomeSetup(microtome);
         this.solutions = new Solutions(microtome);
         this.cutting = new Cutting(microtome);
+        this.unit = unit;
 
     }
 
     public SolutionToSave getCurrentSolution() {
         SolutionToSave currentSolution = new SolutionToSave(microtome.getInitialKnifeAngle(),
                 microtome.getInitialTiltAngle(), solutions.getSolutionKnife(), solutions.getSolutionTilt(),
-                solutions.getSolutionRotation(), solutions.getSolutionFirstTouchName(), solutions.getDistanceToCut());
+                solutions.getSolutionRotation(), solutions.getSolutionFirstTouchName(), solutions.getDistanceToCut(), unit);
 
         return currentSolution;
     }
