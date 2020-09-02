@@ -11,9 +11,7 @@ import ij3d.Image3DUniverse;
 import javax.swing.*;
 import java.awt.Window;
 
-//TODO - more sensible placement of varibles / structure
-// TODO - check against original blender solution. Make mock file for case of interseciton with block face - check how two solutions compare
-// TODO - update wiki to say only 8 bit
+// TODO - neaten up code structure, possibly clearer labelling of which coordinate system & units are being used
 // TODO - check degree symbols work on mac
 
 // Possible improvements to add
@@ -26,9 +24,8 @@ import java.awt.Window;
 // TODO - make generic for any bit depth - currently only accepts 8 bit
 // TODO - make it so transparency panel doesn't appear if plane not initialised
 // TODO - do checks for legitimacy of values when load from settings? e.g. that vertices lie on the block plane
-// TODO - read units from files directly, and display in ui for distances. (easy for opening from current image - just imagePlus.getCalibration().getUnit(), harder
-//  for bdv file - perhaps ask T if there's a way to read from xml?) Mark angles as being in degrees.
 // TODO - make so doesn't show windows until all loaded?
+// TODO - check against original blender solution. Make mock file for case of intersection with block face - check how two solutions compare
 
 
 public class Crosshair {
