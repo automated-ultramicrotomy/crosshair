@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.embl.schwab.crosshair.utils.GeometryUtils.compose;
 import static java.lang.Math.abs;
 
 class MicrotomeSetup {

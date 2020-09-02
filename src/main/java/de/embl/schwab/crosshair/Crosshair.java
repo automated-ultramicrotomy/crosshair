@@ -12,8 +12,8 @@ import javax.swing.*;
 import java.awt.Window;
 
 //TODO - more sensible placement of varibles / structure
-// TODO - check speed loading full sized files as command, or from bdv
 // TODO - check against original blender solution. Make mock file for case of interseciton with block face - check how two solutions compare
+// TODO - update wiki to say only 8 bit
 
 // Possible improvements to add
 // TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
@@ -25,7 +25,8 @@ import java.awt.Window;
 // TODO - make generic for any bit depth - currently only accepts 8 bit
 // TODO - make it so transparency panel doesn't appear if plane not initialised
 // TODO - do checks for legitimacy of values when load from settings? e.g. that vertices lie on the block plane
-
+// TODO - read units from files directly, and display in ui for distances. Mark angles as being in degrees.
+// TODO - make so doesn't show windows until all loaded?
 
 
 public class Crosshair {

@@ -7,7 +7,6 @@ import ij3d.Content;
 import ij3d.Image3DUniverse;
 import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.Matrix4d;
-import org.scijava.vecmath.Point3d;
 import org.scijava.vecmath.Vector3d;
 
 class Microtome {

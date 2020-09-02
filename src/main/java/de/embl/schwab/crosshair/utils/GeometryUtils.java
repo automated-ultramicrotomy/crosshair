@@ -2,8 +2,6 @@ package de.embl.schwab.crosshair.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
-import de.embl.schwab.crosshair.PlaneManager;
-import edu.mines.jtk.opt.Vect;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;

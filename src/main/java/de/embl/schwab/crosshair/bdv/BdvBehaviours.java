@@ -1,9 +1,7 @@
 package de.embl.schwab.crosshair.bdv;
 
 import bdv.util.BdvHandle;
-import bdv.util.BdvStackSource;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
-import de.embl.cba.swing.PopupMenu;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
