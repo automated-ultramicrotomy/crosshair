@@ -14,7 +14,7 @@ Go to Help > Update... in the imagej menu, and select 'Manage update sites'.
 In the new window that pops up, select 'Add update site'. This will create a new row in the table.
 Fill this row out so it looks like below:  
 
-<img src="https://github.com/K-Meech/crosshair/blob/master/images/updateSite.png" width="700">
+<img src="https://github.com/K-Meech/crosshair/blob/master/images/updateSite.png" width="800">
 
 Then click 'Close'.   
 Then click 'Apply Changes'  
