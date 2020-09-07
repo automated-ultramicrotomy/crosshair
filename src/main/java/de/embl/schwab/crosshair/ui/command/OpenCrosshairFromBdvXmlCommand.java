@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.ui.command;
 
-import bdv.util.*;
+import bdv.util.BdvFunctions;
+import bdv.util.BdvStackSource;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
 import ij3d.Content;
@@ -9,22 +10,18 @@ import net.imglib2.type.numeric.ARGBType;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.Parameter;
-
 import java.io.File;
-
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
 
 @Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Target Bdv File" )
 public class OpenCrosshairFromBdvXmlCommand implements Command {
-
-    private BdvStackSource bdvStackSource;
 
     @Parameter ( label = "Select Bdv Xml File:" )
     public File bdvXml;
 
     @Override
     public void run() {
-        final LazySpimSource imageSource = new LazySpimSource("raw", "C:\\Users\\meechan\\Documents\\test_images\\Flipped_imaged_before.xml");
+        final LazySpimSource imageSource = new LazySpimSource("raw", bdvXml.getAbsolutePath());
         BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
         bdvStackSource.setDisplayRange(0, 255);
 
