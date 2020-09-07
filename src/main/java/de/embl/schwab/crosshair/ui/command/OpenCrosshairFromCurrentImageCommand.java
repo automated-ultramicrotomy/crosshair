@@ -45,14 +45,7 @@ public class OpenCrosshairFromCurrentImageCommand implements Command
 
     public static void main( String[] args )
     {
-        //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Raw\\MicroCT\\Targeting\\Course-1\\flipped";
-        //	public static final String INPUT_FOLDER = "Z:\\Kimberly\\Projects\\Targeting\\Data\\Derived\\test_stack";
-//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d";
-//		final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_3d_larger_isotropic";
-//		final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_sparse_image\\yu.tif";
-        //	public static final String INPUT_FOLDER = "C:\\Users\\meechan\\Documents\\test_stack";
-//		final ImagePlus imagePlus = FolderOpener.open(INPUT_FOLDER, "");
-//         final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
+        // final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_3d_larger_anisotropic\\test_3d_larger_anisotropic.tif";
         final String INPUT_IMAGE = "C:\\Users\\meechan\\Documents\\test_images\\Flipped_images_before.tif";
         ImagePlus imagePlus = IJ.openImage(INPUT_IMAGE);
         Image3DUniverse universe = new Image3DUniverse();
