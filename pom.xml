@@ -76,10 +76,10 @@
 		<package-name>de.embl.schwab.crosshair</package-name>
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>EMBL</license.copyrightOwners>
-		<scijava.app.directory>C:\Users\meechan\Documents\temp\Fiji.app</scijava.app.directory>
+		<scijava.app.directory>C:\Users\meechan\Documents\CrosshairUpload\Fiji.app</scijava.app.directory>
 		<enforcer.skip>true</enforcer.skip>
 
-		<imagej-utils.version>0.5.3-SNAPSHOT</imagej-utils.version>
+		<imagej-utils.version>0.5.6</imagej-utils.version>
 	</properties>
 
 	<repositories>
