@@ -447,7 +447,7 @@ public final class GeometryUtils {
     }
     public static boolean checkVectorHorizontalInCurrentView (Bdv bdv, double[] vector) {
         AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
 
         // Convert everything to viewer coordinates
         double[] qCurrentRotation = new double[ 4 ];
@@ -464,7 +464,7 @@ public final class GeometryUtils {
     {
 
         AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
 
         LinAlgHelpers.normalize( targetNormalVector ); // just to be sure.
 

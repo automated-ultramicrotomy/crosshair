@@ -267,7 +267,7 @@ public class PlaneManager {
 
     public ArrayList<Vector3d> getPlaneDefinitionOfCurrentView () {
         final AffineTransform3D transform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+        bdvHandle.getViewerPanel().state().getViewerTransform( transform );
 
         ArrayList<Vector3d> planeDefinition = getPlaneDefinitionFromViewTransform(transform);
 
@@ -304,7 +304,7 @@ public class PlaneManager {
 
     public double[] getGlobalViewCentre () {
         final AffineTransform3D transform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+        bdvHandle.getViewerPanel().state().getViewerTransform( transform );
         double[] centrePointView = getBdvWindowCentre(bdvStackSource);
         double[] centrePointGlobal = new double[3];
         transform.inverse().apply(centrePointView, centrePointGlobal);
@@ -541,7 +541,7 @@ public class PlaneManager {
 
     private double[] convertToViewerCoordinates (RealPoint point) {
         final AffineTransform3D transform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getViewerTransform( transform );
+        bdvHandle.getViewerPanel().state().getViewerTransform( transform );
 
         final double[] lPos = new double[ 3 ];
         final double[] gPos = new double[ 3 ];

@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>crosshair</artifactId>
 	<url>https://github.com/K-Meech/crosshair</url>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>Crosshair</name>
 	<description>Assisted 3D targeting via an ultramicrotome</description>
 	<inceptionYear>2020</inceptionYear>
@@ -79,34 +79,19 @@
 		<scijava.app.directory>C:\Users\meechan\Documents\CrosshairUpload\Fiji.app</scijava.app.directory>
 		<enforcer.skip>true</enforcer.skip>
 
-		<imagej-utils.version>0.5.6</imagej-utils.version>
+		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
+		<imagej-utils.version>0.6.3</imagej-utils.version>
 	</properties>
 
 	<repositories>
-		<!-- for SciJava dependencies -->
 		<repository>
-			<id>imagej.public</id>
-			<url>https://maven.imagej.net/content/groups/public</url>
+			<id>scijava.public</id>
+			<url>https://maven.scijava.org/content/groups/public</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-legacy</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
@@ -114,10 +99,12 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
+			<version>${bigdataviewer-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
+			<version>${bigdataviewer-vistools.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -128,27 +115,9 @@
 			<artifactId>3D_Viewer</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>bigwarp_fiji</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>de.embl.cba</groupId>
 			<artifactId>imagej-utils</artifactId>
 			<version>${imagej-utils.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>bio-formats_plugins</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>ch.systems.cisd</groupId>
-					<artifactId>jhdf5</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
 </project>

@@ -21,7 +21,7 @@ public class BdvUtils {
         double[] currentNormalVector = getCurrentViewNormalVector( bdv );
 
         AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().getState().getViewerTransform( currentViewerTransform );
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
 
         LinAlgHelpers.normalize( targetNormalVector ); // just to be sure.
 

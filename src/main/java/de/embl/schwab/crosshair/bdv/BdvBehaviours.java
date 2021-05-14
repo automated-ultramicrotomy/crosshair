@@ -82,7 +82,7 @@ public class BdvBehaviours {
         final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
         behaviours.install(bdvHandle.getTriggerbindings(), "target");
 
-        bdvHandle.getViewerPanel().addTransformListener(new TransformListener<AffineTransform3D>() {
+        bdvHandle.getViewerPanel().addTransformListener(new bdv.viewer.TransformListener<AffineTransform3D>() {
             @Override
             public void transformChanged(AffineTransform3D affineTransform3D) {
                 if ( planeManager.getTrackPlane() == 1 )
