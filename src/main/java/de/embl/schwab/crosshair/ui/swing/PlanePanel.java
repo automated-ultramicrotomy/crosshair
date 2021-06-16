@@ -19,23 +19,18 @@ import java.util.Map;
     public class PlanePanel extends CrosshairPanel {
 
         private PlaneManager planeManager;
-        private MicrotomeManager microtomeManager;
         private Map<String, JButton> trackingButtons;
         private MicrotomePanel microtomePanel;
         private SavePanel savePanel;
-        private CrosshairFrame crosshairFrame;
         private ArrayList<JButton> buttonsAffectedByBlockTracking;
         private ArrayList<JButton> buttonsAffectedByTargetTracking;
 
         public PlanePanel() {}
 
         public void initialisePanel( CrosshairFrame crosshairFrame ) {
-            this.crosshairFrame = crosshairFrame;
             planeManager = crosshairFrame.getPlaneManager();
-            microtomeManager = crosshairFrame.getMicrotomeManager();
             savePanel = crosshairFrame.getSavePanel();
             microtomePanel = crosshairFrame.getMicrotomePanel();
-
             trackingButtons = new HashMap<>();
             buttonsAffectedByTargetTracking = new ArrayList<>();
             buttonsAffectedByBlockTracking = new ArrayList<>();
@@ -61,21 +56,14 @@ import java.util.Map;
 
                 if (colour == null) return;
 
-                if (planeName == "target") {
-                    if (planeManager.checkNamedPlaneExists("target")) {
-                        planeManager.setTargetPlaneColour(colour);
-                    } else {
-                        IJ.log("Target plane not initialised");
-                    }
-                } else if (planeName == "block") {
-                    if (planeManager.checkNamedPlaneExists("block")) {
-                        planeManager.setBlockPlaneColour(colour);
-                    } else {
-                        IJ.log("Block plane not initialised");
-                    }
+                if ( planeManager.checkNamedPlaneExists( planeName ) ) {
+                    planeManager.setPlaneColour( planeName, colour );
+                } else {
+                    IJ.log( planeName + " plane not initialised" );
                 }
 
             });
+
             if (planeName.equals("target")) {
                 buttonsAffectedByTargetTracking.add(colorButton);
             } else if (planeName.equals("block")) {
@@ -219,18 +207,10 @@ import java.util.Map;
                     new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
             visbilityButton.addActionListener(e -> {
-                if (planeName == "target") {
-                    if (planeManager.checkNamedPlaneExists("target")) {
-                        planeManager.toggleTargetVisbility();
-                    } else {
-                        IJ.log("Target plane not initialised");
-                    }
-                } else if (planeName == "block") {
-                    if (planeManager.checkNamedPlaneExists("block")) {
-                        planeManager.toggleBlockVisbility();
-                    } else {
-                        IJ.log("Block plane not initialised");
-                    }
+                if ( planeManager.checkNamedPlaneExists( planeName ) ) {
+                    planeManager.togglePlaneVisbility( planeName );
+                } else {
+                    IJ.log(planeName + " plane not initialised" );
                 }
             });
 
@@ -286,18 +266,10 @@ import java.util.Map;
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
                 float currentTransparency = 0.7f;
-                if (planeName.equals("target")) {
-                    if (planeManager.checkNamedPlaneExists("target")) {
-                        currentTransparency = planeManager.getTargetTransparency();
-                    } else {
-                        IJ.log("Target plane not initialised");
-                    }
-                } else if (planeName.equals("block")) {
-                    if (planeManager.checkNamedPlaneExists("block")) {
-                        currentTransparency = planeManager.getBlockTransparency();
-                    } else {
-                        IJ.log("Block plane not initialised");
-                    }
+                if ( planeManager.checkNamedPlaneExists( planeName ) ) {
+                    currentTransparency = planeManager.getTransparency( planeName );
+                } else {
+                    IJ.log(planeName + " plane not initialised");
                 }
 
                 // as here https://github.com/K-Meech/crosshair/blob/b7bdece786c1593969ec469916adf9737a7768bb/src/main/java/de/embl/cba/bdv/utils/BdvDialogs.java
@@ -369,10 +341,10 @@ import java.util.Map;
             @Override
             public void update() {
                 transparencySlider.update();
-                if (planeName.equals("target")) {
-                    planeManager.setTargetTransparency((float) transparencyValue.getCurrentValue());
-                } else if (planeName.equals("block")) {
-                    planeManager.setBlockTransparency((float) transparencyValue.getCurrentValue());
+                if ( planeManager.checkNamedPlaneExists( planeName ) ) {
+                    planeManager.setPlaneTransparency( planeName, (float) transparencyValue.getCurrentValue() );
+                } else {
+                    IJ.log(planeName + " plane not initialised");
                 }
             }
         }

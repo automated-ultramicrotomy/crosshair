@@ -298,9 +298,9 @@ class Microtome {
 
         // check angle - do colour change
         if (angleKnifeTarget < knifeTargetAngleThreshold) {
-            planeManager.setTargetPlaneAlignedColour();
+            planeManager.setPlaneColourToAligned( "target" );
         } else {
-            planeManager.setTargetPlaneNotAlignedColour();
+            planeManager.setPlaneColourToUnaligned( "target" );
         }
     }
 

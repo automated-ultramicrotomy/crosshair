@@ -36,13 +36,14 @@ public class PlaneManager {
     private final Map<String, Vector3d> planeNormals;
     private final Map<String, Vector3d> planePoints;
     private final Map<String, Vector3d> planeCentroids;
+    private final Map<String, Color3f> planeColours;
+    private final Map<String, Float> planeTransparencies;
+    private final Map<String, Boolean> planeVisibilities;
+
     private final Map<String, RealPoint> namedVertices;
     private final Map<String, RealPoint> selectedVertex;
-
     private final ArrayList<RealPoint> pointsToFitPlane;
     private final ArrayList<RealPoint> blockVertices;
-
-
 
     private final BdvHandle bdvHandle;
     private final BdvStackSource bdvStackSource;
@@ -50,21 +51,17 @@ public class PlaneManager {
     private final Content imageContent;
     private PointsOverlaySizeChange pointOverlay;
 
-    private Color3f targetPlaneColour;
-    private Color3f blockPlaneColour;
     private Color3f alignedPlaneColour;
 
-    private float targetTransparency;
-    private float blockTransparency;
-
-    private boolean targetVisible;
-    private boolean blockVisible;
-
+    int colourIndex = 0;
 
     public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
         planeNormals = new HashMap<>();
         planePoints = new HashMap<>();
         planeCentroids = new HashMap<>();
+        planeColours = new HashMap<>();
+        planeTransparencies = new HashMap<>();
+        planeVisibilities = new HashMap<>();
         selectedVertex = new HashMap<>();
 
         namedVertices = new HashMap<>();
@@ -76,14 +73,7 @@ public class PlaneManager {
         this.universe = universe;
         this.imageContent = imageContent;
 
-        targetPlaneColour = new Color3f(0, 1, 0);
-        blockPlaneColour = new Color3f(0, 0, 1);
         alignedPlaneColour = new Color3f(1, 0, 0);
-        targetTransparency = 0.7f;
-        blockTransparency = 0.7f;
-
-        targetVisible = true;
-        blockVisible = true;
 
         // TODO - make this threshold user definable - makes sense for microns, but possibly not for other units
         distanceBetweenPlanesThreshold = 1E-10;
@@ -104,12 +94,19 @@ public class PlaneManager {
     }
 
     public ArrayList<RealPoint> getPointsToFitPlane() {return pointsToFitPlane;}
+
     public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
-    public float getTargetTransparency() {return targetTransparency;}
-    public float getBlockTransparency() {return blockTransparency;}
-    public Color3f getTargetPlaneColour() {return targetPlaneColour;}
-    public Color3f getBlockPlaneColour() {return blockPlaneColour;}
+
+    public float getTransparency( String planeName ) {
+        return planeTransparencies.get( planeName );
+    }
+
+    public Color3f getPlaneColour( String planeName ) {
+        return planeColours.get( planeName );
+    }
+
     public int getTrackPlane() {return trackPlane;}
+
     public void setTrackPlane(int track) {trackPlane = track;}
 
     public void setPointOverlay (PointsOverlaySizeChange pointOverlay) {
@@ -134,47 +131,34 @@ public class PlaneManager {
         pointOverlay.setVertexMode(vertexMode);
     }
 
-    public void setTargetPlaneColour (Color colour) {
-        targetPlaneColour.set(colour);
-        if (checkNamedPlaneExists("target")) {
-            universe.getContent("target").setColor(new Color3f(targetPlaneColour));
+    public void setPlaneColour ( String planeName, Color colour) {
+        planeColours.get( planeName ).set( colour );
+
+        if (checkNamedPlaneExists( planeName )) {
+            universe.getContent( planeName ).setColor( new Color3f( colour ) );
         }
     }
 
-    public void setTargetPlaneAlignedColour () {
-        Color3f currentColour = universe.getContent("target").getColor();
-        Color3f alignedColour = new Color3f(alignedPlaneColour);
-        if (currentColour != alignedColour) {
-            universe.getContent("target").setColor(alignedColour);
+    public void setPlaneColourToAligned( String planeName ) {
+        Color3f currentColour = universe.getContent( planeName ).getColor();
+        Color3f alignedColour = new Color3f( alignedPlaneColour );
+        if ( currentColour != alignedColour ) {
+            universe.getContent( planeName ).setColor( alignedColour );
         }
     }
 
-    public void setTargetPlaneNotAlignedColour() {
-        Color3f currentColour = universe.getContent("target").getColor();
-        Color3f notAlignedColour = new Color3f(targetPlaneColour);
+    public void setPlaneColourToUnaligned( String planeName ) {
+        Color3f currentColour = universe.getContent( planeName ).getColor();
+        Color3f notAlignedColour = new Color3f( planeColours.get(planeName) );
         if (currentColour != notAlignedColour) {
-            universe.getContent("target").setColor(notAlignedColour);
+            universe.getContent( planeName ).setColor( notAlignedColour );
         }
     }
 
-    public void setBlockPlaneColour (Color colour) {
-        blockPlaneColour.set(colour);
-        if (checkNamedPlaneExists("block")) {
-            universe.getContent("block").setColor(new Color3f(blockPlaneColour));
-        }
-    }
-
-    public void setTargetTransparency (float transparency) {
-        targetTransparency = transparency;
-        if (checkNamedPlaneExists("target")) {
-            universe.getContent("target").setTransparency(targetTransparency);
-        }
-    }
-
-    public void setBlockTransparency (float transparency) {
-        blockTransparency = transparency;
-        if (checkNamedPlaneExists("block")) {
-            universe.getContent("block").setTransparency(blockTransparency);
+    public void setPlaneTransparency( String planeName, float transparency ) {
+        planeTransparencies.put( planeName, transparency );
+        if ( checkNamedPlaneExists( planeName ) ) {
+            universe.getContent( planeName ).setTransparency( transparency );
         }
     }
 
@@ -359,16 +343,28 @@ public class PlaneManager {
                 universe.removeContent(planeName);
             }
 
-            Color3f planeColor = null;
-            float transparency = 0.7f;
-            if (planeName.equals("target")) {
-                // make copy of colour to assign (using original interferes with changing colour later)
-                planeColor = new Color3f(targetPlaneColour);
-                transparency = targetTransparency;
+            // make copy of colour to assign (using original interferes with changing colour later)
+            Color3f planeColor;
+            if ( planeColours.containsKey( planeName) ) {
+                planeColor = new Color3f(planeColours.get(planeName));
+            } else {
+                // alternate between green and blue to make it easier to see new planes
+                if ( colourIndex == 0 ) {
+                    planeColor = new Color3f(0, 1, 0);
+                    colourIndex = 1;
+                } else {
+                    planeColor = new Color3f(0, 0, 1);
+                    colourIndex = 0;
+                }
+                planeColours.put( planeName, planeColor );
+            }
 
-            } else if (planeName.equals("block")) {
-                planeColor = new Color3f(blockPlaneColour);
-                transparency = blockTransparency;
+            float transparency;
+            if ( planeTransparencies.containsKey( planeName ) ) {
+                transparency = planeTransparencies.get( planeName );
+            } else {
+                transparency = 0.7f;
+                planeTransparencies.put( planeName, transparency );
             }
 
             CustomTriangleMesh newMesh = null;
@@ -380,12 +376,13 @@ public class PlaneManager {
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
             meshContent.setLocked(true);
-            if (planeName.equals("target")) {
-                meshContent.setVisible(targetVisible);
-            } else if (planeName.equals("block")) {
-                meshContent.setVisible(blockVisible);
-            }
 
+            if ( planeVisibilities.containsKey( planeName ) ) {
+                meshContent.setVisible(planeVisibilities.get(planeName));
+            } else {
+                planeVisibilities.put( planeName, true );
+                meshContent.setVisible( true );
+            }
         }
     }
 
@@ -583,41 +580,27 @@ public class PlaneManager {
         }
     }
 
-    public void toggleTargetVisbility () {
-        if (checkNamedPlaneExists("target")) {
-            if (targetVisible) {
-                universe.getContent("target").setVisible(false);
-                targetVisible = false;
+    public void togglePlaneVisbility( String planeName ) {
+        if ( checkNamedPlaneExists(planeName) ) {
+            if ( planeVisibilities.get( planeName ) ) {
+                universe.getContent( planeName ).setVisible( false );
+                planeVisibilities.put( planeName, false );
             } else {
-                universe.getContent("target").setVisible(true);
-                targetVisible = true;
+                universe.getContent( planeName ).setVisible(true);
+                planeVisibilities.put( planeName, true );
             }
         }
     }
 
-    public void toggleBlockVisbility () {
-        if (checkNamedPlaneExists("block")) {
-            if (blockVisible) {
-                universe.getContent("block").setVisible(false);
-                blockVisible = false;
-            } else {
-                universe.getContent("block").setVisible(true);
-                blockVisible = true;
-            }
-        }
-    }
-
-    public Boolean getVisiblityNamedPlane (String name) {
-        if (name.equals("target")) {
-            return targetVisible;
-        } else if (name.equals("block")) {
-            return blockVisible;
+    public Boolean getVisiblityNamedPlane ( String name ) {
+        if ( planeVisibilities.containsKey( name ) ) {
+            return planeVisibilities.get( name );
         } else {
             return null;
         }
     }
 
-    public boolean checkAllPlanesPointsDefined() {
+    public boolean checkAllCrosshairPlanesPointsDefined() {
         boolean targetExists = checkNamedPlaneExists("target");
         boolean blockExists = checkNamedPlaneExists("block");
 

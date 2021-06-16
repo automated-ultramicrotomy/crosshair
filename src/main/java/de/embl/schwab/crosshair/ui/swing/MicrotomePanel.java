@@ -374,7 +374,7 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     private void enterMicrotomeMode () {
-        if (planeManager.checkAllPlanesPointsDefined()) {
+        if (planeManager.checkAllCrosshairPlanesPointsDefined()) {
             enterMicrotomeModeButton.setEnabled(false);
             exitMicrotomeModeButton.setEnabled(true);
             enterCuttingModeButton.setVisible(true);
