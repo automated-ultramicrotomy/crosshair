@@ -14,23 +14,21 @@ import java.util.ArrayList;
 
 public class OtherPanel extends CrosshairPanel {
 
-    private Content imageContent;
+    private ArrayList<Content> imageContents;
     private Image3DUniverse universe;
     private boolean threeDPointsVisible;
     private PointsOverlaySizeChange pointOverlay;
     private BdvHandle bdvHandle;
     private ArrayList<JButton> microtomeVisibilityButtons;
-    private CrosshairFrame crosshairFrame;
 
-    public OtherPanel(CrosshairFrame crosshairFrame) {
-        this.crosshairFrame = crosshairFrame;
-    }
+    public OtherPanel() {}
 
-    public void initialisePanel () {
-        imageContent = crosshairFrame.getImageContent();
-        universe = crosshairFrame.getUniverse();
-        pointOverlay = crosshairFrame.getPointOverlay();
-        bdvHandle = crosshairFrame.getBdvHandle();
+    public void initialisePanel( ArrayList<Content> imageContents, Image3DUniverse universe,
+                                 PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle, boolean includeMicrotomeButtons ) {
+        this.imageContents = imageContents;
+        this.universe = universe;
+        this.pointOverlay = pointOverlay;
+        this.bdvHandle = bdvHandle;
         threeDPointsVisible = true;
         microtomeVisibilityButtons = new ArrayList<>();
 
@@ -40,11 +38,23 @@ public class OtherPanel extends CrosshairPanel {
 
         setLayout(new GridLayout(2, 3));
         addPointToPanel("3d points ", "3D");
-        addPointToPanel("Knife", "/knife.stl");
-        addPointToPanel("Rotation Axis", "rotationAxis");
+        if ( includeMicrotomeButtons ) {
+            addPointToPanel("Knife", "/knife.stl");
+            addPointToPanel("Rotation Axis", "rotationAxis");
+        }
         addPointToPanel("2d points ", "2D");
-        addPointToPanel("Holder", "holder");
-        deactivateMicrotomeButtons();
+        if ( includeMicrotomeButtons ) {
+            addPointToPanel("Holder", "holder");
+            deactivateMicrotomeButtons();
+        }
+    }
+
+    public void initialisePanel( CrosshairFrame crosshairFrame ) {
+        ArrayList<Content> imageContents = new ArrayList<>();
+        imageContents.add( crosshairFrame.getImageContent() );
+
+        initialisePanel( imageContents, crosshairFrame.getUniverse(), crosshairFrame.getPointOverlay(),
+                crosshairFrame.getBdvHandle(), true );
     }
 
     public boolean check3DPointsVisible() {
@@ -67,10 +77,14 @@ public class OtherPanel extends CrosshairPanel {
 
     public void toggleVisiblity3DPoints () {
         if (threeDPointsVisible) {
-            imageContent.showPointList(false);
+            for ( Content imageContent: imageContents ) {
+                imageContent.showPointList(false);
+            }
             threeDPointsVisible = false;
         } else {
-            imageContent.showPointList(true);
+            for ( Content imageContent: imageContents ) {
+                imageContent.showPointList(true);
+            }
             universe.getPointListDialog().setVisible(false);
             threeDPointsVisible = true;
         }

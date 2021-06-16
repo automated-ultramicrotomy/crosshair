@@ -36,11 +36,10 @@ public class SavePanel extends CrosshairPanel {
     private CrosshairFrame crosshairFrame;
 
 
-    public SavePanel(CrosshairFrame crosshairFrame) {
-        this.crosshairFrame = crosshairFrame;
-    }
+    public SavePanel() {}
 
-    public void initialisePanel () {
+    public void initialisePanel( CrosshairFrame crosshairFrame ) {
+        this.crosshairFrame = crosshairFrame;
         this.planeManager = crosshairFrame.getPlaneManager();
         this.microtomeManager = crosshairFrame.getMicrotomeManager();
         this.imageContent = crosshairFrame.getImageContent();

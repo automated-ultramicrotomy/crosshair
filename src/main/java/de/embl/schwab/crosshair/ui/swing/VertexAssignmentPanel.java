@@ -15,11 +15,10 @@ public class VertexAssignmentPanel extends CrosshairPanel {
     private Map<String, JButton> buttons;
     private CrosshairFrame crosshairFrame;
 
-    public VertexAssignmentPanel(CrosshairFrame crosshairFrame) {
-        this.crosshairFrame = crosshairFrame;
-    }
+    public VertexAssignmentPanel() {}
 
-    public void initialisePanel () {
+    public void initialisePanel ( CrosshairFrame crosshairFrame ) {
+        this.crosshairFrame = crosshairFrame;
         this.planeManager = crosshairFrame.getPlaneManager();
         buttons = new HashMap<>();
 

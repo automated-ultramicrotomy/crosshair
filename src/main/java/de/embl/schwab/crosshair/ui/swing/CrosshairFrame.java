@@ -52,22 +52,22 @@ public class CrosshairFrame extends JFrame {
         mainPane.setOpaque(true);
         this.setContentPane(mainPane);
 
-        planePanel = new PlanePanel(this);
+        planePanel = new PlanePanel();
         allPanels.add(planePanel);
-        otherPanel = new OtherPanel(this);
+        otherPanel = new OtherPanel();
         allPanels.add(otherPanel);
-        imagesPanel = new ImagesPanel( this);
+        imagesPanel = new ImagesPanel();
         allPanels.add(imagesPanel);
-        vertexAssignmentPanel = new VertexAssignmentPanel(this);
+        vertexAssignmentPanel = new VertexAssignmentPanel();
         allPanels.add(vertexAssignmentPanel);
-        microtomePanel = new MicrotomePanel(this);
+        microtomePanel = new MicrotomePanel();
         allPanels.add(microtomePanel);
-        savePanel = new SavePanel(this);
+        savePanel = new SavePanel();
         allPanels.add(savePanel);
 
         // this happens separately as many panels depend on eachother, so they must all be created before initialising
         for (CrosshairPanel panel : allPanels) {
-            panel.initialisePanel();
+            panel.initialisePanel( this );
         }
 
         microtomeManager.setMicrotomePanel(microtomePanel);

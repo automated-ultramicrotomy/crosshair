@@ -16,25 +16,18 @@ import java.util.Map;
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
 public class ImagesPanel extends CrosshairPanel {
-    
+
     private Map<String, Content> imageNameToContent;
     private Image3DUniverse universe;
     private OtherPanel otherPanel;
 
-    public ImagesPanel(CrosshairFrame crosshairFrame) {
-        imageNameToContent = new HashMap<>();
-        imageNameToContent.put( "image", crosshairFrame.getImageContent() );
-        this.otherPanel = crosshairFrame.getPointsPanel();
-        this.universe = crosshairFrame.getUniverse();
-    }
+    public ImagesPanel() {}
 
-    public ImagesPanel( Map<String, Content> imageNameToContent, OtherPanel otherPanel, Image3DUniverse universe ) {
+    public void initialisePanel( Map<String, Content> imageNameToContent, OtherPanel otherPanel, Image3DUniverse universe ) {
         this.imageNameToContent = imageNameToContent;
         this.otherPanel = otherPanel;
         this.universe = universe;
-    }
 
-    public void initialisePanel () {
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Images"),
                 BorderFactory.createEmptyBorder(5,5,5,5)));
@@ -43,6 +36,13 @@ public class ImagesPanel extends CrosshairPanel {
         for (String imageName: imageNameToContent.keySet() ) {
             addImageToPanel( imageName );
         }
+    }
+
+    public void initialisePanel ( CrosshairFrame crosshairFrame ) {
+        Map<String, Content> imageNameToContent = new HashMap<>();
+        imageNameToContent.put( "image", crosshairFrame.getImageContent() );
+
+        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse() );
     }
 
 

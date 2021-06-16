@@ -27,11 +27,10 @@ import java.util.Map;
         private ArrayList<JButton> buttonsAffectedByBlockTracking;
         private ArrayList<JButton> buttonsAffectedByTargetTracking;
 
-        public PlanePanel(CrosshairFrame crosshairFrame) {
-            this.crosshairFrame = crosshairFrame;
-        }
+        public PlanePanel() {}
 
-        public void initialisePanel () {
+        public void initialisePanel( CrosshairFrame crosshairFrame ) {
+            this.crosshairFrame = crosshairFrame;
             planeManager = crosshairFrame.getPlaneManager();
             microtomeManager = crosshairFrame.getMicrotomeManager();
             savePanel = crosshairFrame.getSavePanel();
