@@ -10,36 +10,43 @@ import javax.swing.*;
 import java.awt.MouseInfo;
 import java.awt.Dimension;
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 // similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
 
 public class ImagesPanel extends CrosshairPanel {
-
-    private CrosshairFrame crosshairFrame;
+    
+    private Map<String, Content> imageNameToContent;
     private Image3DUniverse universe;
-    private Content imageContent;
     private OtherPanel otherPanel;
-    private Color3f imageColour;
 
     public ImagesPanel(CrosshairFrame crosshairFrame) {
-        this.crosshairFrame = crosshairFrame;
+        imageNameToContent = new HashMap<>();
+        imageNameToContent.put( "image", crosshairFrame.getImageContent() );
+        this.otherPanel = crosshairFrame.getPointsPanel();
+        this.universe = crosshairFrame.getUniverse();
+    }
+
+    public ImagesPanel( Map<String, Content> imageNameToContent, OtherPanel otherPanel, Image3DUniverse universe ) {
+        this.imageNameToContent = imageNameToContent;
+        this.otherPanel = otherPanel;
+        this.universe = universe;
     }
 
     public void initialisePanel () {
-        this.imageContent = crosshairFrame.getImageContent();
-        this.otherPanel = crosshairFrame.getPointsPanel();
-        this.universe = crosshairFrame.getUniverse();
-
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Images"),
                 BorderFactory.createEmptyBorder(5,5,5,5)));
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        addPlaneToPanel("image ");
+        for (String imageName: imageNameToContent.keySet() ) {
+            addImageToPanel( imageName );
+        }
     }
 
 
-    private void addColorButton(JPanel panel, int[] buttonDimensions, String imageName) {
+    private void addColorButton(JPanel panel, int[] buttonDimensions, String imageName ) {
         JButton colorButton;
         colorButton = new JButton("C");
 
@@ -50,14 +57,14 @@ public class ImagesPanel extends CrosshairPanel {
             Color colour = JColorChooser.showDialog(null, "", null);
 
             if (colour == null) return;
-            imageColour = new Color3f(colour);
-            imageContent.setColor(imageColour);
+            Content imageContent = imageNameToContent.get( imageName );
+            imageContent.setColor( new Color3f(colour) );
         });
 
         panel.add(colorButton);
     }
 
-    private void addVisibilityButton (JPanel panel, int[] buttonDimensions, String planeName) {
+    private void addVisibilityButton ( JPanel panel, int[] buttonDimensions, String imageName ) {
         JButton visbilityButton;
         visbilityButton = new JButton("V");
 
@@ -65,10 +72,11 @@ public class ImagesPanel extends CrosshairPanel {
                 new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
         visbilityButton.addActionListener(e -> {
-            if (imageContent.isVisible()) {
+            Content imageContent = imageNameToContent.get( imageName );
+            if ( imageContent.isVisible() ) {
                imageContent.setVisible(false);
                 // Making image content invisible, also makes 3d points invisible > reverse this
-                if (otherPanel.check3DPointsVisible()) {
+                if ( otherPanel.check3DPointsVisible() ) {
                     imageContent.showPointList(true);
                     universe.getPointListDialog().setVisible(false);
                 }
@@ -80,7 +88,7 @@ public class ImagesPanel extends CrosshairPanel {
         panel.add(visbilityButton);
     }
 
-    private void addPlaneToPanel(String imageName) {
+    private void addImageToPanel(String imageName) {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
@@ -108,7 +116,7 @@ public class ImagesPanel extends CrosshairPanel {
     }
 
     public void addTransparencyButton(JPanel panel, int[] buttonDimensions,
-                                      String planeName) {
+                                      String imageName ) {
         JButton button = new JButton("T");
         button.setPreferredSize(new Dimension(
                 buttonDimensions[0],
@@ -119,6 +127,8 @@ public class ImagesPanel extends CrosshairPanel {
 
             JFrame frame = new JFrame("Transparency");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+            Content imageContent = imageNameToContent.get( imageName );
 
             float currentTransparency = imageContent.getTransparency();
 
@@ -136,7 +146,8 @@ public class ImagesPanel extends CrosshairPanel {
             final SliderPanelDouble transparencySlider = new SliderPanelDouble("Transparency", transparencyValue, spinnerStepSize);
             transparencySlider.setNumColummns(7);
             transparencySlider.setDecimalFormat("####E0");
-            transparencyValue.setUpdateListener(new TransparencyUpdateListener(transparencyValue, transparencySlider));
+            transparencyValue.setUpdateListener(
+                    new TransparencyUpdateListener(transparencyValue, transparencySlider, imageName));
 
             transparencyPanel.add(transparencySlider);
             frame.setContentPane(transparencyPanel);
@@ -156,16 +167,20 @@ public class ImagesPanel extends CrosshairPanel {
     public class TransparencyUpdateListener implements BoundedValueDouble.UpdateListener {
         final private BoundedValueDouble transparencyValue;
         private final SliderPanelDouble transparencySlider;
+        private final String imageName;
 
-        public TransparencyUpdateListener(BoundedValueDouble transparencyValue,
-                                          SliderPanelDouble transparencySlider) {
+        public TransparencyUpdateListener( BoundedValueDouble transparencyValue,
+                                          SliderPanelDouble transparencySlider,
+                                           String imageName ) {
             this.transparencyValue = transparencyValue;
             this.transparencySlider = transparencySlider;
+            this.imageName = imageName;
         }
 
         @Override
         public void update() {
             transparencySlider.update();
+            Content imageContent = imageNameToContent.get( imageName );
             imageContent.setTransparency((float) transparencyValue.getCurrentValue());
         }
     }
