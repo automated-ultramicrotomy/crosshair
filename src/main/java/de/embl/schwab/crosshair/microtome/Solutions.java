@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.microtome;
 
 import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
@@ -25,9 +26,14 @@ class Solutions {
     private Vector3d solutionFirstTouch;
     private double distanceToCut;
 
-    Solutions (Microtome microtome) {
+    Solutions( Microtome microtome ) {
         this.microtome = microtome;
         this.planeManager = microtome.getPlaneManager();
+        solutionFirstTouch = new Vector3d();
+        validSolution = false;
+    }
+
+    Solutions() {
         solutionFirstTouch = new Vector3d();
         validSolution = false;
     }
@@ -54,13 +60,41 @@ class Solutions {
         return solutionFirstTouchName;
     }
 
+    void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
+                                 SettingsToSave settings ) {
+        TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( settings.getNamedVertices(),
+                settings.getPlaneNormals() );
+        calculateRotations( solutionRotation, initialTiltAngle, initialKnifeAngle,
+                targetOffsetAndTilt.targetOffset, targetOffsetAndTilt.targetTilt );
+        calculateDistance( settings.getNamedVertices(), settings.getPlaneNormals(), settings.getPlanePoints(),
+                solutionKnife );
+        checkSolutionValid();
+    }
+
     void setSolutionFromRotation (double solutionRotation) {
+        calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
+                microtome.getInitialTargetOffset(), microtome.getInitialTargetTilt() );
+        calculateDistance( planeManager.getNamedVertices(), planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
+                solutionKnife );
+        checkSolutionValid();
+    }
+
+    private void checkSolutionValid () {
+        if (solutionTilt < -20 | solutionTilt > 20 | solutionKnife < -30 | solutionKnife > 30) {
+            validSolution = false;
+        } else {
+            validSolution = true;
+        }
+    }
+
+    private void calculateRotations( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
+                                     double initialTargetOffset, double initialTargetTilt ) {
         this.solutionRotation = solutionRotation;
         double rot = GeometryUtils.convertToRadians(solutionRotation);
-        double iTilt = GeometryUtils.convertToRadians( microtome.getInitialTiltAngle() );
-        double iKnife = GeometryUtils.convertToRadians( microtome.getInitialKnifeAngle() );
-        double tOffset = GeometryUtils.convertToRadians( microtome.getInitialTargetOffset() );
-        double tRotation = GeometryUtils.convertToRadians( microtome.getInitialTargetTilt() );
+        double iTilt = GeometryUtils.convertToRadians( initialTiltAngle );
+        double iKnife = GeometryUtils.convertToRadians( initialKnifeAngle );
+        double tOffset = GeometryUtils.convertToRadians( initialTargetOffset );
+        double tRotation = GeometryUtils.convertToRadians( initialTargetTilt );
 
         double A = cos(iKnife + tOffset);
         double B =  sin(tRotation)*sin(iKnife + tOffset);
@@ -77,23 +111,10 @@ class Solutions {
 
         double solKnife = atan((A*I + H)*(E*cos(rot) + (A*F - G)*sin(rot))/(sqrt(pow(A*I + H, 2) + pow(E*sin(rot) + (-A*F + G)*cos(rot), 2))*abs(A*I + H)));
         this.solutionKnife = GeometryUtils.convertToDegrees(solKnife);
-
-        calculateDistance();
-        checkSolutionValid();
     }
 
-    private void checkSolutionValid () {
-        if (solutionTilt < -20 | solutionTilt > 20 | solutionKnife < -30 | solutionKnife > 30) {
-            validSolution = false;
-        } else {
-            validSolution = true;
-        }
-    }
-
-    private void calculateDistance () {
-        Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
-        Map<String, Vector3d> planeNormals = planeManager.getPlaneNormals();
-        Map<String, Vector3d> planePoints = planeManager.getPlanePoints();
+    private void calculateDistance( Map<String, RealPoint> namedVertices, Map<String, Vector3d> planeNormals,
+                                    Map<String, Vector3d> planePoints, double knifeAngle )  {
         Vector3d targetNormal = new Vector3d(planeNormals.get("target"));
         Vector3d targetPoint = new Vector3d(planePoints.get("target"));
 
@@ -162,7 +183,7 @@ class Solutions {
 
         // Compensate for offset between perpendicular distance and true N-S of microtome
         // I believe this is just the angle of the knife in this scenario, as the knife was reset to true 0
-        double NSDist = perpDist / cos( GeometryUtils.convertToRadians( microtome.getKnife() ));
+        double NSDist = perpDist / cos( GeometryUtils.convertToRadians( knifeAngle ));
         distanceToCut = NSDist;
     }
 }

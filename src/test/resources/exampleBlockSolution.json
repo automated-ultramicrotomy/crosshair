@@ -1,0 +1,12 @@
+{
+  "initialKnifeAngle": 10.0,
+  "initialTiltAngle": 5.0,
+  "knife": 14.9449,
+  "tilt": -9.8089,
+  "rotation": 15.0,
+  "firstTouch": "Bottom Right",
+  "distanceToCut": 210.8122,
+  "anglesUnit": "degrees",
+  "distanceUnit": "microns",
+  "saveDecimalPlaces": 4
+}

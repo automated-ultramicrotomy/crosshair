@@ -14,7 +14,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Target Current Image" )
+@Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Open>Target Current Image" )
 public class OpenCrosshairFromCurrentImageCommand implements Command
 {
     @Parameter
