@@ -55,6 +55,8 @@ public class PlaneManager {
 
     int colourIndex = 0;
 
+    // Given image content is used to define the extent of planes (only shown within bounds of that image)
+    // and where points are shown (again attached to that image)
     public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
         planeNormals = new HashMap<>();
         planePoints = new HashMap<>();
