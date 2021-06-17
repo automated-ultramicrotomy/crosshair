@@ -1,7 +1,7 @@
 package de.embl.schwab.crosshair.ui.swing;
 
 import bdv.util.BdvHandle;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import ij3d.Content;

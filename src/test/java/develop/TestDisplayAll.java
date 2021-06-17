@@ -5,26 +5,17 @@ import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import com.google.gson.Gson;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import itc.converters.AffineTransform3DToFlatString;
-import itc.converters.ElastixAffine3DToAffineTransform3D;
-import itc.converters.ElastixEuler3DToAffineTransform3D;
-import itc.transforms.elastix.ElastixAffineTransform3D;
-import itc.transforms.elastix.ElastixEulerTransform3D;
-import itc.transforms.elastix.ElastixTransform;
-import itc.utilities.TransformUtils;
-import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.vecmath.Vector3d;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
 
@@ -64,10 +55,10 @@ public class TestDisplayAll {
             SettingsToSave beforeSettings = gson.fromJson(fileReader, SettingsToSave.class);
             fileReader = new FileReader(afterPlanes);
             SettingsToSave afterSettings = gson.fromJson(fileReader, SettingsToSave.class);
-            Vector3d beforeNormal = beforeSettings.getPlaneNormals().get("target");
-            Vector3d afterNormal = afterSettings.getPlaneNormals().get("block");
-            planeManager.updatePlane(beforeNormal,  beforeSettings.getPlanePoints().get("target"), "before_target");
-            planeManager.updatePlane(afterNormal,  afterSettings.getPlanePoints().get("block"), "after_block");
+            Vector3d beforeNormal = beforeSettings.getPlaneNormals().get( Crosshair.target );
+            Vector3d afterNormal = afterSettings.getPlaneNormals().get( Crosshair.block );
+            planeManager.updatePlane(beforeNormal,  beforeSettings.getPlanePoints().get( Crosshair.target ), "before_target");
+            planeManager.updatePlane(afterNormal,  afterSettings.getPlanePoints().get( Crosshair.block ), "after_block");
 
             double angle = GeometryUtils.convertToDegrees(beforeNormal.angle(afterNormal));
             if (angle > 90) {

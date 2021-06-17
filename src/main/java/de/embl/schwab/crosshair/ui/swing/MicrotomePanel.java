@@ -2,8 +2,9 @@ package de.embl.schwab.crosshair.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij.IJ;
 import org.apache.commons.math3.util.Precision;
 
@@ -143,14 +144,6 @@ public class MicrotomePanel extends CrosshairPanel {
         panel.add(initialMicrotomeSetup);
     }
 
-    public void disableEnterMicrotomeMode () {
-        enterMicrotomeModeButton.setEnabled(false);
-    }
-
-    public void enableEnterMicrotomeButton () {
-        enterMicrotomeModeButton.setEnabled(true);
-    }
-
     private void addMicrotomeControlsPanel (JPanel panel) {
         JPanel microtomeControls = new JPanel();
         microtomeControls.setLayout(new BoxLayout(microtomeControls, BoxLayout.PAGE_AXIS));
@@ -167,6 +160,8 @@ public class MicrotomePanel extends CrosshairPanel {
         enterMicrotomeModeButton.setActionCommand("enter_microtome_mode");
         enterMicrotomeModeButton.addActionListener(microtomeModeListener);
         toggleMicrotomeModePanel.add(enterMicrotomeModeButton);
+        planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( enterMicrotomeModeButton );
+        planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( enterMicrotomeModeButton );
 
         exitMicrotomeModeButton = new JButton("Exit Microtome Mode");
         exitMicrotomeModeButton.setActionCommand("exit_microtome_mode");
@@ -392,8 +387,8 @@ public class MicrotomePanel extends CrosshairPanel {
             savePanel.enableSaveSolution();
             planePanel.disableAllTracking();
             otherPanel.activateMicrotomeButtons();
-            planeManager.setPointMode(0);
-            planeManager.setVertexMode(0);
+            planeManager.setPointMode( false );
+            planeManager.setVertexMode( false );
             crosshairFrame.pack();
         } else {
             IJ.log("Some of: target plane, block plane, top left, top right, bottom left, bottom right aren't defined.");

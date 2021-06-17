@@ -1,8 +1,9 @@
-package de.embl.schwab.crosshair;
+package de.embl.schwab.crosshair.plane;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import customnode.CustomTriangleMesh;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.utils.BdvUtils;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
@@ -27,18 +28,15 @@ import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
 
 public class PlaneManager {
 
-    private int trackPlane = 0;
-    private int pointMode = 0;
-    private int vertexMode = 0;
+    private boolean isTrackingPlane = false;
+    private String trackedPlaneName;
+
+    private boolean isInPointMode = false;
+    private boolean isInVertexMode = false;
 
     private double distanceBetweenPlanesThreshold;
 
-    private final Map<String, Vector3d> planeNormals;
-    private final Map<String, Vector3d> planePoints;
-    private final Map<String, Vector3d> planeCentroids;
-    private final Map<String, Color3f> planeColours;
-    private final Map<String, Float> planeTransparencies;
-    private final Map<String, Boolean> planeVisibilities;
+    private final Map<String, Plane> planeNameToPlane;
 
     private final Map<String, RealPoint> namedVertices;
     private final Map<String, RealPoint> selectedVertex;
@@ -51,19 +49,12 @@ public class PlaneManager {
     private final Content imageContent;
     private PointsOverlaySizeChange pointOverlay;
 
-    private Color3f alignedPlaneColour;
-
-    int colourIndex = 0;
+    private final Color3f alignedPlaneColour = new Color3f(1, 0, 0);
 
     // Given image content is used to define the extent of planes (only shown within bounds of that image)
     // and where points are shown (again attached to that image)
     public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
-        planeNormals = new HashMap<>();
-        planePoints = new HashMap<>();
-        planeCentroids = new HashMap<>();
-        planeColours = new HashMap<>();
-        planeTransparencies = new HashMap<>();
-        planeVisibilities = new HashMap<>();
+        planeNameToPlane = new HashMap<>();
         selectedVertex = new HashMap<>();
 
         namedVertices = new HashMap<>();
@@ -75,8 +66,6 @@ public class PlaneManager {
         this.universe = universe;
         this.imageContent = imageContent;
 
-        alignedPlaneColour = new Color3f(1, 0, 0);
-
         // TODO - make this threshold user definable - makes sense for microns, but possibly not for other units
         distanceBetweenPlanesThreshold = 1E-10;
     }
@@ -85,11 +74,9 @@ public class PlaneManager {
         return selectedVertex;
     }
 
-    public Map<String, Vector3d> getPlaneNormals() { return planeNormals; }
-
-    public Map<String, Vector3d> getPlanePoints() { return planePoints; }
-
-    public Map<String, Vector3d> getPlaneCentroids() { return planeCentroids; }
+    public Plane getPlane( String planeName ) {
+        return planeNameToPlane.get( planeName );
+    }
 
     public Map<String, RealPoint> getNamedVertices() {
         return namedVertices;
@@ -99,42 +86,40 @@ public class PlaneManager {
 
     public ArrayList<RealPoint> getBlockVertices() {return blockVertices;}
 
-    public float getTransparency( String planeName ) {
-        return planeTransparencies.get( planeName );
+    public boolean isTrackingPlane() { return isTrackingPlane; }
+
+    public void setTrackingPlane( boolean tracking ) { isTrackingPlane = tracking; }
+
+    public void setTrackedPlaneName(String trackedPlaneName) {
+        this.trackedPlaneName = trackedPlaneName;
     }
 
-    public Color3f getPlaneColour( String planeName ) {
-        return planeColours.get( planeName );
+    public String getTrackedPlaneName() {
+        return trackedPlaneName;
     }
-
-    public int getTrackPlane() {return trackPlane;}
-
-    public void setTrackPlane(int track) {trackPlane = track;}
 
     public void setPointOverlay (PointsOverlaySizeChange pointOverlay) {
         this.pointOverlay = pointOverlay;
     }
 
-    public int getPointMode() {
-        return pointMode;
+    public boolean isInPointMode() { return isInPointMode; }
+
+    public void setPointMode( boolean isInPointMode ) {
+        this.isInPointMode = isInPointMode;
+        pointOverlay.setPointMode( isInPointMode );
     }
 
-    public void setPointMode(int pointMode) {
-        this.pointMode = pointMode;
-        pointOverlay.setPointMode(pointMode);
+    public boolean isInVertexMode() {
+        return isInVertexMode;
     }
 
-    public int getVertexMode() {
-        return vertexMode;
-    }
-
-    public void setVertexMode(int vertexMode) {
-        this.vertexMode = vertexMode;
-        pointOverlay.setVertexMode(vertexMode);
+    public void setVertexMode( boolean isInVertexMode ) {
+        this.isInVertexMode = isInVertexMode;
+        pointOverlay.setVertexMode( isInVertexMode );
     }
 
     public void setPlaneColour ( String planeName, Color colour) {
-        planeColours.get( planeName ).set( colour );
+        planeNameToPlane.get( planeName ).setColor( colour );
 
         if (checkNamedPlaneExists( planeName )) {
             universe.getContent( planeName ).setColor( new Color3f( colour ) );
@@ -151,14 +136,15 @@ public class PlaneManager {
 
     public void setPlaneColourToUnaligned( String planeName ) {
         Color3f currentColour = universe.getContent( planeName ).getColor();
-        Color3f notAlignedColour = new Color3f( planeColours.get(planeName) );
+        Color3f notAlignedColour = new Color3f( planeNameToPlane.get(planeName).getColor() );
         if (currentColour != notAlignedColour) {
             universe.getContent( planeName ).setColor( notAlignedColour );
         }
     }
 
     public void setPlaneTransparency( String planeName, float transparency ) {
-        planeTransparencies.put( planeName, transparency );
+        planeNameToPlane.get( planeName ).setTransparency( transparency );
+
         if ( checkNamedPlaneExists( planeName ) ) {
             universe.getContent( planeName ).setTransparency( transparency );
         }
@@ -232,7 +218,7 @@ public class PlaneManager {
     }
 
     public boolean checkNamedPlaneExists(String name) {
-        return planeNormals.containsKey(name);
+        return planeNameToPlane.containsKey( name );
     }
 
     public void updatePlaneOnTransformChange(AffineTransform3D affineTransform3D, String planeName) {
@@ -246,8 +232,9 @@ public class PlaneManager {
     }
 
     public void redrawCurrentPlanes () {
-        for (String planeName: planeNormals.keySet()) {
-            updatePlane(planeNormals.get(planeName), planePoints.get(planeName), planeName );
+        for ( String planeName: planeNameToPlane.keySet() ) {
+            Plane plane = planeNameToPlane.get( planeName );
+            updatePlane( plane.getNormal(), plane.getPoint(), planeName );
         }
     }
 
@@ -312,9 +299,14 @@ public class PlaneManager {
         ArrayList<Vector3d> intersectionPoints = GeometryUtils.calculateIntersections(minCoord, maxCoord, planeNormal, planePoint);
 
         if (intersectionPoints.size() > 0) {
-            planeNormals.put(planeName, planeNormal);
-            planePoints.put(planeName, planePoint);
-            planeCentroids.put(planeName, GeometryUtils.getCentroid(intersectionPoints));
+            Plane plane;
+            if ( !planeNameToPlane.containsKey( planeName ) ) {
+                plane = new Plane( planeName, planeNormal, planePoint, GeometryUtils.getCentroid(intersectionPoints));
+                planeNameToPlane.put( planeName, plane );
+            } else {
+                plane = planeNameToPlane.get( planeName );
+                plane.updatePlane( planeNormal, planePoint, GeometryUtils.getCentroid(intersectionPoints) );
+            }
 
             // intersections were in local space, we want to display in the global so must account for any transformations
             // of the image
@@ -345,46 +337,17 @@ public class PlaneManager {
                 universe.removeContent(planeName);
             }
 
-            // make copy of colour to assign (using original interferes with changing colour later)
-            Color3f planeColor;
-            if ( planeColours.containsKey( planeName) ) {
-                planeColor = new Color3f(planeColours.get(planeName));
-            } else {
-                // alternate between green and blue to make it easier to see new planes
-                if ( colourIndex == 0 ) {
-                    planeColor = new Color3f(0, 1, 0);
-                    colourIndex = 1;
-                } else {
-                    planeColor = new Color3f(0, 0, 1);
-                    colourIndex = 0;
-                }
-                planeColours.put( planeName, planeColor );
-            }
-
-            float transparency;
-            if ( planeTransparencies.containsKey( planeName ) ) {
-                transparency = planeTransparencies.get( planeName );
-            } else {
-                transparency = 0.7f;
-                planeTransparencies.put( planeName, transparency );
-            }
-
             CustomTriangleMesh newMesh = null;
             if (intersectionPoints.size() == 3) {
-                newMesh = new CustomTriangleMesh(vectorPoints, planeColor, transparency);
+                newMesh = new CustomTriangleMesh( vectorPoints, plane.getColor(), plane.getTransparency() );
             } else if (intersectionPoints.size() > 3) {
                 ArrayList<Point3f> triangles = GeometryUtils.calculateTrianglesFromPoints(intersectionPoints, transformedNormal);
-                newMesh = new CustomTriangleMesh(triangles, planeColor, transparency);
+                newMesh = new CustomTriangleMesh( triangles, plane.getColor(), plane.getTransparency() );
             }
             Content meshContent = universe.addCustomMesh(newMesh, planeName);
             meshContent.setLocked(true);
 
-            if ( planeVisibilities.containsKey( planeName ) ) {
-                meshContent.setVisible(planeVisibilities.get(planeName));
-            } else {
-                planeVisibilities.put( planeName, true );
-                meshContent.setVisible( true );
-            }
+            meshContent.setVisible( plane.isVisible() );
         }
     }
 
@@ -394,8 +357,10 @@ public class PlaneManager {
             Vector3d currentPlaneNormal = planeDefinition.get(0);
             Vector3d currentPlanePoint = planeDefinition.get(1);
 
-            boolean normalsParallel = GeometryUtils.checkVectorsParallel(planeNormals.get(name), currentPlaneNormal);
-            double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, planeNormals.get(name), planePoints.get(name));
+            Plane plane = planeNameToPlane.get( name );
+            boolean normalsParallel = GeometryUtils.checkVectorsParallel( plane.getNormal(), currentPlaneNormal );
+            double distanceToPlane = GeometryUtils.distanceFromPointToPlane( currentPlanePoint,
+                    plane.getNormal(), plane.getPoint() );
 
             // units may want to be more or less strict
             // necessary due to double precision, will very rarely get exactly the same value
@@ -405,10 +370,10 @@ public class PlaneManager {
                 IJ.log("Already at that plane");
             } else {
                 double[] targetNormal = new double[3];
-                planeNormals.get(name).get(targetNormal);
+                plane.getNormal().get( targetNormal );
 
                 double[] targetCentroid = new double[3];
-                planeCentroids.get(name).get(targetCentroid);
+                plane.getCentroid().get( targetCentroid );
                 moveToPosition(bdvStackSource, targetCentroid, 0, 0);
                 if (!normalsParallel) {
                     BdvUtils.levelCurrentView(bdvStackSource, targetNormal);
@@ -426,7 +391,10 @@ public class PlaneManager {
             RealPoint point = getCurrentPosition();
             double[] position = new double[3];
             point.localize(position);
-            double distanceToPlane = GeometryUtils.distanceFromPointToPlane(new Vector3d(position), planeNormals.get("block"), planePoints.get("block"));
+
+            Plane blockPlane = planeNameToPlane.get( Crosshair.block );
+            double distanceToPlane = GeometryUtils.distanceFromPointToPlane(new Vector3d(position),
+                    blockPlane.getNormal(), blockPlane.getPoint() );
 
             // units may want to be more or less strict
             if (distanceToPlane < distanceBetweenPlanesThreshold) {
@@ -492,14 +460,11 @@ public class PlaneManager {
     public void removeNamedPlane (String name) {
         if (checkNamedPlaneExists(name)) {
         //        remove block vertices as these are tied to a particular plane (unlike the points)
-            if (name.equals("block")) {
+            if (name.equals( Crosshair.block )) {
                 removeAllBlockVertices();
             }
 
-            planeNormals.remove(name);
-            planeCentroids.remove(name);
-            planePoints.remove(name);
-
+            planeNameToPlane.remove( name );
             universe.removeContent(name);
         }
 
@@ -584,27 +549,25 @@ public class PlaneManager {
 
     public void togglePlaneVisbility( String planeName ) {
         if ( checkNamedPlaneExists(planeName) ) {
-            if ( planeVisibilities.get( planeName ) ) {
-                universe.getContent( planeName ).setVisible( false );
-                planeVisibilities.put( planeName, false );
-            } else {
-                universe.getContent( planeName ).setVisible(true);
-                planeVisibilities.put( planeName, true );
-            }
+            Plane plane = planeNameToPlane.get( planeName );
+            boolean isVisibile = plane.isVisible();
+
+            universe.getContent( planeName ).setVisible( !isVisibile );
+            plane.setVisible( !isVisibile );
         }
     }
 
     public Boolean getVisiblityNamedPlane ( String name ) {
-        if ( planeVisibilities.containsKey( name ) ) {
-            return planeVisibilities.get( name );
+        if ( checkNamedPlaneExists( name ) ) {
+            return planeNameToPlane.get( name ).isVisible();
         } else {
             return null;
         }
     }
 
     public boolean checkAllCrosshairPlanesPointsDefined() {
-        boolean targetExists = checkNamedPlaneExists("target");
-        boolean blockExists = checkNamedPlaneExists("block");
+        boolean targetExists = checkNamedPlaneExists( Crosshair.target );
+        boolean blockExists = checkNamedPlaneExists( Crosshair.block );
 
         boolean allVerticesExist = true;
         String[] vertexPoints = {"Top Left", "Top Right", "Bottom Left", "Bottom Right"};

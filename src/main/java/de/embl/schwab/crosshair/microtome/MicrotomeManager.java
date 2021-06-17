@@ -1,7 +1,7 @@
 package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.io.SolutionToSave;
 import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
 import de.embl.schwab.crosshair.ui.swing.VertexAssignmentPanel;

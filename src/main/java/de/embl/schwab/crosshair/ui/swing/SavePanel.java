@@ -2,11 +2,12 @@ package de.embl.schwab.crosshair.ui.swing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.io.SolutionToSave;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij.IJ;
 import ij3d.Content;
 import net.imglib2.RealPoint;
@@ -59,11 +60,15 @@ public class SavePanel extends CrosshairPanel {
         saveSettings.setActionCommand("save_settings");
         saveSettings.addActionListener(saveLoadListener);
         add(saveSettings);
+        planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( saveSettings );
+        planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( saveSettings );
 
         loadSettings = new JButton("Load Settings");
         loadSettings.setActionCommand("load_settings");
         loadSettings.addActionListener(saveLoadListener);
         add(loadSettings);
+        planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( loadSettings );
+        planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( loadSettings );
 
         saveSolution = new JButton("Save Solution");
         saveSolution.setActionCommand("save_solution");
@@ -114,9 +119,9 @@ public class SavePanel extends CrosshairPanel {
 
                     SettingsToSave settingsToSave = new SettingsToSave(planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
                             planeManager.getNamedVertices(), planeManager.getPointsToFitPlane(),
-                            planeManager.getBlockVertices(), planeManager.getPlaneColour( "target" ),
-                            planeManager.getPlaneColour( "block" ), planeManager.getTransparency( "target" ),
-                            planeManager.getTransparency( "block" ),
+                            planeManager.getBlockVertices(), planeManager.getPlaneColour( Crosshair.target  ),
+                            planeManager.getPlaneColour( Crosshair.block ), planeManager.getTransparency( Crosshair.target ),
+                            planeManager.getTransparency( Crosshair.block ),
                             imageContent.getTransparency(), imageContent.getColor(), redLut, greenLut, blueLut, alphaLut
                     );
 
@@ -203,16 +208,16 @@ public class SavePanel extends CrosshairPanel {
             }
 
             // if some planes aren't defined in loaded settings, remove them if present
-            for (String plane : new String[]{"target", "block"}) {
+            for (String plane : new String[]{ Crosshair.target, Crosshair.block }) {
                 if (!settingsPlaneNormals.containsKey(plane)) {
                     planeManager.removeNamedPlane(plane);
                 }
             }
 
-            planeManager.setPlaneColour( "target", settingsToSave.getTargetPlaneColour().get());
-            planeManager.setPlaneColour( "block", settingsToSave.getBlockPlaneColour().get());
-            planeManager.setPlaneTransparency( "target", settingsToSave.getTargetTransparency());
-            planeManager.setPlaneTransparency( "block", settingsToSave.getBlockTransparency());
+            planeManager.setPlaneColour( Crosshair.target, settingsToSave.getTargetPlaneColour().get());
+            planeManager.setPlaneColour( Crosshair.block, settingsToSave.getBlockPlaneColour().get());
+            planeManager.setPlaneTransparency( Crosshair.target, settingsToSave.getTargetTransparency());
+            planeManager.setPlaneTransparency( Crosshair.block, settingsToSave.getBlockTransparency());
 
             for (RealPoint point : settingsToSave.getPoints()) {
                 planeManager.addRemovePointFromPointList(planeManager.getPointsToFitPlane(), point);
@@ -236,12 +241,12 @@ public class SavePanel extends CrosshairPanel {
             }
 
             // Set everything to be visible if not already
-            if (!planeManager.getVisiblityNamedPlane("target")) {
-                planeManager.togglePlaneVisbility( "target");
+            if (!planeManager.getVisiblityNamedPlane( Crosshair.target )) {
+                planeManager.togglePlaneVisbility( Crosshair.target );
             }
 
-            if (!planeManager.getVisiblityNamedPlane("block")) {
-                planeManager.togglePlaneVisbility( "block" );
+            if (!planeManager.getVisiblityNamedPlane( Crosshair.block )) {
+                planeManager.togglePlaneVisbility( Crosshair.block );
             }
 
             if (!otherPanel.check3DPointsVisible()) {

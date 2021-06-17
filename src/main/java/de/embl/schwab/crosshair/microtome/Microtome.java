@@ -1,7 +1,8 @@
 package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -283,7 +284,7 @@ class Microtome {
         updateAngleKnifeTarget();
 
         imageContent.setTransform(finalTransform);
-        for (String planeName : new String[] {"target", "block"}) {
+        for (String planeName : new String[] { Crosshair.target, Crosshair.block }) {
             universe.getContent(planeName).setTransform(finalTransform);
         }
     }
@@ -298,9 +299,9 @@ class Microtome {
 
         // check angle - do colour change
         if (angleKnifeTarget < knifeTargetAngleThreshold) {
-            planeManager.setPlaneColourToAligned( "target" );
+            planeManager.setPlaneColourToAligned( Crosshair.target );
         } else {
-            planeManager.setPlaneColourToUnaligned( "target" );
+            planeManager.setPlaneColourToUnaligned( Crosshair.target );
         }
     }
 

@@ -4,6 +4,7 @@ import bdv.util.*;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
 import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -29,6 +30,9 @@ import java.awt.Window;
 
 
 public class Crosshair {
+
+	public static final String target = "target";
+	public static final String block = "block";
 
 	public Crosshair (BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent, String unit) {
 

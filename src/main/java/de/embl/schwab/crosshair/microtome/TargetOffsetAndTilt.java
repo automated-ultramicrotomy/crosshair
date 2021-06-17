@@ -12,9 +12,7 @@ public class TargetOffsetAndTilt {
 
     public TargetOffsetAndTilt() { }
 
-    public TargetOffsetAndTilt( Map<String, RealPoint> namedVertices, Map<String, Vector3d> planeNormals ) {
-        Vector3d blockNormal = planeNormals.get("block");
-        Vector3d targetNormal = planeNormals.get("target");
+    public TargetOffsetAndTilt( Map<String, RealPoint> namedVertices, Vector3d blockNormal, Vector3d targetNormal ) {
 
         double[] topLeft = new double[3];
         double[] bottomLeft = new double[3];

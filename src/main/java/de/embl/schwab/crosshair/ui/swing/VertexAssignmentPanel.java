@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.ui.swing;
 
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 
 import javax.swing.*;
 import java.awt.GridLayout;

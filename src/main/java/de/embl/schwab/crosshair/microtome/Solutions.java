@@ -1,6 +1,8 @@
 package de.embl.schwab.crosshair.microtome;
 
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.plane.Plane;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
@@ -63,18 +65,19 @@ class Solutions {
     void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
                                  SettingsToSave settings ) {
         TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( settings.getNamedVertices(),
-                settings.getPlaneNormals() );
+                settings.getPlaneNormals().get( Crosshair.block ), settings.getPlaneNormals().get( Crosshair.target ) );
         calculateRotations( solutionRotation, initialTiltAngle, initialKnifeAngle,
                 targetOffsetAndTilt.targetOffset, targetOffsetAndTilt.targetTilt );
-        calculateDistance( settings.getNamedVertices(), settings.getPlaneNormals(), settings.getPlanePoints(),
-                solutionKnife );
+        calculateDistance( settings.getNamedVertices(), settings.getPlaneNormals().get( Crosshair.target ),
+                settings.getPlanePoints().get( Crosshair.target ), solutionKnife );
         checkSolutionValid();
     }
 
     void setSolutionFromRotation (double solutionRotation) {
         calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
                 microtome.getInitialTargetOffset(), microtome.getInitialTargetTilt() );
-        calculateDistance( planeManager.getNamedVertices(), planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
+        Plane targetPlane = planeManager.getPlane( Crosshair.target );
+        calculateDistance( planeManager.getNamedVertices(), targetPlane.getNormal(), targetPlane.getPoint(),
                 solutionKnife );
         checkSolutionValid();
     }
@@ -113,10 +116,8 @@ class Solutions {
         this.solutionKnife = GeometryUtils.convertToDegrees(solKnife);
     }
 
-    private void calculateDistance( Map<String, RealPoint> namedVertices, Map<String, Vector3d> planeNormals,
-                                    Map<String, Vector3d> planePoints, double knifeAngle )  {
-        Vector3d targetNormal = new Vector3d(planeNormals.get("target"));
-        Vector3d targetPoint = new Vector3d(planePoints.get("target"));
+    private void calculateDistance( Map<String, RealPoint> namedVertices, Vector3d targetNormal,
+                                    Vector3d targetPoint, double knifeAngle )  {
 
         double[] topLeft = new double[3];
         double[] topRight = new double[3];

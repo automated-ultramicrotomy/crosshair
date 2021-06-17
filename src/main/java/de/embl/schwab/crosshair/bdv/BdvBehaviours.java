@@ -2,12 +2,12 @@ package de.embl.schwab.crosshair.bdv;
 
 import bdv.util.BdvHandle;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.TransformListener;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -33,9 +33,9 @@ public class BdvBehaviours {
     private void addVertexBehaviour() {
         if (microtomeManager.isMicrotomeModeActive()) {
             IJ.log("Can't change points when in microtome mode");
-        } else if (planeManager.getTrackPlane() != 0) {
+        } else if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
-        } else if (!planeManager.checkNamedPlaneExists("block")) {
+        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
             IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
         } else {
             planeManager.addRemoveCurrentPositionBlockVertices();
@@ -45,7 +45,7 @@ public class BdvBehaviours {
     private void addPointBehaviour() {
         if (microtomeManager.isMicrotomeModeActive()) {
             IJ.log("Can't change points when in microtome mode");
-        } else if (planeManager.getTrackPlane() != 0) {
+        } else if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
         } else {
             planeManager.addRemoveCurrentPositionPointsToFitPlane();
@@ -55,7 +55,7 @@ public class BdvBehaviours {
     private void addFitToPointsBehaviour() {
         if (microtomeManager.isMicrotomeModeActive()) {
             IJ.log("Can't fit to points when in microtome mode");
-        } else if (planeManager.getTrackPlane() == 2) {
+        } else if ( planeManager.getTrackedPlaneName().equals( Crosshair.block )) {
             IJ.log("Can't fit to points when tracking block plane");
         } else {
             if (planeManager.getPointsToFitPlane().size() >= 3) {
@@ -66,11 +66,11 @@ public class BdvBehaviours {
                     if (result == JOptionPane.YES_OPTION) {
                         planeManager.removeAllBlockVertices();
                         ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
-                        planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+                        planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
                     }
                 } else {
                     ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
-                    planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), "block");
+                    planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
                 }
             } else {
                 IJ.log ("Need at least 3 points to fit plane");
@@ -80,40 +80,37 @@ public class BdvBehaviours {
 
     private void installBehaviours() {
         final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
-        behaviours.install(bdvHandle.getTriggerbindings(), "target");
+        behaviours.install( bdvHandle.getTriggerbindings(), Crosshair.target );
 
         bdvHandle.getViewerPanel().addTransformListener(new bdv.viewer.TransformListener<AffineTransform3D>() {
             @Override
             public void transformChanged(AffineTransform3D affineTransform3D) {
-                if ( planeManager.getTrackPlane() == 1 )
-                {
-                    planeManager.updatePlaneOnTransformChange(affineTransform3D, "target");
-                } else if (planeManager.getTrackPlane() == 2) {
-                    planeManager.updatePlaneOnTransformChange(affineTransform3D, "block");
+                if ( planeManager.isTrackingPlane() ) {
+                    planeManager.updatePlaneOnTransformChange( affineTransform3D, planeManager.getTrackedPlaneName() );
                 }
             }
         });
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
-            if (planeManager.getPointMode() == 0 & planeManager.getVertexMode() == 0) {
+            if ( !planeManager.isInPointMode() & !planeManager.isInVertexMode() ) {
                 planeManager.toggleSelectedVertexCurrentPosition();
-            } else if (planeManager.getPointMode() == 1) {
+            } else if ( planeManager.isInPointMode() ) {
                 addPointBehaviour();
-            } else if (planeManager.getVertexMode() == 1) {
+            } else if ( planeManager.isInVertexMode() ) {
                 addVertexBehaviour();
             }
         }, "Left Click behaviours", "button1" );
 
         BdvPopupMenus.addAction(bdvHandle, "Toggle Point Mode", ( x, y ) ->
         {
-            if (!microtomeManager.isMicrotomeModeActive()) {
-                if (planeManager.getPointMode() == 0) {
-                    if (planeManager.getVertexMode() == 1) {
-                        planeManager.setVertexMode(0);
+            if ( !microtomeManager.isMicrotomeModeActive() ) {
+                if ( !planeManager.isInPointMode() ) {
+                    if ( planeManager.isInVertexMode() ) {
+                        planeManager.setVertexMode( false );
                     }
-                    planeManager.setPointMode(1);
+                    planeManager.setPointMode( true );
                 } else {
-                    planeManager.setPointMode(0);
+                    planeManager.setPointMode( false );
                 }
             } else {
                 IJ.log("Can't change points while in microtome mode");
@@ -123,13 +120,13 @@ public class BdvBehaviours {
         BdvPopupMenus.addAction(bdvHandle, "Toggle Vertex Mode", ( x, y ) ->
         {
             if (!microtomeManager.isMicrotomeModeActive()) {
-                if (planeManager.getVertexMode() == 0) {
-                    if (planeManager.getPointMode() == 1) {
-                        planeManager.setPointMode(0);
+                if ( !planeManager.isInVertexMode() ) {
+                    if ( planeManager.isInPointMode() ) {
+                        planeManager.setPointMode( false );
                     }
-                    planeManager.setVertexMode(1);
+                    planeManager.setVertexMode( true );
                 } else {
-                    planeManager.setVertexMode(0);
+                    planeManager.setVertexMode( false );
                 }
             } else {
                 IJ.log("Can't change vertices while in microtome mode");

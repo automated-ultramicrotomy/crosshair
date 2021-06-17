@@ -2,7 +2,8 @@ package de.embl.schwab.crosshair.microtome;
 
 import customnode.CustomMesh;
 import customnode.Tube;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.io.STLResourceLoader;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.*;
@@ -99,7 +100,7 @@ class MicrotomeSetup {
         microtome.setInitialBlockTransform(initialBlockTransform);
 
         // initialise target normals
-        Vector3d initialTargetNormal = new Vector3d(planeManager.getPlaneNormals().get("target"));
+        Vector3d initialTargetNormal = new Vector3d( planeManager.getPlane( Crosshair.target ).getNormal() );
         microtome.setInitialTargetNormal(initialTargetNormal);
         Vector3d currentTargetNormal = new Vector3d(initialTargetNormal);
         new Transform3D(initialBlockTransform).transform(currentTargetNormal);
@@ -122,8 +123,9 @@ class MicrotomeSetup {
 
     private void setTargetOffsetTilt() {
         Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
-        Map<String, Vector3d> planeNormals = planeManager.getPlaneNormals();
-        TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( namedVertices, planeNormals );
+        Vector3d blockNormal = planeManager.getPlane( Crosshair.block ).getNormal();
+        Vector3d targetNormal = planeManager.getPlane( Crosshair.target ).getNormal();
+        TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( namedVertices, blockNormal, targetNormal );
 
         microtome.setInitialTargetOffset( targetOffsetAndTilt.targetOffset );
         microtome.setInitialTargetTilt( targetOffsetAndTilt.targetTilt );
@@ -227,7 +229,7 @@ class MicrotomeSetup {
     }
 
     private Matrix4d setupBlockOrientation(double initialKnifeAngle) {
-        String[] planeNames = {"target", "block"};
+        String[] planeNames = { Crosshair.target, Crosshair.block };
         //reset translation / rotation in case it has been modified
         imageContent.setTransform(new Transform3D());
         for (String name : planeNames) {

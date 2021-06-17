@@ -1,7 +1,7 @@
 package de.embl.schwab.crosshair.microtome;
 
 import customnode.CustomTriangleMesh;
-import de.embl.schwab.crosshair.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
