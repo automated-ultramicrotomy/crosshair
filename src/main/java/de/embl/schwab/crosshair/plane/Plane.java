@@ -1,5 +1,6 @@
 package de.embl.schwab.crosshair.plane;
 
+import ij3d.Content;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Vector3d;
 
@@ -10,9 +11,6 @@ import java.util.Map;
 
 public class Plane {
 
-    // alternate between green and blue to make it easier to see new planes
-    private static int colourIndex = 0;
-
     private String name;
 
     private Vector3d normal;
@@ -21,65 +19,69 @@ public class Plane {
     private Vector3d centroid;
 
     private Color3f color;
-    private Float transparency;
-    private Boolean visible;
+    private float transparency;
+    private boolean isVisible;
+
+    private Content mesh; // the 3d custom triangle mesh representing the plane
 
     private ArrayList<JButton> buttonsAffectedByTracking; // these buttons must be disabled when this plane is tracked
 
-    public Plane( String name, Vector3d normal, Vector3d point, Vector3d centroid ) {
+    public Plane( String name, Vector3d normal, Vector3d point, Vector3d centroid, Content mesh, Color3f color,
+                  float transparency, boolean isVisible ) {
         this.name = name;
         this.normal = normal;
         this.point = point;
         this.centroid = centroid;
 
-        this.transparency = 0.7f;
-        this.visible = true;
-
-        // alternate between green and blue to make it easier to see new planes
-        if ( colourIndex == 0 ) {
-            this.color = new Color3f(0, 1, 0);
-            colourIndex = 1;
-        } else {
-            this.color = new Color3f(0, 0, 1);
-            colourIndex = 0;
-        }
+        this.transparency = transparency;
+        this.isVisible = isVisible;
+        this.mesh = mesh;
+        this.color = color;
 
         this.buttonsAffectedByTracking = new ArrayList<>();
     }
 
-    public void updatePlane( Vector3d normal, Vector3d point, Vector3d centroid ) {
+    public void updatePlane( Vector3d normal, Vector3d point, Vector3d centroid, Content mesh ) {
         this.normal = normal;
         this.point = point;
         this.centroid = centroid;
+        this.mesh = mesh;
     }
 
     public String getName() {
         return name;
     }
 
-    public Boolean isVisible() {
-        return visible;
-    }
+    public Boolean isVisible() { return this.isVisible(); }
 
     public void setVisible(Boolean visible) {
-        this.visible = visible;
+        this.isVisible = visible;
+        if ( mesh != null ) {
+            mesh.setVisible(visible);
+        }
     }
 
     public Color3f getColor() {
-        return color;
+        return this.color;
     }
 
     public void setColor( Color color ) {
-        // make copy of colour to assign (using original interferes with changing colour later)
-        this.color.set( new Color3f( color ) );
+        this.color = new Color3f(color);
+        if ( mesh != null ) {
+            // make copy of colour to assign (using original interferes with changing colour later)
+            mesh.setColor( this.color );
+        }
     }
 
     public Float getTransparency() {
-        return transparency;
+        return this.transparency;
     }
 
     public void setTransparency( Float transparency ) {
         this.transparency = transparency;
+        if ( mesh != null ) {
+            mesh.setTransparency(transparency);
+        }
     }
 
     public Vector3d getCentroid() {

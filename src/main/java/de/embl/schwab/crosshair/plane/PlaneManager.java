@@ -34,6 +34,8 @@ public class PlaneManager {
     private boolean isInPointMode = false;
     private boolean isInVertexMode = false;
 
+    private PlaneCreator planeCreator;
+
     private double distanceBetweenPlanesThreshold;
 
     private final Map<String, Plane> planeNameToPlane;
@@ -51,6 +53,8 @@ public class PlaneManager {
 
     private final Color3f alignedPlaneColour = new Color3f(1, 0, 0);
 
+
+
     // Given image content is used to define the extent of planes (only shown within bounds of that image)
     // and where points are shown (again attached to that image)
     public PlaneManager(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent) {
@@ -60,6 +64,8 @@ public class PlaneManager {
         namedVertices = new HashMap<>();
         pointsToFitPlane = new ArrayList<>();
         blockVertices = new ArrayList<>();
+
+        this.planeCreator = new PlaneCreator( universe, imageContent );
 
         this.bdvStackSource = bdvStackSource;
         this.bdvHandle = bdvStackSource.getBdvHandle();
@@ -287,67 +293,11 @@ public class PlaneManager {
 
     public void updatePlane(Vector3d planeNormal, Vector3d planePoint, String planeName) {
 
-        Point3d min = new Point3d();
-        Point3d max = new Point3d();
-        imageContent.getMax(max);
-        imageContent.getMin(min);
-        double[] minCoord = new double[3];
-        double[] maxCoord = new double[3];
-        min.get(minCoord);
-        max.get(maxCoord);
-
-        ArrayList<Vector3d> intersectionPoints = GeometryUtils.calculateIntersections(minCoord, maxCoord, planeNormal, planePoint);
-
-        if (intersectionPoints.size() > 0) {
-            Plane plane;
-            if ( !planeNameToPlane.containsKey( planeName ) ) {
-                plane = new Plane( planeName, planeNormal, planePoint, GeometryUtils.getCentroid(intersectionPoints));
-                planeNameToPlane.put( planeName, plane );
-            } else {
-                plane = planeNameToPlane.get( planeName );
-                plane.updatePlane( planeNormal, planePoint, GeometryUtils.getCentroid(intersectionPoints) );
-            }
-
-            // intersections were in local space, we want to display in the global so must account for any transformations
-            // of the image
-            Transform3D translate = new Transform3D();
-            Transform3D rotate = new Transform3D();
-            imageContent.getLocalTranslate(translate);
-            imageContent.getLocalRotate(rotate);
-
-            for (Vector3d point : intersectionPoints) {
-                // convert to point > transform affects vectors differently
-                Point3d intersect = new Point3d(point.getX(), point.getY(), point.getZ());
-                rotate.transform(intersect);
-                translate.transform(intersect);
-                point.setX(intersect.getX());
-                point.setY(intersect.getY());
-                point.setZ(intersect.getZ());
-            }
-
-            Vector3d transformedNormal = new Vector3d(planeNormal.getX(), planeNormal.getY(), planeNormal.getZ());
-            rotate.transform(transformedNormal);
-
-            ArrayList<Point3f> vectorPoints = new ArrayList<>();
-            for (Vector3d d : intersectionPoints) {
-                vectorPoints.add(new Point3f((float) d.getX(), (float) d.getY(), (float) d.getZ()));
-            }
-
-            if (universe.contains(planeName)) {
-                universe.removeContent(planeName);
-            }
-
-            CustomTriangleMesh newMesh = null;
-            if (intersectionPoints.size() == 3) {
-                newMesh = new CustomTriangleMesh( vectorPoints, plane.getColor(), plane.getTransparency() );
-            } else if (intersectionPoints.size() > 3) {
-                ArrayList<Point3f> triangles = GeometryUtils.calculateTrianglesFromPoints(intersectionPoints, transformedNormal);
-                newMesh = new CustomTriangleMesh( triangles, plane.getColor(), plane.getTransparency() );
-            }
-            Content meshContent = universe.addCustomMesh(newMesh, planeName);
-            meshContent.setLocked(true);
-
-            meshContent.setVisible( plane.isVisible() );
+        if ( checkNamedPlaneExists( planeName ) ) {
+            planeCreator.updatePlane( getPlane( planeName ), planeNormal, planePoint );
+        } else {
+            Plane plane = planeCreator.createPlane( planeNormal, planePoint, planeName );
+            planeNameToPlane.put(planeName, plane);
         }
     }
 
