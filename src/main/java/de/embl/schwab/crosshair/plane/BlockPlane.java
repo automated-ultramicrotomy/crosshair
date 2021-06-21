@@ -32,6 +32,36 @@ public class BlockPlane extends Plane {
         this.isVertexSelected = false;
     }
 
+    public boolean isVertexSelected() {
+        return isVertexSelected;
+    }
+
+    public RealPoint getSelectedVertex() {
+        return vertices.get( selectedVertexIndex );
+    }
+
+    public ArrayList<RealPoint> getVertices() {
+        return vertices;
+    }
+
+    public Map<String, RealPoint> getNamedVertices() {
+        return namedVertices;
+    }
+
+    public ArrayList<RealPoint> getVerticesExceptForSelected() {
+        if ( isVertexSelected ) {
+            ArrayList<RealPoint> nonSelectedVertices = new ArrayList<>();
+            for (int i = 0; i< vertices.size(); i++) {
+                if ( i != selectedVertexIndex ) {
+                    nonSelectedVertices.add( vertices.get(i) );
+                }
+            }
+            return nonSelectedVertices;
+        } else {
+            return vertices;
+        }
+    }
+
     public void nameSelectedVertex(String name) {
         if (!selectedVertex.containsKey("selected")) {
             IJ.log("No vertex selected");
