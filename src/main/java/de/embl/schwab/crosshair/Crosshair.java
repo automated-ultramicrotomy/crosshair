@@ -2,7 +2,7 @@ package de.embl.schwab.crosshair;
 
 import bdv.util.*;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
-import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
+import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
@@ -48,7 +48,7 @@ public class Crosshair {
 
 		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
 		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
-		PointsOverlaySizeChange pointOverlay = new PointsOverlaySizeChange();
+		PointOverlay2d pointOverlay = new PointOverlay2d();
 		pointOverlay.setPoints(planeManager.getPointsToFitPlane(), planeManager.getBlockVertices(),
 				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
 		planeManager.setPointOverlay(pointOverlay);

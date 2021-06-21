@@ -2,7 +2,7 @@ package de.embl.schwab.crosshair.ui.swing;
 
 import bdv.util.BdvHandle;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
+import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -16,7 +16,7 @@ public class CrosshairFrame extends JFrame {
     private Content imageContent;
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
-    private PointsOverlaySizeChange pointOverlay;
+    private PointOverlay2d pointOverlay;
     private BdvHandle bdvHandle;
 
     private ImagesPanel imagesPanel;
@@ -30,7 +30,7 @@ public class CrosshairFrame extends JFrame {
     private String unit;
 
     public CrosshairFrame(Image3DUniverse universe, Content imageContent, PlaneManager planeManager, MicrotomeManager microtomeManager,
-                          PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle, String unit) {
+                          PointOverlay2d pointOverlay, BdvHandle bdvHandle, String unit) {
 
         this.universe = universe;
         this.imageContent = imageContent;
@@ -129,7 +129,7 @@ public class CrosshairFrame extends JFrame {
         return microtomeManager;
     }
 
-    public PointsOverlaySizeChange getPointOverlay() {
+    public PointOverlay2d getPointOverlay() {
         return pointOverlay;
     }
 

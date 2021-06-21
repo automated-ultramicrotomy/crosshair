@@ -100,7 +100,7 @@ class MicrotomeSetup {
         microtome.setInitialBlockTransform(initialBlockTransform);
 
         // initialise target normals
-        Vector3d initialTargetNormal = new Vector3d( planeManager.getPlane( Crosshair.target ).getNormal() );
+        Vector3d initialTargetNormal = new Vector3d( planeManager.getStandardPlane( Crosshair.target ).getNormal() );
         microtome.setInitialTargetNormal(initialTargetNormal);
         Vector3d currentTargetNormal = new Vector3d(initialTargetNormal);
         new Transform3D(initialBlockTransform).transform(currentTargetNormal);
@@ -123,8 +123,8 @@ class MicrotomeSetup {
 
     private void setTargetOffsetTilt() {
         Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
-        Vector3d blockNormal = planeManager.getPlane( Crosshair.block ).getNormal();
-        Vector3d targetNormal = planeManager.getPlane( Crosshair.target ).getNormal();
+        Vector3d blockNormal = planeManager.getStandardPlane( Crosshair.block ).getNormal();
+        Vector3d targetNormal = planeManager.getStandardPlane( Crosshair.target ).getNormal();
         TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( namedVertices, blockNormal, targetNormal );
 
         microtome.setInitialTargetOffset( targetOffsetAndTilt.targetOffset );

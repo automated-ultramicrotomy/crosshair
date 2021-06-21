@@ -1,7 +1,7 @@
 package de.embl.schwab.crosshair.ui.swing;
 
 import bdv.util.BdvHandle;
-import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
+import de.embl.schwab.crosshair.points.PointOverlay2d;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 
@@ -17,14 +17,14 @@ public class OtherPanel extends CrosshairPanel {
     private ArrayList<Content> imageContents;
     private Image3DUniverse universe;
     private boolean threeDPointsVisible;
-    private PointsOverlaySizeChange pointOverlay;
+    private PointOverlay2d pointOverlay;
     private BdvHandle bdvHandle;
     private ArrayList<JButton> microtomeVisibilityButtons;
 
     public OtherPanel() {}
 
-    public void initialisePanel( ArrayList<Content> imageContents, Image3DUniverse universe,
-                                 PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle, boolean includeMicrotomeButtons ) {
+    public void initialisePanel(ArrayList<Content> imageContents, Image3DUniverse universe,
+                                PointOverlay2d pointOverlay, BdvHandle bdvHandle, boolean includeMicrotomeButtons ) {
         this.imageContents = imageContents;
         this.universe = universe;
         this.pointOverlay = pointOverlay;

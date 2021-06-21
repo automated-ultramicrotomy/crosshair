@@ -35,15 +35,7 @@ public class PlaneCreator {
         float transparency = 0.7f;
         boolean isVisible = true;
 
-        Content meshContent;
-        if (intersectionPoints.size() > 0) {
-            CustomTriangleMesh mesh = createPlaneMesh( intersectionPoints, planeNormal, color, transparency );
-            meshContent = universe.addCustomMesh( mesh, planeName );
-            meshContent.setLocked( true );
-            meshContent.setVisible( isVisible );
-        } else {
-            meshContent = null;
-        }
+        Content meshContent = createMeshContent( intersectionPoints, planeNormal, color, transparency, isVisible, planeName );
 
         return new Plane( planeName, planeNormal, planePoint, planeCentroid,
                 meshContent, color, transparency, isVisible );
@@ -58,16 +50,8 @@ public class PlaneCreator {
         ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints( newNormal, newPoint );
         Vector3d newCentroid = GeometryUtils.getCentroid(intersectionPoints);
 
-        Content meshContent;
-        if (intersectionPoints.size() > 0) {
-            CustomTriangleMesh mesh = createPlaneMesh( intersectionPoints, newNormal,
-                    plane.getColor(), plane.getTransparency() );
-            meshContent = universe.addCustomMesh( mesh, plane.getName() );
-            meshContent.setLocked( true );
-            meshContent.setVisible( plane.isVisible() );
-        } else {
-            meshContent = null;
-        }
+        Content meshContent = createMeshContent( intersectionPoints, newNormal, plane.getColor(), plane.getTransparency(),
+                plane.isVisible(), plane.getName() );
 
         plane.updatePlane( newNormal, newPoint, newCentroid, meshContent );
     }
@@ -81,6 +65,22 @@ public class PlaneCreator {
             colourIndex = 0;
             return new Color3f(0, 0, 1);
         }
+    }
+
+    private Content createMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal,
+                                        Color3f color, float transparency, boolean isVisible, String planeName ) {
+        Content meshContent;
+        if (intersectionPoints.size() > 0) {
+            CustomTriangleMesh mesh = createPlaneMesh( intersectionPoints, planeNormal,
+                    color, transparency );
+            meshContent = universe.addCustomMesh( mesh, planeName );
+            meshContent.setLocked( true );
+            meshContent.setVisible( isVisible );
+        } else {
+            meshContent = null;
+        }
+
+        return meshContent;
     }
 
     private CustomTriangleMesh createPlaneMesh(ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal,

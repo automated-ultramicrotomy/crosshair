@@ -42,11 +42,7 @@ import java.util.Map;
 
         public void initialisePanel( CrosshairFrame crosshairFrame ) {
             planeManager = crosshairFrame.getPlaneManager();
-            savePanel = crosshairFrame.getSavePanel();
-            microtomePanel = crosshairFrame.getMicrotomePanel();
             trackingButtons = new HashMap<>();
-            buttonsAffectedByTargetTracking = new ArrayList<>();
-            buttonsAffectedByBlockTracking = new ArrayList<>();
 
             setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder("Planes"),
@@ -151,7 +147,7 @@ import java.util.Map;
         }
 
         private void toggleBlockTracking (JButton trackButton) {
-            if (planeManager.getTrackPlane() == 0) {
+            if ( !planeManager.isTrackingPlane() ) {
                 // check if there are already vertex points
                 if (planeManager.getBlockVertices().size() > 0) {
                     int result = JOptionPane.showConfirmDialog(null, "If you track the block plane, you will lose all current vertex points. Continue?", "Are you sure?",
@@ -201,7 +197,7 @@ import java.util.Map;
                 }
             });
 
-            planeManager.getPlane( planeName ).addButtonAffectedByTracking( visbilityButton );
+            planeManager.getStandardPlane( planeName ).addButtonAffectedByTracking( visbilityButton );
             panel.add(visbilityButton);
         }
 
@@ -249,7 +245,7 @@ import java.util.Map;
 
                 float currentTransparency = 0.7f;
                 if ( planeManager.checkNamedPlaneExists( planeName ) ) {
-                    currentTransparency = planeManager.getPlane( planeName ).getTransparency();
+                    currentTransparency = planeManager.getStandardPlane( planeName ).getTransparency();
                 } else {
                     IJ.log(planeName + " plane not initialised");
                 }
@@ -283,7 +279,7 @@ import java.util.Map;
                 frame.setVisible(true);
             });
 
-            planeManager.getPlane( planeName ).addButtonAffectedByTracking( button );
+            planeManager.getStandardPlane( planeName ).addButtonAffectedByTracking( button );
             panel.add(button);
         }
 

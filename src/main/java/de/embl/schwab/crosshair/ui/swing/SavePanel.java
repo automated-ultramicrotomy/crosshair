@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.ui.swing;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
+import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.io.SolutionToSave;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
@@ -30,7 +30,7 @@ public class SavePanel extends CrosshairPanel {
     private Content imageContent;
     private MicrotomePanel microtomePanel;
     private OtherPanel otherPanel;
-    private PointsOverlaySizeChange pointOverlay;
+    private PointOverlay2d pointOverlay;
     private JButton saveSolution;
     private JButton saveSettings;
     private JButton loadSettings;
@@ -60,15 +60,15 @@ public class SavePanel extends CrosshairPanel {
         saveSettings.setActionCommand("save_settings");
         saveSettings.addActionListener(saveLoadListener);
         add(saveSettings);
-        planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( saveSettings );
-        planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( saveSettings );
+        planeManager.getStandardPlane( Crosshair.target ).addButtonAffectedByTracking( saveSettings );
+        planeManager.getStandardPlane( Crosshair.block ).addButtonAffectedByTracking( saveSettings );
 
         loadSettings = new JButton("Load Settings");
         loadSettings.setActionCommand("load_settings");
         loadSettings.addActionListener(saveLoadListener);
         add(loadSettings);
-        planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( loadSettings );
-        planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( loadSettings );
+        planeManager.getStandardPlane( Crosshair.target ).addButtonAffectedByTracking( loadSettings );
+        planeManager.getStandardPlane( Crosshair.block ).addButtonAffectedByTracking( loadSettings );
 
         saveSolution = new JButton("Save Solution");
         saveSolution.setActionCommand("save_solution");

@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.plane;
 
 import ij3d.Content;
+import net.imglib2.RealPoint;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Vector3d;
 
@@ -23,6 +24,8 @@ public class Plane {
     private boolean isVisible;
 
     private Content mesh; // the 3d custom triangle mesh representing the plane
+
+    private final ArrayList<RealPoint> pointsToFitPlane; // points used to fit this plane
 
     private ArrayList<JButton> buttonsAffectedByTracking; // these buttons must be disabled when this plane is tracked
 
@@ -52,7 +55,7 @@ public class Plane {
         return name;
     }
 
-    public Boolean isVisible() { return this.isVisible(); }
+    public Boolean isVisible() { return this.isVisible; }
 
     public void setVisible(Boolean visible) {
         this.isVisible = visible;
@@ -102,5 +105,17 @@ public class Plane {
 
     public void addButtonAffectedByTracking(JButton jButton ) {
         buttonsAffectedByTracking.add( jButton );
+    }
+
+    public ArrayList<RealPoint> getPointsToFitPlane() {
+        return pointsToFitPlane;
+    }
+
+    public void removeAllPointsToFitPlane() {
+        for (RealPoint point : pointsToFitPlane) {
+            removePointFrom3DViewer(point);
+        }
+        pointsToFitPlane.clear();
+        bdvHandle.getViewerPanel().requestRepaint();
     }
 }

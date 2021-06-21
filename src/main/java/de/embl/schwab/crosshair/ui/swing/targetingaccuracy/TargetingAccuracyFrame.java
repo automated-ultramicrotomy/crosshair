@@ -2,7 +2,7 @@ package de.embl.schwab.crosshair.ui.swing.targetingaccuracy;
 
 import bdv.util.BdvHandle;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.bdv.PointsOverlaySizeChange;
+import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.ui.swing.*;
 import ij3d.Content;
@@ -17,7 +17,7 @@ public class TargetingAccuracyFrame extends JFrame {
     private Image3DUniverse universe;
     private Content imageContent;
     private PlaneManager planeManager;
-    private PointsOverlaySizeChange pointOverlay;
+    private PointOverlay2d pointOverlay;
     private BdvHandle bdvHandle;
     private String unit;
 
@@ -28,9 +28,9 @@ public class TargetingAccuracyFrame extends JFrame {
 
     // primary image is the one fed to the planemanager to control extent of planes and points in the 3d view.
     // For accuracy measuring purposes, it should be the block before trimming
-    public TargetingAccuracyFrame( Image3DUniverse universe, Map<String, Content> imageNametoContent,
-                                   String primaryImageName, PlaneManager planeManager,
-                                   MicrotomeManager microtomeManager, PointsOverlaySizeChange pointOverlay, BdvHandle bdvHandle, String unit  ) {
+    public TargetingAccuracyFrame(Image3DUniverse universe, Map<String, Content> imageNametoContent,
+                                  String primaryImageName, PlaneManager planeManager,
+                                  MicrotomeManager microtomeManager, PointOverlay2d pointOverlay, BdvHandle bdvHandle, String unit  ) {
 
         this.universe = universe;
         this.imageContent = imageContent;
