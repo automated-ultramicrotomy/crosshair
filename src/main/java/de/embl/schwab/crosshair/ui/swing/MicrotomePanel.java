@@ -4,8 +4,11 @@ import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import ij.IJ;
+import net.imglib2.RealPoint;
 import org.apache.commons.math3.util.Precision;
 
 import javax.swing.*;
@@ -369,7 +372,7 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     private void enterMicrotomeMode () {
-        if (planeManager.checkAllCrosshairPlanesPointsDefined()) {
+        if ( checkAllCrosshairPlanesPointsDefined() ) {
             enterMicrotomeModeButton.setEnabled(false);
             exitMicrotomeModeButton.setEnabled(true);
             enterCuttingModeButton.setVisible(true);
@@ -441,6 +444,32 @@ public class MicrotomePanel extends CrosshairPanel {
         enterCuttingModeButton.setEnabled(true);
         exitCuttingModeButton.setEnabled(false);
         crosshairFrame.pack();
+    }
+
+    private boolean checkAllCrosshairPlanesPointsDefined() {
+        boolean targetExists = planeManager.checkNamedPlaneExists( Crosshair.target );
+        boolean blockExists = planeManager.checkNamedPlaneExists( Crosshair.block );
+
+        boolean allVerticesExist = false;
+        if ( blockExists ) {
+            allVerticesExist = true;
+            BlockPlane blockPlane = planeManager.getBlockPlane( Crosshair.block );
+            Map<VertexPoint, RealPoint> assignedVertices =  blockPlane.getAssignedVertices();
+
+            for ( VertexPoint vertexPoint: VertexPoint.values() ) {
+                if ( !assignedVertices.containsKey( vertexPoint ) ) {
+                    allVerticesExist = false;
+                    break;
+                }
+            }
+        }
+
+        if (targetExists & blockExists & allVerticesExist) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     abstract class MicrotomeListener implements BoundedValueDouble.UpdateListener {

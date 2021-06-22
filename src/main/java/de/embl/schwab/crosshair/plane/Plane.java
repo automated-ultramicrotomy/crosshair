@@ -87,6 +87,10 @@ public class Plane {
         }
     }
 
+    public void toggleVisible() {
+        setVisible( !isVisible );
+    }
+
     public Color3f getColor() {
         return this.color;
     }
@@ -185,5 +189,9 @@ public class Plane {
         } else {
             return false;
         }
+    }
+
+    public PointsToFitPlane2dOverlay getPointsToFitPlane2dOverlay() {
+        return pointsToFitPlane2dOverlay;
     }
 }

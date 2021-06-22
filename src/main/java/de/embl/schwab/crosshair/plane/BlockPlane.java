@@ -73,7 +73,11 @@ public class BlockPlane extends Plane {
         }
     }
 
-    public void assignSelectedVertex( VertexPoint vertexPoint ) {
+    public VertexPoints2dOverlay getVertexPoints2dOverlay() {
+        return vertexPoints2dOverlay;
+    }
+
+    public void assignSelectedVertex(VertexPoint vertexPoint ) {
         if ( !isVertexSelected ) {
             IJ.log("No vertex selected");
         } else {
