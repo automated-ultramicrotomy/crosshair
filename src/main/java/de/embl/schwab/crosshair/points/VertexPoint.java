@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.points;
 
-public enum VertexPoints {
+public enum VertexPoint {
 
     TopLeft,
     TopRight,

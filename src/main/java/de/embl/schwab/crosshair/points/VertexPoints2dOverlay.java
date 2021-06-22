@@ -5,6 +5,8 @@ import net.imglib2.RealPoint;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VertexPoints2dOverlay extends PointOverlay2d {
 
@@ -27,6 +29,10 @@ public class VertexPoints2dOverlay extends PointOverlay2d {
 
         drawPoints( blockPlane.getVerticesExceptForSelected(), colVertex, g );
 
-        drawTextOnPoints( blockPlane.getNamedVertices(), colVertex, g );
+        Map<String, RealPoint> pointLabelToPoint = new HashMap<>();
+        for ( VertexPoint vertexPoint: blockPlane.getAssignedVertices().keySet() ) {
+            pointLabelToPoint.put( vertexPoint.toString(), blockPlane.getAssignedVertices().get( vertexPoint ) );
+        }
+        drawTextOnPoints( pointLabelToPoint, colVertex, g );
     }
 }

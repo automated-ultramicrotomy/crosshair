@@ -350,41 +350,41 @@ public class PlaneManager {
     //     }
     // }
 
-    public void addRemovePointFromPointList(ArrayList<RealPoint> points, RealPoint point) {
-    // remove point if already present, otherwise add point
-        double[] pointViewerCoords = convertToViewerCoordinates(point);
-
-        boolean distanceMatch = false;
-        for ( int i = 0; i < points.size(); i++ )
-        {
-            RealPoint currentPoint = points.get(i);
-            double[] currentPointViewerCoords = convertToViewerCoordinates(currentPoint);
-            double distance = GeometryUtils.distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
-            if (distance < 5) {
-                removePointFrom3DViewer(currentPoint);
-                // remove matching points from named vertices
-                removeMatchingNamedVertices(currentPoint);
-                // remove matching points from selected vertices
-                removeMatchingSelectdVertices(currentPoint);
-                points.remove(i);
-                bdvHandle.getViewerPanel().requestRepaint();
-
-                distanceMatch = true;
-                break;
-            }
-
-        }
-
-        if (!distanceMatch) {
-            points.add(point);
-            bdvHandle.getViewerPanel().requestRepaint();
-
-            double[] position = new double[3];
-            point.localize(position);
-            imageContent.getPointList().add("", position[0], position[1], position[2]);
-        }
-
-    }
+    // public void addRemovePointFromPointList(ArrayList<RealPoint> points, RealPoint point) {
+    // // remove point if already present, otherwise add point
+    //     double[] pointViewerCoords = convertToViewerCoordinates(point);
+    //
+    //     boolean distanceMatch = false;
+    //     for ( int i = 0; i < points.size(); i++ )
+    //     {
+    //         RealPoint currentPoint = points.get(i);
+    //         double[] currentPointViewerCoords = convertToViewerCoordinates(currentPoint);
+    //         double distance = GeometryUtils.distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
+    //         if (distance < 5) {
+    //             removePointFrom3DViewer(currentPoint);
+    //             // remove matching points from named vertices
+    //             removeMatchingNamedVertices(currentPoint);
+    //             // remove matching points from selected vertices
+    //             removeMatchingSelectdVertices(currentPoint);
+    //             points.remove(i);
+    //             bdvHandle.getViewerPanel().requestRepaint();
+    //
+    //             distanceMatch = true;
+    //             break;
+    //         }
+    //
+    //     }
+    //
+    //     if (!distanceMatch) {
+    //         points.add(point);
+    //         bdvHandle.getViewerPanel().requestRepaint();
+    //
+    //         double[] position = new double[3];
+    //         point.localize(position);
+    //         imageContent.getPointList().add("", position[0], position[1], position[2]);
+    //     }
+    //
+    // }
 
     // public void removeAllBlockVertices() {
     //     for (RealPoint point : blockVertices) {
@@ -437,11 +437,11 @@ public class PlaneManager {
     //     }
     // }
 
-    private RealPoint getCurrentPosition () {
-        RealPoint point = new RealPoint(3);
-        bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
-        return point;
-    }
+    // private RealPoint getCurrentPosition () {
+    //     RealPoint point = new RealPoint(3);
+    //     bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
+    //     return point;
+    // }
 
     private double[] getCurrentPositionViewerCoordinates () {
         RealPoint point = getCurrentPosition();
