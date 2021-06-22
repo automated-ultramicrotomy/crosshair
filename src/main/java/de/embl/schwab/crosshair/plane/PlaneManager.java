@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.plane;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import de.embl.schwab.crosshair.points.Point3dOverlay;
+import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.utils.BdvUtils;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
@@ -61,6 +62,10 @@ public class PlaneManager {
         }
     }
 
+    public Set<String> getPlaneNames() {
+        return planeNameToPlane.keySet();
+    }
+
     public boolean isTrackingPlane() { return isTrackingPlane; }
 
     public void setTrackingPlane( boolean tracking ) { isTrackingPlane = tracking; }
@@ -77,6 +82,7 @@ public class PlaneManager {
 
     public void setPointMode( boolean isInPointMode ) {
         this.isInPointMode = isInPointMode;
+        bdvHandle.getViewerPanel().requestRepaint();
     }
 
     public boolean isInVertexMode() {
@@ -85,6 +91,7 @@ public class PlaneManager {
 
     public void setVertexMode( boolean isInVertexMode ) {
         this.isInVertexMode = isInVertexMode;
+        bdvHandle.getViewerPanel().requestRepaint();
     }
 
     public boolean checkNamedPlaneExists(String name) {
@@ -96,8 +103,21 @@ public class PlaneManager {
         planeNameToPlane.put(planeName, plane);
     }
 
+    public void addPlane( String planeName, boolean isVisible ){
+        // adds plane in default location at the origin parallel to z axis
+        Plane plane = planeCreator.createPlane( new Vector3d(0, 0, 1), new Vector3d(0, 0, 0),
+                planeName, isVisible );
+        planeNameToPlane.put(planeName, plane);
+    }
+
     public void addBlockPlane( Vector3d planeNormal, Vector3d planePoint, String planeName ) {
         BlockPlane plane = planeCreator.createBlockPlane( planeNormal, planePoint, planeName );
+        planeNameToPlane.put(planeName, plane);
+    }
+
+    public void addBlockPlane( String planeName, boolean isVisible ) {
+        BlockPlane plane = planeCreator.createBlockPlane( new Vector3d(0, 0, 1), new Vector3d(0, 0, 0),
+                planeName, isVisible );
         planeNameToPlane.put(planeName, plane);
     }
 
@@ -138,6 +158,18 @@ public class PlaneManager {
             Plane plane = planeNameToPlane.get( planeName );
             updatePlane( plane.getNormal(), plane.getPoint(), planeName );
         }
+    }
+
+    public ArrayList<PointOverlay2d> getAll2dPointOverlays() {
+        ArrayList<PointOverlay2d> pointOverlays = new ArrayList<>();
+        for ( Plane plane: planeNameToPlane.values() ) {
+            pointOverlays.add( plane.getPointsToFitPlane2dOverlay() );
+            if ( plane instanceof BlockPlane ) {
+                pointOverlays.add( ((BlockPlane) plane).getVertexPoints2dOverlay() );
+            }
+        }
+
+        return pointOverlays;
     }
 
     public ArrayList<Vector3d> getPlaneDefinitionOfCurrentView () {

@@ -16,7 +16,6 @@ public class CrosshairFrame extends JFrame {
     private Content imageContent;
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
-    private PointOverlay2d pointOverlay;
     private BdvHandle bdvHandle;
 
     private ImagesPanel imagesPanel;
@@ -30,13 +29,12 @@ public class CrosshairFrame extends JFrame {
     private String unit;
 
     public CrosshairFrame(Image3DUniverse universe, Content imageContent, PlaneManager planeManager, MicrotomeManager microtomeManager,
-                          PointOverlay2d pointOverlay, BdvHandle bdvHandle, String unit) {
+                          BdvHandle bdvHandle, String unit) {
 
         this.universe = universe;
         this.imageContent = imageContent;
         this.planeManager = planeManager;
         this.microtomeManager = microtomeManager;
-        this.pointOverlay = pointOverlay;
         this.bdvHandle = bdvHandle;
         this.unit = unit;
 
@@ -127,10 +125,6 @@ public class CrosshairFrame extends JFrame {
 
     public MicrotomeManager getMicrotomeManager() {
         return microtomeManager;
-    }
-
-    public PointOverlay2d getPointOverlay() {
-        return pointOverlay;
     }
 
     public String getUnit() { return unit; }

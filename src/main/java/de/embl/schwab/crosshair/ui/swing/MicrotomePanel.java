@@ -163,8 +163,8 @@ public class MicrotomePanel extends CrosshairPanel {
         enterMicrotomeModeButton.setActionCommand("enter_microtome_mode");
         enterMicrotomeModeButton.addActionListener(microtomeModeListener);
         toggleMicrotomeModePanel.add(enterMicrotomeModeButton);
-        planeManager.getStandardPlane( Crosshair.target ).addButtonAffectedByTracking( enterMicrotomeModeButton );
-        planeManager.getStandardPlane( Crosshair.block ).addButtonAffectedByTracking( enterMicrotomeModeButton );
+        planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( enterMicrotomeModeButton );
+        planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( enterMicrotomeModeButton );
 
         exitMicrotomeModeButton = new JButton("Exit Microtome Mode");
         exitMicrotomeModeButton.setActionCommand("exit_microtome_mode");

@@ -17,17 +17,18 @@ public class OtherPanel extends CrosshairPanel {
     private ArrayList<Content> imageContents;
     private Image3DUniverse universe;
     private boolean threeDPointsVisible;
-    private PointOverlay2d pointOverlay;
+    private ArrayList<PointOverlay2d> pointOverlays;
     private BdvHandle bdvHandle;
     private ArrayList<JButton> microtomeVisibilityButtons;
 
     public OtherPanel() {}
 
     public void initialisePanel(ArrayList<Content> imageContents, Image3DUniverse universe,
-                                PointOverlay2d pointOverlay, BdvHandle bdvHandle, boolean includeMicrotomeButtons ) {
+                                ArrayList<PointOverlay2d> pointOverlays, BdvHandle bdvHandle,
+                                boolean includeMicrotomeButtons ) {
         this.imageContents = imageContents;
         this.universe = universe;
-        this.pointOverlay = pointOverlay;
+        this.pointOverlays = pointOverlays;
         this.bdvHandle = bdvHandle;
         threeDPointsVisible = true;
         microtomeVisibilityButtons = new ArrayList<>();
@@ -53,7 +54,8 @@ public class OtherPanel extends CrosshairPanel {
         ArrayList<Content> imageContents = new ArrayList<>();
         imageContents.add( crosshairFrame.getImageContent() );
 
-        initialisePanel( imageContents, crosshairFrame.getUniverse(), crosshairFrame.getPointOverlay(),
+        initialisePanel( imageContents, crosshairFrame.getUniverse(),
+                crosshairFrame.getPlaneManager().getAll2dPointOverlays(),
                 crosshairFrame.getBdvHandle(), true );
     }
 
@@ -98,7 +100,9 @@ public class OtherPanel extends CrosshairPanel {
                 new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
         visbilityButton.addActionListener(e -> {
-            pointOverlay.toggleShowPoints();
+            for ( PointOverlay2d pointOverlay: pointOverlays ) {
+                pointOverlay.toggleShowPoints();
+            }
             bdvHandle.getViewerPanel().requestRepaint();
         });
 

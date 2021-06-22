@@ -2,14 +2,10 @@ package de.embl.schwab.crosshair.points;
 
 import bdv.util.BdvHandle;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
-import ij3d.Content;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import vib.BenesNamedPoint;
-import vib.PointList;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class PointHelper {
 
@@ -49,43 +45,6 @@ public class PointHelper {
         }
 
         return null;
-    }
-
-    public void addOrRemovePointFromPointList( ArrayList<RealPoint> points, RealPoint point, BdvHandle bdvHandle ) {
-
-        // remove point if within a certain distance of an existing point, otherwise add point
-        double[] pointViewerCoords = convertToViewerCoordinates( point, bdvHandle );
-
-        boolean distanceMatch = false;
-        for ( int i = 0; i < points.size(); i++ )
-        {
-            RealPoint currentPoint = points.get(i);
-            double[] currentPointViewerCoords = convertToViewerCoordinates(currentPoint);
-            double distance = GeometryUtils.distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
-            if (distance < 5) {
-                removePointFrom3DViewer(currentPoint);
-                // remove matching points from named vertices
-                removeMatchingNamedVertices(currentPoint);
-                // remove matching points from selected vertices
-                removeMatchingSelectdVertices(currentPoint);
-                points.remove(i);
-                bdvHandle.getViewerPanel().requestRepaint();
-
-                distanceMatch = true;
-                break;
-            }
-
-        }
-
-        if (!distanceMatch) {
-            points.add(point);
-            bdvHandle.getViewerPanel().requestRepaint();
-
-            double[] position = new double[3];
-            point.localize(position);
-            imageContent.getPointList().add("", position[0], position[1], position[2]);
-        }
-
     }
 
     public static double[] getCurrentPositionViewerCoordinates ( BdvHandle bdvHandle ) {

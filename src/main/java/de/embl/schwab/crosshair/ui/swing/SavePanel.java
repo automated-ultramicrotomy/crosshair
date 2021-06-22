@@ -30,7 +30,6 @@ public class SavePanel extends CrosshairPanel {
     private Content imageContent;
     private MicrotomePanel microtomePanel;
     private OtherPanel otherPanel;
-    private PointOverlay2d pointOverlay;
     private JButton saveSolution;
     private JButton saveSettings;
     private JButton loadSettings;
@@ -46,7 +45,6 @@ public class SavePanel extends CrosshairPanel {
         this.imageContent = crosshairFrame.getImageContent();
         this.microtomePanel = crosshairFrame.getMicrotomePanel();
         this.otherPanel = crosshairFrame.getPointsPanel();
-        this.pointOverlay = crosshairFrame.getPointOverlay();
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Save and Load"),
@@ -54,27 +52,27 @@ public class SavePanel extends CrosshairPanel {
 
         setLayout(new GridLayout(1, 3));
 
-        ActionListener saveLoadListener = new saveLoadListener();
+        // ActionListener saveLoadListener = new saveLoadListener();
 
-        saveSettings = new JButton("Save Settings");
-        saveSettings.setActionCommand("save_settings");
-        saveSettings.addActionListener(saveLoadListener);
-        add(saveSettings);
-        planeManager.getStandardPlane( Crosshair.target ).addButtonAffectedByTracking( saveSettings );
-        planeManager.getStandardPlane( Crosshair.block ).addButtonAffectedByTracking( saveSettings );
-
-        loadSettings = new JButton("Load Settings");
-        loadSettings.setActionCommand("load_settings");
-        loadSettings.addActionListener(saveLoadListener);
-        add(loadSettings);
-        planeManager.getStandardPlane( Crosshair.target ).addButtonAffectedByTracking( loadSettings );
-        planeManager.getStandardPlane( Crosshair.block ).addButtonAffectedByTracking( loadSettings );
-
-        saveSolution = new JButton("Save Solution");
-        saveSolution.setActionCommand("save_solution");
-        saveSolution.addActionListener(saveLoadListener);
-        saveSolution.setEnabled(false);
-        add(saveSolution);
+        // saveSettings = new JButton("Save Settings");
+        // saveSettings.setActionCommand("save_settings");
+        // saveSettings.addActionListener(saveLoadListener);
+        // add(saveSettings);
+        // planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( saveSettings );
+        // planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( saveSettings );
+        //
+        // loadSettings = new JButton("Load Settings");
+        // loadSettings.setActionCommand("load_settings");
+        // loadSettings.addActionListener(saveLoadListener);
+        // add(loadSettings);
+        // planeManager.getPlane( Crosshair.target ).addButtonAffectedByTracking( loadSettings );
+        // planeManager.getPlane( Crosshair.block ).addButtonAffectedByTracking( loadSettings );
+        //
+        // saveSolution = new JButton("Save Solution");
+        // saveSolution.setActionCommand("save_solution");
+        // saveSolution.addActionListener(saveLoadListener);
+        // saveSolution.setEnabled(false);
+        // add(saveSolution);
     }
 
     void enableSaveSolution() {
@@ -93,172 +91,172 @@ public class SavePanel extends CrosshairPanel {
 
     void disableLoadSettings() {loadSettings.setEnabled(false);}
 
-    class saveLoadListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            if (e.getActionCommand().equals("save_settings")) {
+    // class saveLoadListener implements ActionListener {
+    //     public void actionPerformed(ActionEvent e) {
+    //         if (e.getActionCommand().equals("save_settings")) {
+    //
+    //             String filePath = "";
+    //             JFileChooser chooser = new JFileChooser();
+    //             chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
+    //             int returnVal = chooser.showSaveDialog(null);
+    //             if (returnVal == JFileChooser.APPROVE_OPTION) {
+    //                 filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
+    //             }
+    //
+    //             if (filePath != "") {
+    //
+    //                 // transfer function settings
+    //                 int[] redLut = new int[256];
+    //                 int[] greenLut = new int[256];
+    //                 int[] blueLut = new int[256];
+    //                 int[] alphaLut = new int[256];
+    //                 imageContent.getRedLUT(redLut);
+    //                 imageContent.getGreenLUT(greenLut);
+    //                 imageContent.getBlueLUT(blueLut);
+    //                 imageContent.getAlphaLUT(alphaLut);
+    //
+    //                 SettingsToSave settingsToSave = new SettingsToSave(planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
+    //                         planeManager.getNamedVertices(), planeManager.getPointsToFitPlane(),
+    //                         planeManager.getBlockVertices(), planeManager.getPlaneColour( Crosshair.target  ),
+    //                         planeManager.getPlaneColour( Crosshair.block ), planeManager.getTransparency( Crosshair.target ),
+    //                         planeManager.getTransparency( Crosshair.block ),
+    //                         imageContent.getTransparency(), imageContent.getColor(), redLut, greenLut, blueLut, alphaLut
+    //                 );
+    //
+    //                 try {
+    //                     FileWriter fileWriter = new FileWriter(filePath);
+    //                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    //                     gson.toJson(settingsToSave, fileWriter);
+    //                     fileWriter.flush();
+    //                     fileWriter.close();
+    //                 } catch (IOException e1) {
+    //                     e1.printStackTrace();
+    //                 }
+    //             }
+    //
+    //         } else if (e.getActionCommand().equals("load_settings")) {
+    //             String filePath = "";
+    //             JFileChooser chooser = new JFileChooser();
+    //             chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
+    //             int returnVal = chooser.showOpenDialog(null);
+    //             if (returnVal == JFileChooser.APPROVE_OPTION) {
+    //                 filePath = chooser.getSelectedFile().getAbsolutePath();
+    //             }
+    //
+    //             if (!filePath.equals("")) {
+    //                 Gson gson = new Gson();
+    //                 try {
+    //                     FileReader fileReader = new FileReader(filePath);
+    //                     SettingsToSave settingsToSave = gson.fromJson(fileReader, SettingsToSave.class);
+    //                     loadSettings(settingsToSave);
+    //
+    //                 } catch (FileNotFoundException e1) {
+    //                     e1.printStackTrace();
+    //                 }
+    //             }
+    //
+    //         } else if (e.getActionCommand().equals("save_solution")) {
+    //             if ( microtomeManager.isValidSolution() ) {
+    //                 String filePath = "";
+    //                 JFileChooser chooser = new JFileChooser();
+    //                 chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
+    //                 int returnVal = chooser.showSaveDialog(null);
+    //                 if (returnVal == JFileChooser.APPROVE_OPTION) {
+    //                     filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
+    //                 }
+    //
+    //                 if (filePath != "") {
+    //                     // if you set a solution then move other sliders, it will no longer be a solution. Here we force it
+    //                     // to react and set all sliders for that current solution.
+    //                     double currentSolutionRot = microtomePanel.getRotationSolutionAngle().getCurrentValue();
+    //                     microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
+    //
+    //                     SolutionToSave solutionToSave = microtomeManager.getCurrentSolution();
+    //
+    //                     try {
+    //                         FileWriter fileWriter = new FileWriter(filePath);
+    //                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    //                         gson.toJson(solutionToSave, fileWriter);
+    //                         fileWriter.flush();
+    //                         fileWriter.close();
+    //                     } catch (IOException e1) {
+    //                         e1.printStackTrace();
+    //                     }
+    //
+    //                 }
+    //             } else {
+    //                 JOptionPane.showMessageDialog(null, "No valid solutions for this rotation. Try another rotation, or revise your target plane.");
+    //             }
+    //         }
+    //     }
+    // }
+    //
+    // private void loadSettings(SettingsToSave settingsToSave) {
+    //     if (microtomeManager.isMicrotomeModeActive()) {
+    //         microtomePanel.exitMicrotomeMode();
+    //     }
+    //
+    //     if ( !planeManager.isTrackingPlane() ) {
+    //         planeManager.removeAllBlockVertices();
+    //         planeManager.removeAllPointsToFitPlane();
+    //
+    //         Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
+    //         for (String planeName : settingsPlaneNormals.keySet()) {
+    //             planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
+    //         }
+    //
+    //         // if some planes aren't defined in loaded settings, remove them if present
+    //         for (String plane : new String[]{ Crosshair.target, Crosshair.block }) {
+    //             if (!settingsPlaneNormals.containsKey(plane)) {
+    //                 planeManager.removeNamedPlane(plane);
+    //             }
+    //         }
+    //
+    //         planeManager.getPlane( Crosshair.target).setColor( settingsToSave.getTargetPlaneColour().get() );
+    //         planeManager.getPlane( Crosshair.block).setColor( settingsToSave.getBlockPlaneColour().get() );
+    //         planeManager.getPlane( Crosshair.target).setTransparency( settingsToSave.getTargetTransparency() );
+    //         planeManager.getPlane( Crosshair.block).setTransparency( settingsToSave.getBlockTransparency() );
+    //
+    //         for (RealPoint point : settingsToSave.getPoints()) {
+    //             planeManager.addRemovePointFromPointList(planeManager.getPointsToFitPlane(), point);
+    //         }
+    //
+    //         for (RealPoint point : settingsToSave.getBlockVertices()) {
+    //             planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
+    //         }
+    //
+    //         for (Map.Entry<String, RealPoint> entry : settingsToSave.getNamedVertices().entrySet()) {
+    //             planeManager.nameVertex(entry.getKey(), entry.getValue());
+    //         }
+    //
+    //         imageContent.setColor(settingsToSave.getImageColour());
+    //         imageContent.setTransparency(settingsToSave.getImageTransparency());
+    //
+    //         // TODO - if null, set to the default lut, need to look up what this is and recreate it
+    //         if (settingsToSave.getRedLut() != null & settingsToSave.getBlueLut() != null & settingsToSave.getGreenLut() != null & settingsToSave.getAlphaLut() != null) {
+    //             // transfer function
+    //             imageContent.setLUT(settingsToSave.getRedLut(), settingsToSave.getGreenLut(), settingsToSave.getBlueLut(), settingsToSave.getAlphaLut());
+    //         }
+    //
+    //         // Set everything to be visible if not already
+    //         if (!planeManager.getVisiblityNamedPlane( Crosshair.target )) {
+    //             planeManager.togglePlaneVisbility( Crosshair.target );
+    //         }
+    //
+    //         if (!planeManager.getVisiblityNamedPlane( Crosshair.block )) {
+    //             planeManager.togglePlaneVisbility( Crosshair.block );
+    //         }
+    //
+    //         if (!otherPanel.check3DPointsVisible()) {
+    //             otherPanel.toggleVisiblity3DPoints();
+    //         }
+    //
+    //         if (!pointOverlay.checkPointsVisible()) {
+    //             pointOverlay.toggleShowPoints();
+    //         }
+    //     } else {
+    //         IJ.log("Cant load settings when tracking a plane");
+    //     }
 
-                String filePath = "";
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
-                int returnVal = chooser.showSaveDialog(null);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
-                }
-
-                if (filePath != "") {
-
-                    // transfer function settings
-                    int[] redLut = new int[256];
-                    int[] greenLut = new int[256];
-                    int[] blueLut = new int[256];
-                    int[] alphaLut = new int[256];
-                    imageContent.getRedLUT(redLut);
-                    imageContent.getGreenLUT(greenLut);
-                    imageContent.getBlueLUT(blueLut);
-                    imageContent.getAlphaLUT(alphaLut);
-
-                    SettingsToSave settingsToSave = new SettingsToSave(planeManager.getPlaneNormals(), planeManager.getPlanePoints(),
-                            planeManager.getNamedVertices(), planeManager.getPointsToFitPlane(),
-                            planeManager.getBlockVertices(), planeManager.getPlaneColour( Crosshair.target  ),
-                            planeManager.getPlaneColour( Crosshair.block ), planeManager.getTransparency( Crosshair.target ),
-                            planeManager.getTransparency( Crosshair.block ),
-                            imageContent.getTransparency(), imageContent.getColor(), redLut, greenLut, blueLut, alphaLut
-                    );
-
-                    try {
-                        FileWriter fileWriter = new FileWriter(filePath);
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        gson.toJson(settingsToSave, fileWriter);
-                        fileWriter.flush();
-                        fileWriter.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-
-            } else if (e.getActionCommand().equals("load_settings")) {
-                String filePath = "";
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
-                int returnVal = chooser.showOpenDialog(null);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    filePath = chooser.getSelectedFile().getAbsolutePath();
-                }
-
-                if (!filePath.equals("")) {
-                    Gson gson = new Gson();
-                    try {
-                        FileReader fileReader = new FileReader(filePath);
-                        SettingsToSave settingsToSave = gson.fromJson(fileReader, SettingsToSave.class);
-                        loadSettings(settingsToSave);
-
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-
-            } else if (e.getActionCommand().equals("save_solution")) {
-                if ( microtomeManager.isValidSolution() ) {
-                    String filePath = "";
-                    JFileChooser chooser = new JFileChooser();
-                    chooser.setFileFilter(new FileNameExtensionFilter("json", "json"));
-                    int returnVal = chooser.showSaveDialog(null);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        filePath = chooser.getSelectedFile().getAbsolutePath() + ".json";
-                    }
-
-                    if (filePath != "") {
-                        // if you set a solution then move other sliders, it will no longer be a solution. Here we force it
-                        // to react and set all sliders for that current solution.
-                        double currentSolutionRot = microtomePanel.getRotationSolutionAngle().getCurrentValue();
-                        microtomePanel.getRotationSolutionAngle().setCurrentValue(currentSolutionRot);
-
-                        SolutionToSave solutionToSave = microtomeManager.getCurrentSolution();
-
-                        try {
-                            FileWriter fileWriter = new FileWriter(filePath);
-                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                            gson.toJson(solutionToSave, fileWriter);
-                            fileWriter.flush();
-                            fileWriter.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "No valid solutions for this rotation. Try another rotation, or revise your target plane.");
-                }
-            }
-        }
-    }
-
-    private void loadSettings(SettingsToSave settingsToSave) {
-        if (microtomeManager.isMicrotomeModeActive()) {
-            microtomePanel.exitMicrotomeMode();
-        }
-
-        if (planeManager.getTrackPlane() == 0) {
-            planeManager.removeAllBlockVertices();
-            planeManager.removeAllPointsToFitPlane();
-
-            Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
-            for (String planeName : settingsPlaneNormals.keySet()) {
-                planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
-            }
-
-            // if some planes aren't defined in loaded settings, remove them if present
-            for (String plane : new String[]{ Crosshair.target, Crosshair.block }) {
-                if (!settingsPlaneNormals.containsKey(plane)) {
-                    planeManager.removeNamedPlane(plane);
-                }
-            }
-
-            planeManager.setPlaneColour( Crosshair.target, settingsToSave.getTargetPlaneColour().get());
-            planeManager.setPlaneColour( Crosshair.block, settingsToSave.getBlockPlaneColour().get());
-            planeManager.setPlaneTransparency( Crosshair.target, settingsToSave.getTargetTransparency());
-            planeManager.setPlaneTransparency( Crosshair.block, settingsToSave.getBlockTransparency());
-
-            for (RealPoint point : settingsToSave.getPoints()) {
-                planeManager.addRemovePointFromPointList(planeManager.getPointsToFitPlane(), point);
-            }
-
-            for (RealPoint point : settingsToSave.getBlockVertices()) {
-                planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
-            }
-
-            for (Map.Entry<String, RealPoint> entry : settingsToSave.getNamedVertices().entrySet()) {
-                planeManager.nameVertex(entry.getKey(), entry.getValue());
-            }
-
-            imageContent.setColor(settingsToSave.getImageColour());
-            imageContent.setTransparency(settingsToSave.getImageTransparency());
-
-            // TODO - if null, set to the default lut, need to look up what this is and recreate it
-            if (settingsToSave.getRedLut() != null & settingsToSave.getBlueLut() != null & settingsToSave.getGreenLut() != null & settingsToSave.getAlphaLut() != null) {
-                // transfer function
-                imageContent.setLUT(settingsToSave.getRedLut(), settingsToSave.getGreenLut(), settingsToSave.getBlueLut(), settingsToSave.getAlphaLut());
-            }
-
-            // Set everything to be visible if not already
-            if (!planeManager.getVisiblityNamedPlane( Crosshair.target )) {
-                planeManager.togglePlaneVisbility( Crosshair.target );
-            }
-
-            if (!planeManager.getVisiblityNamedPlane( Crosshair.block )) {
-                planeManager.togglePlaneVisbility( Crosshair.block );
-            }
-
-            if (!otherPanel.check3DPointsVisible()) {
-                otherPanel.toggleVisiblity3DPoints();
-            }
-
-            if (!pointOverlay.checkPointsVisible()) {
-                pointOverlay.toggleShowPoints();
-            }
-        } else {
-            IJ.log("Cant load settings when tracking a plane");
-        }
-
-    }
+    // }
 }

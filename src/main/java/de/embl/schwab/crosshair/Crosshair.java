@@ -47,15 +47,13 @@ public class Crosshair {
 		// only regions of the image > 0
 
 		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+		planeManager.addBlockPlane( Crosshair.block, false );
+		planeManager.addPlane( Crosshair.target, false );
+
 		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
-		PointOverlay2d pointOverlay = new PointOverlay2d();
-		pointOverlay.setPoints(planeManager.getPointsToFitPlane(), planeManager.getBlockVertices(),
-				planeManager.getSelectedVertex(), planeManager.getNamedVertices());
-		planeManager.setPointOverlay(pointOverlay);
-		BdvFunctions.showOverlay(pointOverlay, "PointOverlay", Bdv.options().addTo(bdvStackSource));
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
-		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, pointOverlay, bdvHandle, unit);
+		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, bdvHandle, unit);
 
 		// Space out windows like here:
 		// https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java#L369

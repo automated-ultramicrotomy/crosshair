@@ -4,6 +4,7 @@ import bdv.util.BdvHandle;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
@@ -38,7 +39,7 @@ public class BdvBehaviours {
         } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
             IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
         } else {
-            planeManager.addRemoveCurrentPositionBlockVertices();
+            planeManager.getBlockPlane( Crosshair.block ).addOrRemoveCurrentPositionFromVertices();
         }
     }
 
@@ -47,8 +48,10 @@ public class BdvBehaviours {
             IJ.log("Can't change points when in microtome mode");
         } else if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
+        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
+            IJ.log("Block plane doesn't exist" );
         } else {
-            planeManager.addRemoveCurrentPositionPointsToFitPlane();
+            planeManager.getPlane( Crosshair.block ).addOrRemoveCurrentPositionFromPointsToFitPlane();
         }
     }
 
@@ -57,19 +60,22 @@ public class BdvBehaviours {
             IJ.log("Can't fit to points when in microtome mode");
         } else if ( planeManager.getTrackedPlaneName().equals( Crosshair.block )) {
             IJ.log("Can't fit to points when tracking block plane");
+        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
+            IJ.log("Block plane doesn't exist" );
         } else {
-            if (planeManager.getPointsToFitPlane().size() >= 3) {
-                if (planeManager.getBlockVertices().size() > 0) {
+            BlockPlane plane = planeManager.getBlockPlane( Crosshair.block );
+            if ( plane.getPointsToFitPlane().size() >= 3 ) {
+                if ( plane.getVertices().size() > 0 ) {
                     int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                     if (result == JOptionPane.YES_OPTION) {
-                        planeManager.removeAllBlockVertices();
-                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
+                        plane.removeAllVertices();
+                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
                         planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
                     }
                 } else {
-                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints(planeManager.getPointsToFitPlane());
+                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
                     planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
                 }
             } else {
@@ -93,7 +99,8 @@ public class BdvBehaviours {
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             if ( !planeManager.isInPointMode() & !planeManager.isInVertexMode() ) {
-                planeManager.toggleSelectedVertexCurrentPosition();
+                BlockPlane blockPlane = planeManager.getBlockPlane( Crosshair.block );
+                blockPlane.toggleSelectedVertexCurrentPosition();
             } else if ( planeManager.isInPointMode() ) {
                 addPointBehaviour();
             } else if ( planeManager.isInVertexMode() ) {
