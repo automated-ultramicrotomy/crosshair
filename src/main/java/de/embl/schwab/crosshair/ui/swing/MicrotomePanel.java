@@ -388,7 +388,7 @@ public class MicrotomePanel extends CrosshairPanel {
             cuttingControlsPanel.setVisible(true);
             currentSettingsPanel.setVisible(true);
             savePanel.enableSaveSolution();
-            planePanel.disableAllTracking();
+            planePanel.disableAllTrackingButtons();
             otherPanel.activateMicrotomeButtons();
             planeManager.setPointMode( false );
             planeManager.setVertexMode( false );
@@ -413,7 +413,7 @@ public class MicrotomePanel extends CrosshairPanel {
         tiltAngle.setCurrentValue(0);
         rotationAngle.setCurrentValue(0);
         microtomeManager.exitMicrotomeMode();
-        planePanel.enableAllTracking();
+        planePanel.enableAllTrackingButtons();
 
         // inactivate sliders
         disableSliders();

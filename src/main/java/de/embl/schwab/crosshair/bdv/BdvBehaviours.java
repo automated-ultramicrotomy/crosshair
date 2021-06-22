@@ -56,11 +56,11 @@ public class BdvBehaviours {
     }
 
     private void addFitToPointsBehaviour() {
-        if (microtomeManager.isMicrotomeModeActive()) {
+        if ( microtomeManager.isMicrotomeModeActive() ) {
             IJ.log("Can't fit to points when in microtome mode");
-        } else if ( planeManager.getTrackedPlaneName().equals( Crosshair.block )) {
+        } else if ( planeManager.isTrackingPlane() && planeManager.getTrackedPlaneName().equals( Crosshair.block ) ) {
             IJ.log("Can't fit to points when tracking block plane");
-        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
+        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block ) ) {
             IJ.log("Block plane doesn't exist" );
         } else {
             BlockPlane plane = planeManager.getBlockPlane( Crosshair.block );
@@ -73,10 +73,12 @@ public class BdvBehaviours {
                         plane.removeAllVertices();
                         ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
                         planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
+                        planeManager.getPlane( Crosshair.block ).setVisible( true );
                     }
                 } else {
                     ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
                     planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
+                    planeManager.getPlane( Crosshair.block ).setVisible( true );
                 }
             } else {
                 IJ.log ("Need at least 3 points to fit plane");

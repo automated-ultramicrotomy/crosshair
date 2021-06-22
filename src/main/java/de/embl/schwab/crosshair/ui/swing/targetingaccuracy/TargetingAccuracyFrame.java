@@ -32,66 +32,66 @@ public class TargetingAccuracyFrame extends JFrame {
                                   String primaryImageName, PlaneManager planeManager,
                                   MicrotomeManager microtomeManager, PointOverlay2d pointOverlay, BdvHandle bdvHandle, String unit  ) {
 
-        this.universe = universe;
-        this.imageContent = imageContent;
-        this.planeManager = planeManager;
-        this.pointOverlay = pointOverlay;
-        this.bdvHandle = bdvHandle;
-        this.unit = unit;
-
-        allPanels = new ArrayList<>();
-
-        this.setTitle("Crosshair targeting accuracy");
-        this.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-
-        // main panel
-        JPanel mainPane = new JPanel();
-        mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
-        mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        mainPane.setOpaque(true);
-        this.setContentPane(mainPane);
-
-        planePanel = new PlanePanel();
-
-        allPanels.add(planePanel);
-        otherPanel = new OtherPanel();
-        allPanels.add(otherPanel);
-        imagesPanel = new ImagesPanel();
-        allPanels.add(imagesPanel);
-
-        planePanel.initialisePanel();
-        otherPanel.initialisePanel((ArrayList<Content>) imageNametoContent.values(), universe, pointOverlay,
-                bdvHandle, false );
-        imagesPanel.initialisePanel( imageNametoContent, otherPanel, universe );
-
-        // this happens separately as many panels depend on eachother, so they must all be created before initialising
-        for (CrosshairPanel panel : allPanels) {
-            panel.initialisePanel( this );
-        }
-
-        mainPane.add(imagesPanel);
-        mainPane.add(planePanel);
-        mainPane.add(otherPanel);
-
-        this.pack();
-        this.setVisible( true );
-
-
-
-        this.planeManager = planeManager;
-
-        this.setTitle("Crosshair targeting accuracy");
-        this.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-
-        // main panel
-        JPanel mainPane = new JPanel();
-        mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
-        mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        mainPane.setOpaque(true);
-        this.setContentPane(mainPane);
-
-        this.pack();
-        this.setVisible( true );
+        // this.universe = universe;
+        // this.imageContent = imageContent;
+        // this.planeManager = planeManager;
+        // this.pointOverlay = pointOverlay;
+        // this.bdvHandle = bdvHandle;
+        // this.unit = unit;
+        //
+        // allPanels = new ArrayList<>();
+        //
+        // this.setTitle("Crosshair targeting accuracy");
+        // this.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+        //
+        // // main panel
+        // JPanel mainPane = new JPanel();
+        // mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
+        // mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        // mainPane.setOpaque(true);
+        // this.setContentPane(mainPane);
+        //
+        // planePanel = new PlanePanel();
+        //
+        // allPanels.add(planePanel);
+        // otherPanel = new OtherPanel();
+        // allPanels.add(otherPanel);
+        // imagesPanel = new ImagesPanel();
+        // allPanels.add(imagesPanel);
+        //
+        // planePanel.initialisePanel();
+        // otherPanel.initialisePanel((ArrayList<Content>) imageNametoContent.values(), universe, pointOverlay,
+        //         bdvHandle, false );
+        // imagesPanel.initialisePanel( imageNametoContent, otherPanel, universe );
+        //
+        // // this happens separately as many panels depend on eachother, so they must all be created before initialising
+        // for (CrosshairPanel panel : allPanels) {
+        //     panel.initialisePanel( this );
+        // }
+        //
+        // mainPane.add(imagesPanel);
+        // mainPane.add(planePanel);
+        // mainPane.add(otherPanel);
+        //
+        // this.pack();
+        // this.setVisible( true );
+        //
+        //
+        //
+        // this.planeManager = planeManager;
+        //
+        // this.setTitle("Crosshair targeting accuracy");
+        // this.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+        //
+        // // main panel
+        // JPanel mainPane = new JPanel();
+        // mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
+        // mainPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        // mainPane.setOpaque(true);
+        // this.setContentPane(mainPane);
+        //
+        // this.pack();
+        // this.setVisible( true );
 
     }
 }

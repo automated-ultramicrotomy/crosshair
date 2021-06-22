@@ -1,7 +1,10 @@
 package de.embl.schwab.crosshair.plane;
 
+import bdv.util.Bdv;
+import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
+import de.embl.schwab.crosshair.bdv.ModeOverlay;
 import de.embl.schwab.crosshair.points.Point3dOverlay;
 import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.utils.BdvUtils;
@@ -43,6 +46,8 @@ public class PlaneManager {
         planeNameToPlane = new HashMap<>();
 
         this.bdvStackSource = bdvStackSource;
+        BdvFunctions.showOverlay( new ModeOverlay( this), "mode_text",
+                Bdv.options().addTo( bdvStackSource ) );
         this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
 

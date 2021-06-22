@@ -25,6 +25,22 @@ public enum VertexPoint {
         }
     }
 
+    public static VertexPoint fromString( String string ) {
+        switch ( string )
+        {
+            case "Top Left":
+                return TopLeft;
+            case "Top Right":
+                return TopRight;
+            case "Bottom Left":
+                return BottomLeft;
+            case "Bottom Right":
+                return BottomRight;
+            default:
+                throw new UnsupportedOperationException("Unknown vertex");
+        }
+    }
+
     public String toShortString()
     {
         switch ( this )

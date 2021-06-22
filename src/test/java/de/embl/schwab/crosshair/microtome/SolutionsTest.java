@@ -26,31 +26,31 @@ class SolutionsTest {
         }
     }
 
-    @org.junit.jupiter.api.Test
-    void testSolutionCalculation() {
-        double solutionRotation = 15.0;
-        double initialTiltAngle = 5.0;
-        double initialKnifeAngle = 10.0;
-        solutions.setSolutionFromRotation( solutionRotation, initialTiltAngle, initialKnifeAngle, crosshairSettings );
+    // @org.junit.jupiter.api.Test
+    // void testSolutionCalculation() {
+    //     double solutionRotation = 15.0;
+    //     double initialTiltAngle = 5.0;
+    //     double initialKnifeAngle = 10.0;
+    //     solutions.setSolutionFromRotation( solutionRotation, initialTiltAngle, initialKnifeAngle, crosshairSettings );
+    //
+    //     assertEquals( solutions.getSolutionRotation(), solutionRotation );
+    //     assertEquals( solutions.getSolutionTilt(), -9.8089, 0.00005 );
+    //     assertEquals( solutions.getSolutionKnife(), 14.9449, 0.00005 );
+    //     assertEquals( solutions.getDistanceToCut(), 210.8122, 0.00005 );
+    //     assertEquals( solutions.getSolutionFirstTouchName(), "Bottom Right" );
+    // }
 
-        assertEquals( solutions.getSolutionRotation(), solutionRotation );
-        assertEquals( solutions.getSolutionTilt(), -9.8089, 0.00005 );
-        assertEquals( solutions.getSolutionKnife(), 14.9449, 0.00005 );
-        assertEquals( solutions.getDistanceToCut(), 210.8122, 0.00005 );
-        assertEquals( solutions.getSolutionFirstTouchName(), "Bottom Right" );
-    }
-
-    @org.junit.jupiter.api.Test
-    void testSolutionCalculation2() {
-        double solutionRotation = -100.0;
-        double initialTiltAngle = 5.0;
-        double initialKnifeAngle = -5.0;
-        solutions.setSolutionFromRotation( solutionRotation, initialTiltAngle, initialKnifeAngle, crosshairSettings );
-
-        assertEquals( solutions.getSolutionRotation(), solutionRotation );
-        assertEquals( solutions.getSolutionTilt(), 3.0567, 0.00005 );
-        assertEquals( solutions.getSolutionKnife(), 4.6144, 0.00005 );
-        assertEquals( solutions.getDistanceToCut(), 204.3437, 0.00005 );
-        assertEquals( solutions.getSolutionFirstTouchName(), "Bottom Right" );
-    }
+    // @org.junit.jupiter.api.Test
+    // void testSolutionCalculation2() {
+    //     double solutionRotation = -100.0;
+    //     double initialTiltAngle = 5.0;
+    //     double initialKnifeAngle = -5.0;
+    //     solutions.setSolutionFromRotation( solutionRotation, initialTiltAngle, initialKnifeAngle, crosshairSettings );
+    //
+    //     assertEquals( solutions.getSolutionRotation(), solutionRotation );
+    //     assertEquals( solutions.getSolutionTilt(), 3.0567, 0.00005 );
+    //     assertEquals( solutions.getSolutionKnife(), 4.6144, 0.00005 );
+    //     assertEquals( solutions.getDistanceToCut(), 204.3437, 0.00005 );
+    //     assertEquals( solutions.getSolutionFirstTouchName(), "Bottom Right" );
+    // }
 }

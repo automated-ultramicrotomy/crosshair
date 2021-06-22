@@ -4,6 +4,7 @@ import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.io.SettingsToSave;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
@@ -62,22 +63,22 @@ class Solutions {
         return solutionFirstTouchName;
     }
 
-    void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
-                                 SettingsToSave settings ) {
-        TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( settings.getNamedVertices(),
-                settings.getPlaneNormals().get( Crosshair.block ), settings.getPlaneNormals().get( Crosshair.target ) );
-        calculateRotations( solutionRotation, initialTiltAngle, initialKnifeAngle,
-                targetOffsetAndTilt.targetOffset, targetOffsetAndTilt.targetTilt );
-        calculateDistance( settings.getNamedVertices(), settings.getPlaneNormals().get( Crosshair.target ),
-                settings.getPlanePoints().get( Crosshair.target ), solutionKnife );
-        checkSolutionValid();
-    }
+    // void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
+    //                              SettingsToSave settings ) {
+    //     TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( settings.getNamedVertices(),
+    //             settings.getPlaneNormals().get( Crosshair.block ), settings.getPlaneNormals().get( Crosshair.target ) );
+    //     calculateRotations( solutionRotation, initialTiltAngle, initialKnifeAngle,
+    //             targetOffsetAndTilt.targetOffset, targetOffsetAndTilt.targetTilt );
+    //     calculateDistance( settings.getNamedVertices(), settings.getPlaneNormals().get( Crosshair.target ),
+    //             settings.getPlanePoints().get( Crosshair.target ), solutionKnife );
+    //     checkSolutionValid();
+    // }
 
     void setSolutionFromRotation (double solutionRotation) {
         calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
                 microtome.getInitialTargetOffset(), microtome.getInitialTargetTilt() );
-        Plane targetPlane = planeManager.getStandardPlane( Crosshair.target );
-        calculateDistance( planeManager.getNamedVertices(), targetPlane.getNormal(), targetPlane.getPoint(),
+        Plane targetPlane = planeManager.getPlane( Crosshair.target );
+        calculateDistance( planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices(), targetPlane.getNormal(), targetPlane.getPoint(),
                 solutionKnife );
         checkSolutionValid();
     }
@@ -116,17 +117,17 @@ class Solutions {
         this.solutionKnife = GeometryUtils.convertToDegrees(solKnife);
     }
 
-    private void calculateDistance( Map<String, RealPoint> namedVertices, Vector3d targetNormal,
-                                    Vector3d targetPoint, double knifeAngle )  {
+    private void calculateDistance( Map<VertexPoint, RealPoint> assignedVertices, Vector3d targetNormal,
+                                   Vector3d targetPoint, double knifeAngle )  {
 
         double[] topLeft = new double[3];
         double[] topRight = new double[3];
         double[] bottomLeft = new double[3];
         double[] bottomRight = new double[3];
-        namedVertices.get("Top Left").localize(topLeft);
-        namedVertices.get("Top Right").localize(topRight);
-        namedVertices.get("Bottom Left").localize(bottomLeft);
-        namedVertices.get("Bottom Right").localize(bottomRight);
+        assignedVertices.get( VertexPoint.TopLeft ).localize(topLeft);
+        assignedVertices.get( VertexPoint.TopRight ).localize(topRight);
+        assignedVertices.get( VertexPoint.BottomLeft ).localize(bottomLeft);
+        assignedVertices.get( VertexPoint.BottomRight ).localize(bottomRight);
 
         // Calculate first point touched on block face
         // Originally I did this by calculating perpendicular distance from target to each point (unsigned),
@@ -165,16 +166,16 @@ class Solutions {
         //  Assign first touch to point with maximum distance
         if (maxDistanceIndex == 0) {
             solutionFirstTouch.set(topLeft);
-            solutionFirstTouchName = "Top Left";
+            solutionFirstTouchName = VertexPoint.TopLeft.toString();
         } else if (maxDistanceIndex == 1) {
             solutionFirstTouch.set(topRight);
-            solutionFirstTouchName = "Top Right";
+            solutionFirstTouchName = VertexPoint.TopRight.toString();
         } else if (maxDistanceIndex == 2) {
             solutionFirstTouch.set(bottomLeft);
-            solutionFirstTouchName = "Bottom Left";
+            solutionFirstTouchName = VertexPoint.BottomLeft.toString();
         } else if (maxDistanceIndex == 3) {
             solutionFirstTouch.set(bottomRight);
-            solutionFirstTouchName = "Bottom Right";
+            solutionFirstTouchName = VertexPoint.BottomRight.toString();
         }
 
         // Calculate perpendicular distance to target

@@ -1,6 +1,8 @@
 package de.embl.schwab.crosshair.ui.swing;
 
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexPoint;
 
 import javax.swing.*;
 import java.awt.GridLayout;
@@ -57,7 +59,10 @@ public class VertexAssignmentPanel extends CrosshairPanel {
 
     class vertexPointListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            planeManager.nameSelectedVertex(e.getActionCommand());
+            if ( planeManager.checkNamedPlaneExists( Crosshair.block )) {
+                VertexPoint vertexPoint = VertexPoint.fromString( e.getActionCommand() );
+                planeManager.getBlockPlane( Crosshair.block ).assignSelectedVertex( vertexPoint );
+            }
         }
     }
 

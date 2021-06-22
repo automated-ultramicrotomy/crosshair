@@ -127,6 +127,8 @@ public class BlockPlane extends Plane {
                 selectedVertex = matchingPointWithinDistance;
                 isVertexSelected = true;
             }
+
+            bdv.getBdvHandle().getViewerPanel().requestRepaint();
         }
     }
 

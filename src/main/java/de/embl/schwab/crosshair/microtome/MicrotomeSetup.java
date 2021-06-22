@@ -5,6 +5,7 @@ import customnode.Tube;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.io.STLResourceLoader;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.*;
 import net.imglib2.RealPoint;
@@ -100,7 +101,7 @@ class MicrotomeSetup {
         microtome.setInitialBlockTransform(initialBlockTransform);
 
         // initialise target normals
-        Vector3d initialTargetNormal = new Vector3d( planeManager.getStandardPlane( Crosshair.target ).getNormal() );
+        Vector3d initialTargetNormal = new Vector3d( planeManager.getPlane( Crosshair.target ).getNormal() );
         microtome.setInitialTargetNormal(initialTargetNormal);
         Vector3d currentTargetNormal = new Vector3d(initialTargetNormal);
         new Transform3D(initialBlockTransform).transform(currentTargetNormal);
@@ -122,10 +123,10 @@ class MicrotomeSetup {
     }
 
     private void setTargetOffsetTilt() {
-        Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
-        Vector3d blockNormal = planeManager.getStandardPlane( Crosshair.block ).getNormal();
-        Vector3d targetNormal = planeManager.getStandardPlane( Crosshair.target ).getNormal();
-        TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( namedVertices, blockNormal, targetNormal );
+        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices();
+        Vector3d blockNormal = planeManager.getPlane( Crosshair.block ).getNormal();
+        Vector3d targetNormal = planeManager.getPlane( Crosshair.target ).getNormal();
+        TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( assignedVertices, blockNormal, targetNormal );
 
         microtome.setInitialTargetOffset( targetOffsetAndTilt.targetOffset );
         microtome.setInitialTargetTilt( targetOffsetAndTilt.targetTilt );
@@ -236,15 +237,15 @@ class MicrotomeSetup {
             universe.getContent(name).setTransform(new Transform3D());
         }
 
-        Map<String, RealPoint> namedVertices = planeManager.getNamedVertices();
+        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices();
 
         // check normal in right orientation, coming out of block surface
         double[] topLeft = new double[3];
         double[] bottomLeft = new double[3];
         double[] bottomRight = new double[3];
-        namedVertices.get("Top Left").localize(topLeft);
-        namedVertices.get("Bottom Left").localize(bottomLeft);
-        namedVertices.get("Bottom Right").localize(bottomRight);
+        assignedVertices.get( VertexPoint.TopLeft ).localize(topLeft);
+        assignedVertices.get( VertexPoint.BottomLeft ).localize(bottomLeft);
+        assignedVertices.get( VertexPoint.BottomRight ).localize(bottomRight);
 
         Vector3d bottomEdgeVector = new Vector3d();
         bottomEdgeVector.sub(new Vector3d(bottomRight), new Vector3d(bottomLeft));

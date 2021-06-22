@@ -1,7 +1,9 @@
 package de.embl.schwab.crosshair.microtome;
 
 import customnode.CustomTriangleMesh;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -99,15 +101,14 @@ class Cutting {
 
     private void setCuttingBounds () {
         // All image vertices in microtome coordinates
-        Map<String, RealPoint> vertices = planeManager.getNamedVertices();
+        Map<VertexPoint, RealPoint> vertices = planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices();
         ArrayList<Point3d> verticesMicrotomeCoords = new ArrayList<>();
         ArrayList<Vector3d> verticesMicrotomeCoordsV = new ArrayList<>();
-        ArrayList<String> vertexNames = new ArrayList<>();
-        for (String key: vertices.keySet()) {
+
+        for ( RealPoint point: vertices.values() ) {
             double[] location = new double[3];
-            vertices.get(key).localize(location);
+            point.localize(location);
             verticesMicrotomeCoords.add(new Point3d(location));
-            vertexNames.add(key);
         }
 
         Matrix4d currentBlockTransform = microtome.getCurrentBlockTransform();

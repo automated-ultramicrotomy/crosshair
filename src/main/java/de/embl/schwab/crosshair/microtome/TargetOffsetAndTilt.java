@@ -1,5 +1,6 @@
 package de.embl.schwab.crosshair.microtome;
 
+import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Vector3d;
@@ -12,14 +13,14 @@ public class TargetOffsetAndTilt {
 
     public TargetOffsetAndTilt() { }
 
-    public TargetOffsetAndTilt( Map<String, RealPoint> namedVertices, Vector3d blockNormal, Vector3d targetNormal ) {
+    public TargetOffsetAndTilt(Map<VertexPoint, RealPoint> assignedVertices, Vector3d blockNormal, Vector3d targetNormal ) {
 
         double[] topLeft = new double[3];
         double[] bottomLeft = new double[3];
         double[] bottomRight = new double[3];
-        namedVertices.get("Top Left").localize(topLeft);
-        namedVertices.get("Bottom Left").localize(bottomLeft);
-        namedVertices.get("Bottom Right").localize(bottomRight);
+        assignedVertices.get( VertexPoint.TopLeft ).localize(topLeft);
+        assignedVertices.get( VertexPoint.BottomLeft ).localize(bottomLeft);
+        assignedVertices.get( VertexPoint.BottomRight ).localize(bottomRight);
 
         // Vector along the bottom edge of block, left to right
         Vector3d bottomEdgeVector = new Vector3d();

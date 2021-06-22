@@ -33,7 +33,7 @@ import java.util.Map;
 
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             for ( String planeName: planeManager.getPlaneNames() ) {
-                addPlaneToPanel( planeName )
+                addPlaneToPanel( planeName );
             }
         }
 
@@ -97,7 +97,6 @@ import java.util.Map;
             });
 
             trackingButtons.put(planeName, trackButton);
-            planeManager.getPlane( planeName ).addButtonAffectedByTracking( trackButton );
             panel.add(trackButton);
         }
 
@@ -137,15 +136,18 @@ import java.util.Map;
         private void enablePlaneTracking( JButton trackButton, String planeName ) {
             planeManager.setTrackingPlane( true );
             planeManager.setTrackedPlaneName( planeName );
+            planeManager.getPlane( planeName ).setVisible( true );
             planeManager.updatePlaneCurrentView( planeName );
             trackButton.setBackground(new Color (255, 0,0));
             disableButtonsAffectedByTracking( planeName );
+            disableAllTrackingButtonsExceptNamed( planeName );
         }
 
         private void disablePlaneTracking( JButton trackButton, String planeName ) {
             planeManager.setTrackingPlane( false );
             trackButton.setBackground(null);
             enableButtonsAffectedByTracking( planeName );
+            enableAllTrackingButtons();
         }
 
         private void addVisibilityButton (JPanel panel, int[] buttonDimensions, String planeName) {
@@ -249,13 +251,21 @@ import java.util.Map;
             panel.add(button);
         }
 
-        public void disableAllTracking () {
+        public void disableAllTrackingButtons() {
             for (String key : trackingButtons.keySet()) {
                 trackingButtons.get(key).setEnabled(false);
             }
         }
 
-        public void enableAllTracking () {
+        public void disableAllTrackingButtonsExceptNamed( String planeName ) {
+            for (String key : trackingButtons.keySet()) {
+                if ( !key.equals(planeName) ) {
+                    trackingButtons.get(key).setEnabled(false);
+                }
+            }
+        }
+
+        public void enableAllTrackingButtons() {
             for (String key : trackingButtons.keySet()) {
                 trackingButtons.get(key).setEnabled(true);
             }
