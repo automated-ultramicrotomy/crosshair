@@ -5,6 +5,7 @@ import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.BlockPlane;
+import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
@@ -55,6 +56,12 @@ public class BdvBehaviours {
         }
     }
 
+    private void fitToPoints( Plane plane ) {
+        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
+        planeManager.updatePlane( planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
+        plane.setVisible( true );
+    }
+
     private void addFitToPointsBehaviour() {
         if ( microtomeManager.isMicrotomeModeActive() ) {
             IJ.log("Can't fit to points when in microtome mode");
@@ -71,14 +78,10 @@ public class BdvBehaviours {
                             JOptionPane.QUESTION_MESSAGE);
                     if (result == JOptionPane.YES_OPTION) {
                         plane.removeAllVertices();
-                        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
-                        planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
-                        planeManager.getPlane( Crosshair.block ).setVisible( true );
+                        fitToPoints( plane );
                     }
                 } else {
-                    ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
-                    planeManager.updatePlane(planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
-                    planeManager.getPlane( Crosshair.block ).setVisible( true );
+                    fitToPoints( plane );
                 }
             } else {
                 IJ.log ("Need at least 3 points to fit plane");
@@ -101,8 +104,10 @@ public class BdvBehaviours {
 
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             if ( !planeManager.isInPointMode() & !planeManager.isInVertexMode() ) {
-                BlockPlane blockPlane = planeManager.getBlockPlane( Crosshair.block );
-                blockPlane.toggleSelectedVertexCurrentPosition();
+                if ( planeManager.checkNamedPlaneExists( Crosshair.block ) ) {
+                    BlockPlane blockPlane = planeManager.getBlockPlane(Crosshair.block);
+                    blockPlane.toggleSelectedVertexCurrentPosition();
+                }
             } else if ( planeManager.isInPointMode() ) {
                 addPointBehaviour();
             } else if ( planeManager.isInVertexMode() ) {

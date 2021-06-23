@@ -107,11 +107,9 @@ public class PlaneManager {
         Plane plane = planeCreator.createPlane( planeNormal, planePoint, planeName );
         planeNameToPlane.put(planeName, plane);
     }
-
-    public void addPlane( String planeName, boolean isVisible ){
-        // adds plane in default location at the origin parallel to z axis
-        Plane plane = planeCreator.createPlane( new Vector3d(0, 0, 1), new Vector3d(0, 0, 0),
-                planeName, isVisible );
+    public void addPlaneAtCurrentView( String planeName ){
+        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
+        Plane plane = planeCreator.createPlane( planeDefinition.get(0), planeDefinition.get(1), planeName );
         planeNameToPlane.put(planeName, plane);
     }
 
@@ -120,9 +118,9 @@ public class PlaneManager {
         planeNameToPlane.put(planeName, plane);
     }
 
-    public void addBlockPlane( String planeName, boolean isVisible ) {
-        BlockPlane plane = planeCreator.createBlockPlane( new Vector3d(0, 0, 1), new Vector3d(0, 0, 0),
-                planeName, isVisible );
+    public void addBlockPlaneAtCurrentView( String planeName ) {
+        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
+        Plane plane = planeCreator.createBlockPlane( planeDefinition.get(0), planeDefinition.get(1), planeName );
         planeNameToPlane.put(planeName, plane);
     }
 

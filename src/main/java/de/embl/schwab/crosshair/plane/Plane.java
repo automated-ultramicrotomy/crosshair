@@ -43,8 +43,6 @@ public class Plane {
     private final ArrayList<RealPoint> pointsToFitPlane; // points used to fit this plane
     private double distanceBetweenPlanesThreshold = 1E-10; // distance used to be 'on' plane
 
-    private ArrayList<JButton> buttonsAffectedByTracking; // these buttons must be disabled when this plane is tracked
-
     public Plane( String name, Vector3d normal, Vector3d point, Vector3d centroid, Content mesh, Color3f color,
                   float transparency, boolean isVisible, Bdv bdv, Point3dOverlay point3dOverlay ) {
         this.name = name;
@@ -60,7 +58,6 @@ public class Plane {
         this.bdv = bdv;
         this.point3dOverlay = point3dOverlay;
 
-        this.buttonsAffectedByTracking = new ArrayList<>();
         this.pointsToFitPlane = new ArrayList<>();
         this.pointsToFitPlane2dOverlay = new PointsToFitPlane2dOverlay( this );
         BdvFunctions.showOverlay( pointsToFitPlane2dOverlay, name + "-points_to_fit_plane",
@@ -124,14 +121,6 @@ public class Plane {
 
     public Vector3d getPoint() {
         return point;
-    }
-
-    public ArrayList<JButton> getButtonsAffectedByTracking() {
-        return buttonsAffectedByTracking;
-    }
-
-    public void addButtonAffectedByTracking(JButton jButton ) {
-        buttonsAffectedByTracking.add( jButton );
     }
 
     public ArrayList<RealPoint> getPointsToFitPlane() {

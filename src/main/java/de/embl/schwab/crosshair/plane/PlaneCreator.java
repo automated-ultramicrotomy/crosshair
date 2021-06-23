@@ -21,9 +21,6 @@ public class PlaneCreator {
     private Bdv bdv; // bdv instance to assign to plane, needed to keep 2d point overlays up to date
     private Point3dOverlay point3dOverlay; // 3d point overlay to assign to plane
 
-    // alternate between green and blue to make it easier to see new planes
-    private static int colourIndex = 0;
-
     public PlaneCreator(Image3DUniverse universe, Content imageContent, Bdv bdv, Point3dOverlay point3dOverlay ) {
         this.universe = universe;
         this.imageContent = imageContent;
@@ -37,20 +34,7 @@ public class PlaneCreator {
         ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints(planeNormal, planePoint);
         Vector3d planeCentroid = GeometryUtils.getCentroid(intersectionPoints);
 
-        Content meshContent = createDefaultMeshContent( intersectionPoints, planeNormal, planeName );
-
-        return new Plane( planeName, planeNormal, planePoint, planeCentroid,
-                meshContent, meshContent.getColor(), meshContent.getTransparency(),
-                meshContent.isVisible(), bdv, point3dOverlay );
-    }
-
-    public Plane createPlane( Vector3d planeNormal, Vector3d planePoint, String planeName, boolean isVisible ) {
-
-        // intersection points with image bounds, these will form the vertices of the plane mesh
-        ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints(planeNormal, planePoint);
-        Vector3d planeCentroid = GeometryUtils.getCentroid(intersectionPoints);
-
-        Content meshContent = createDefaultMeshContent( intersectionPoints, planeNormal, planeName, isVisible );
+        Content meshContent = createDefaultPlaneMeshContent( intersectionPoints, planeNormal, planeName );
 
         return new Plane( planeName, planeNormal, planePoint, planeCentroid,
                 meshContent, meshContent.getColor(), meshContent.getTransparency(),
@@ -63,20 +47,7 @@ public class PlaneCreator {
         ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints(planeNormal, planePoint);
         Vector3d planeCentroid = GeometryUtils.getCentroid(intersectionPoints);
 
-        Content meshContent = createDefaultMeshContent( intersectionPoints, planeNormal, planeName );
-
-        return new BlockPlane( planeName, planeNormal, planePoint, planeCentroid,
-                meshContent, meshContent.getColor(), meshContent.getTransparency(),
-                meshContent.isVisible(), bdv, point3dOverlay );
-    }
-
-    public BlockPlane createBlockPlane( Vector3d planeNormal, Vector3d planePoint, String planeName, boolean isVisible ) {
-
-        // intersection points with image bounds, these will form the vertices of the plane mesh
-        ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints(planeNormal, planePoint);
-        Vector3d planeCentroid = GeometryUtils.getCentroid(intersectionPoints);
-
-        Content meshContent = createDefaultMeshContent( intersectionPoints, planeNormal, planeName, isVisible );
+        Content meshContent = createDefaultBlockPlaneMeshContent( intersectionPoints, planeNormal, planeName );
 
         return new BlockPlane( planeName, planeNormal, planePoint, planeCentroid,
                 meshContent, meshContent.getColor(), meshContent.getTransparency(),
@@ -98,27 +69,16 @@ public class PlaneCreator {
         plane.updatePlane( newNormal, newPoint, newCentroid, meshContent );
     }
 
-    private Color3f generateNewPlaneColor() {
-        // alternate between green and blue to make it easier to see new planes
-        if ( colourIndex == 0 ) {
-            colourIndex = 1;
-            return new Color3f(0, 1, 0);
-        } else {
-            colourIndex = 0;
-            return new Color3f(0, 0, 1);
-        }
-    }
-
-    private Content createDefaultMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal, String planeName ) {
-        return createDefaultMeshContent( intersectionPoints, planeNormal, planeName, true );
-    }
-
-    private Content createDefaultMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal, String planeName,
-                                              boolean isVisible ) {
-        Color3f color = generateNewPlaneColor();
+    private Content createDefaultBlockPlaneMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal, String planeName ) {
         float transparency = 0.7f;
+        Color3f color =  new Color3f(0, 0, 1);
+        return createMeshContent( intersectionPoints, planeNormal, color, transparency, true, planeName );
+    }
 
-        return createMeshContent( intersectionPoints, planeNormal, color, transparency, isVisible, planeName );
+    private Content createDefaultPlaneMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal, String planeName ) {
+        float transparency = 0.7f;
+        Color3f color =  new Color3f(0, 1, 0);
+        return createMeshContent( intersectionPoints, planeNormal, color, transparency, true, planeName );
     }
 
     private Content createMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal,
