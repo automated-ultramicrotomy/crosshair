@@ -45,6 +45,9 @@ public class ImagesPanel extends CrosshairPanel {
         initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse() );
     }
 
+    public Map<String, Content> getImageNameToContent() {
+        return imageNameToContent;
+    }
 
     private void addColorButton(JPanel panel, int[] buttonDimensions, String imageName ) {
         JButton colorButton;

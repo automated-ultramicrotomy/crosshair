@@ -24,11 +24,11 @@ public class BlockPlane extends Plane {
     private final ArrayList<RealPoint> vertices; // all vertex points placed on the block plane
     private final Map<VertexPoint, RealPoint> assignedVertices; // the subset of assigned vertices e.g. top left, top right...
 
-    private boolean isVertexSelected;
-    private RealPoint selectedVertex;
+    private transient boolean isVertexSelected;
+    private transient RealPoint selectedVertex;
 
     // visualisation 2d
-    private VertexPoints2dOverlay vertexPoints2dOverlay;
+    private transient VertexPoints2dOverlay vertexPoints2dOverlay;
 
     public BlockPlane( String name, Vector3d normal, Vector3d point, Vector3d centroid, Content mesh, Color3f color,
                        float transparency, boolean isVisible, Bdv bdv, Point3dOverlay point3dOverlay ) {

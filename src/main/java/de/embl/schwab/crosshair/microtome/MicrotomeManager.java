@@ -2,7 +2,7 @@ package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.io.SolutionToSave;
+import de.embl.schwab.crosshair.io.Solution;
 import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
 import de.embl.schwab.crosshair.ui.swing.VertexAssignmentPanel;
 import ij.IJ;
@@ -39,8 +39,8 @@ public class MicrotomeManager {
 
     }
 
-    public SolutionToSave getCurrentSolution() {
-        SolutionToSave currentSolution = new SolutionToSave(microtome.getInitialKnifeAngle(),
+    public Solution getCurrentSolution() {
+        Solution currentSolution = new Solution(microtome.getInitialKnifeAngle(),
                 microtome.getInitialTiltAngle(), solutions.getSolutionKnife(), solutions.getSolutionTilt(),
                 solutions.getSolutionRotation(), solutions.getSolutionFirstTouchName(), solutions.getDistanceToCut(), unit);
 

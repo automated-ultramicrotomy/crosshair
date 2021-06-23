@@ -26,19 +26,19 @@ public class Plane {
     private Vector3d normal;
     private Vector3d point;
 
-    private Vector3d centroid;
+    private transient Vector3d centroid;
 
     private Color3f color;
     private float transparency;
     private boolean isVisible;
 
     // 2d visualisation
-    protected Bdv bdv;
-    private PointsToFitPlane2dOverlay pointsToFitPlane2dOverlay;
+    protected  transient Bdv bdv;
+    private transient PointsToFitPlane2dOverlay pointsToFitPlane2dOverlay;
 
     // 3d visualisation
-    private Content mesh; // the 3d custom triangle mesh representing the plane
-    protected Point3dOverlay point3dOverlay;
+    private transient Content mesh; // the 3d custom triangle mesh representing the plane
+    protected transient Point3dOverlay point3dOverlay;
 
     private final ArrayList<RealPoint> pointsToFitPlane; // points used to fit this plane
     private double distanceBetweenPlanesThreshold = 1E-10; // distance used to be 'on' plane

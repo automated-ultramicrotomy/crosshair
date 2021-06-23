@@ -3,7 +3,6 @@ package de.embl.schwab.crosshair.microtome;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.io.SettingsToSave;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
@@ -64,7 +63,7 @@ class Solutions {
     }
 
     // void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
-    //                              SettingsToSave settings ) {
+    //                              Settings settings ) {
     //     TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( settings.getNamedVertices(),
     //             settings.getPlaneNormals().get( Crosshair.block ), settings.getPlaneNormals().get( Crosshair.target ) );
     //     calculateRotations( solutionRotation, initialTiltAngle, initialKnifeAngle,

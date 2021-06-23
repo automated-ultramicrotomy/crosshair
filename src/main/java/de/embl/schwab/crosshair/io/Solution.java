@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.io;
 
 import org.apache.commons.math3.util.Precision;
 
-public class SolutionToSave {
+public class Solution {
 
     private double initialKnifeAngle;
     private double initialTiltAngle;
@@ -16,8 +16,8 @@ public class SolutionToSave {
     private String distanceUnit;
     private int saveDecimalPlaces;
 
-    public SolutionToSave(double initialKnifeAngle, double initialTiltAngle, double knife, double tilt,
-                          double rotation, String firstTouch, double distanceToCut, String unit) {
+    public Solution(double initialKnifeAngle, double initialTiltAngle, double knife, double tilt,
+                    double rotation, String firstTouch, double distanceToCut, String unit) {
         saveDecimalPlaces = 4;
         this.initialKnifeAngle = Precision.round(initialKnifeAngle, saveDecimalPlaces);
         this.initialTiltAngle = Precision.round(initialTiltAngle, saveDecimalPlaces);

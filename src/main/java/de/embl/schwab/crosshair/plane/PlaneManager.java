@@ -71,6 +71,10 @@ public class PlaneManager {
         return planeNameToPlane.keySet();
     }
 
+    public Map<String, Plane> getPlaneNameToPlane() {
+        return planeNameToPlane;
+    }
+
     public boolean isTrackingPlane() { return isTrackingPlane; }
 
     public void setTrackingPlane( boolean tracking ) { isTrackingPlane = tracking; }

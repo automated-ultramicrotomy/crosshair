@@ -1,19 +1,17 @@
 package de.embl.schwab.crosshair.microtome;
 
 import com.google.gson.Gson;
-import de.embl.schwab.crosshair.io.SettingsToSave;
+import de.embl.schwab.crosshair.io.Settings;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SolutionsTest {
 
     private Solutions solutions;
-    private SettingsToSave crosshairSettings;
+    private Settings crosshairSettings;
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -21,7 +19,7 @@ class SolutionsTest {
         File exampleJson = new File(classLoader.getResource("exampleBlock.json").getFile());
         try ( FileReader fileReader = new FileReader( exampleJson ) ) {
             Gson gson = new Gson();
-            crosshairSettings = gson.fromJson(fileReader, SettingsToSave.class);
+            crosshairSettings = gson.fromJson(fileReader, Settings.class);
             this.solutions = new Solutions();
         }
     }
