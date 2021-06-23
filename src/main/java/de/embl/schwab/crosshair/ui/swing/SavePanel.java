@@ -2,11 +2,14 @@ package de.embl.schwab.crosshair.ui.swing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.io.ImageContentSettings;
+import de.embl.schwab.crosshair.io.PlaneMapDeserializer;
 import de.embl.schwab.crosshair.io.Settings;
 import de.embl.schwab.crosshair.io.Solution;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij3d.Content;
 
@@ -206,7 +209,9 @@ public class SavePanel extends CrosshairPanel {
     }
 
     private Settings readSettings( String filePath ) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().
+                registerTypeAdapter( new TypeToken<Map<String, Plane>>(){}.getType(), new PlaneMapDeserializer()).create();
+
         try {
             FileReader fileReader = new FileReader(filePath);
             return gson.fromJson(fileReader, Settings.class);
@@ -222,19 +227,15 @@ public class SavePanel extends CrosshairPanel {
         // }
         //
         // if ( !planeManager.isTrackingPlane() ) {
-        //     planeManager.removeAllBlockVertices();
-        //     planeManager.removeAllPointsToFitPlane();
+        //     for (String planeName : planeManager.getPlaneNames()) {
+        //         planeManager.removeNamedPlane(planeName);
+        //     }
+        //
+        //     // add planes from settings
         //
         //     Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
         //     for (String planeName : settingsPlaneNormals.keySet()) {
         //         planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
-        //     }
-        //
-        //     // if some planes aren't defined in loaded settings, remove them if present
-        //     for (String plane : new String[]{ Crosshair.target, Crosshair.block }) {
-        //         if (!settingsPlaneNormals.containsKey(plane)) {
-        //             planeManager.removeNamedPlane(plane);
-        //         }
         //     }
         //
         //     planeManager.getPlane( Crosshair.target).setColor( settingsToSave.getTargetPlaneColour().get() );
