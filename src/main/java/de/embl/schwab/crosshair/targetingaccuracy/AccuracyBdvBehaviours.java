@@ -42,13 +42,13 @@ public class AccuracyBdvBehaviours {
 
     private void fitToPoints( Plane plane ) {
         ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
-        planeManager.updatePlane( planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
+        planeManager.updatePlane( planeDefinition.get(0), planeDefinition.get(1), TargetingAccuracy.afterBlock );
         plane.setVisible( true );
     }
 
     private void addFitToPointsBehaviour() {
-        if ( planeManager.isTrackingPlane() && planeManager.getTrackedPlaneName().equals( Crosshair.block ) ) {
-            IJ.log("Can't fit to points when tracking block plane");
+        if ( planeManager.isTrackingPlane() && planeManager.getTrackedPlaneName().equals( TargetingAccuracy.afterBlock ) ) {
+            IJ.log("Can't fit to points when tracking after block plane");
         } else if ( !planeManager.checkNamedPlaneExists( TargetingAccuracy.afterBlock ) ) {
             IJ.log("After block plane doesn't exist" );
         } else {
@@ -73,6 +73,12 @@ public class AccuracyBdvBehaviours {
                 }
             }
         });
+
+        behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
+            if ( planeManager.isInPointMode() ) {
+                addPointBehaviour();
+            }
+        }, "Left Click behaviours", "button1" );
 
         BdvPopupMenus.addAction(bdvHandle, "Toggle Point Mode", ( x, y ) ->
         {
