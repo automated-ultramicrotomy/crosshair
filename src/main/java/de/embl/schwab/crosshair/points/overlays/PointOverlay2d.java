@@ -1,4 +1,4 @@
-package de.embl.schwab.crosshair.points;
+package de.embl.schwab.crosshair.points.overlays;
 
 import bdv.util.BdvOverlay;
 import net.imglib2.RealLocalizable;

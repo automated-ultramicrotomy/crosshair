@@ -1,4 +1,4 @@
-package de.embl.schwab.crosshair.points;
+package de.embl.schwab.crosshair.points.overlays;
 
 import ij3d.Content;
 import net.imglib2.RealPoint;

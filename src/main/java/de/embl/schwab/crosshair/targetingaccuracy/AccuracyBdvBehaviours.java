@@ -33,31 +33,16 @@ public class AccuracyBdvBehaviours {
     private void addPointBehaviour() {
         if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
-        } else if ( !planeManager.checkNamedPlaneExists( TargetingAccuracy.afterBlock )) {
-            IJ.log("After block plane doesn't exist" );
         } else {
-            planeManager.getPlane( TargetingAccuracy.afterBlock ).addOrRemoveCurrentPositionFromPointsToFitPlane();
+            planeManager.getPointsToFitPlaneDisplay( TargetingAccuracy.afterBlock ).addOrRemoveCurrentPositionFromPointsToFitPlane();
         }
-    }
-
-    private void fitToPoints( Plane plane ) {
-        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
-        planeManager.updatePlane( planeDefinition.get(0), planeDefinition.get(1), TargetingAccuracy.afterBlock );
-        plane.setVisible( true );
     }
 
     private void addFitToPointsBehaviour() {
         if ( planeManager.isTrackingPlane() && planeManager.getTrackedPlaneName().equals( TargetingAccuracy.afterBlock ) ) {
             IJ.log("Can't fit to points when tracking after block plane");
-        } else if ( !planeManager.checkNamedPlaneExists( TargetingAccuracy.afterBlock ) ) {
-            IJ.log("After block plane doesn't exist" );
         } else {
-            Plane plane = planeManager.getPlane( TargetingAccuracy.afterBlock );
-            if ( plane.getPointsToFitPlane().size() >= 3 ) {
-                    fitToPoints( plane );
-            } else {
-                IJ.log ("Need at least 3 points to fit plane");
-            }
+            planeManager.fitPlaneToPoints( TargetingAccuracy.afterBlock );
         }
     }
 

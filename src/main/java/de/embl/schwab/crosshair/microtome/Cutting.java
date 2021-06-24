@@ -101,7 +101,7 @@ class Cutting {
 
     private void setCuttingBounds () {
         // All image vertices in microtome coordinates
-        Map<VertexPoint, RealPoint> vertices = planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices();
+        Map<VertexPoint, RealPoint> vertices = planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices();
         ArrayList<Point3d> verticesMicrotomeCoords = new ArrayList<>();
         ArrayList<Vector3d> verticesMicrotomeCoordsV = new ArrayList<>();
 

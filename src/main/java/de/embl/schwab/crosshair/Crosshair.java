@@ -2,15 +2,11 @@ package de.embl.schwab.crosshair;
 
 import bdv.util.*;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
-import de.embl.schwab.crosshair.points.PointOverlay2d;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-
-import javax.swing.*;
-import java.awt.Window;
 
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 

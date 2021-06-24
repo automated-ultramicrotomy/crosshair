@@ -34,7 +34,7 @@ public class PlaneSettings {
         this.color = plane.getColor();
         this.transparency = plane.getTransparency();
         this.isVisible = plane.isVisible();
-        this.pointsToFitPlane = plane.getPointsToFitPlane();
+        this.pointsToFitPlane = plane.getPointsToFitPlaneDisplay().getPointsToFitPlane();
         this.distanceBetweenPlanesThreshold = plane.getDistanceBetweenPlanesThreshold();
     }
 }

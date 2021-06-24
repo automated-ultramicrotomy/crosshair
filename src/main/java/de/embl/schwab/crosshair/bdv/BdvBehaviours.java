@@ -40,7 +40,7 @@ public class BdvBehaviours {
         } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
             IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
         } else {
-            planeManager.getBlockPlane( Crosshair.block ).addOrRemoveCurrentPositionFromVertices();
+            planeManager.getVertexDisplay( Crosshair.block ).addOrRemoveCurrentPositionFromVertices();
         }
     }
 
@@ -52,14 +52,8 @@ public class BdvBehaviours {
         } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
             IJ.log("Block plane doesn't exist" );
         } else {
-            planeManager.getPlane( Crosshair.block ).addOrRemoveCurrentPositionFromPointsToFitPlane();
+            planeManager.getPointsToFitPlaneDisplay( Crosshair.block ).addOrRemoveCurrentPositionFromPointsToFitPlane();
         }
-    }
-
-    private void fitToPoints( Plane plane ) {
-        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( plane.getPointsToFitPlane() );
-        planeManager.updatePlane( planeDefinition.get(0), planeDefinition.get(1), Crosshair.block );
-        plane.setVisible( true );
     }
 
     private void addFitToPointsBehaviour() {
@@ -71,20 +65,16 @@ public class BdvBehaviours {
             IJ.log("Block plane doesn't exist" );
         } else {
             BlockPlane plane = planeManager.getBlockPlane( Crosshair.block );
-            if ( plane.getPointsToFitPlane().size() >= 3 ) {
-                if ( plane.getVertices().size() > 0 ) {
-                    int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE);
-                    if (result == JOptionPane.YES_OPTION) {
-                        plane.removeAllVertices();
-                        fitToPoints( plane );
-                    }
-                } else {
-                    fitToPoints( plane );
+            if ( plane.getVertexDisplay().getVertices().size() > 0 ) {
+                int result = JOptionPane.showConfirmDialog(null, "If you fit the block plane to points, you will lose all current vertex points. Continue?", "Are you sure?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    plane.getVertexDisplay().removeAllVertices();
+                    planeManager.fitBlockPlaneToPoints( Crosshair.block );
                 }
             } else {
-                IJ.log ("Need at least 3 points to fit plane");
+                planeManager.fitBlockPlaneToPoints( Crosshair.block );
             }
         }
     }
@@ -105,8 +95,7 @@ public class BdvBehaviours {
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             if ( !planeManager.isInPointMode() & !planeManager.isInVertexMode() ) {
                 if ( planeManager.checkNamedPlaneExists( Crosshair.block ) ) {
-                    BlockPlane blockPlane = planeManager.getBlockPlane(Crosshair.block);
-                    blockPlane.toggleSelectedVertexCurrentPosition();
+                    planeManager.getVertexDisplay( Crosshair.block ).toggleSelectedVertexCurrentPosition();
                 }
             } else if ( planeManager.isInPointMode() ) {
                 addPointBehaviour();

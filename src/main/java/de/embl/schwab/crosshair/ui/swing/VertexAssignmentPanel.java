@@ -61,7 +61,7 @@ public class VertexAssignmentPanel extends CrosshairPanel {
         public void actionPerformed(ActionEvent e) {
             if ( planeManager.checkNamedPlaneExists( Crosshair.block )) {
                 VertexPoint vertexPoint = VertexPoint.fromString( e.getActionCommand() );
-                planeManager.getBlockPlane( Crosshair.block ).assignSelectedVertex( vertexPoint );
+                planeManager.getVertexDisplay( Crosshair.block ).assignSelectedVertex( vertexPoint );
             }
         }
     }

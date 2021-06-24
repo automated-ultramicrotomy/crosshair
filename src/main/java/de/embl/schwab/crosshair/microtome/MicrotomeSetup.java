@@ -123,7 +123,7 @@ class MicrotomeSetup {
     }
 
     private void setTargetOffsetTilt() {
-        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices();
+        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices();
         Vector3d blockNormal = planeManager.getPlane( Crosshair.block ).getNormal();
         Vector3d targetNormal = planeManager.getPlane( Crosshair.target ).getNormal();
         TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( assignedVertices, blockNormal, targetNormal );
@@ -237,7 +237,7 @@ class MicrotomeSetup {
             universe.getContent(name).setTransform(new Transform3D());
         }
 
-        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices();
+        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices();
 
         // check normal in right orientation, coming out of block surface
         double[] topLeft = new double[3];

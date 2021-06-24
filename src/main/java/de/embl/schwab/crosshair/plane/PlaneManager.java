@@ -5,13 +5,17 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import de.embl.schwab.crosshair.bdv.ModeOverlay;
-import de.embl.schwab.crosshair.points.Point3dOverlay;
-import de.embl.schwab.crosshair.points.PointOverlay2d;
+import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
+import de.embl.schwab.crosshair.points.VertexDisplay;
+import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
+import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
+import de.embl.schwab.crosshair.targetingaccuracy.TargetingAccuracy;
 import de.embl.schwab.crosshair.utils.BdvUtils;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Vector3d;
@@ -35,23 +39,28 @@ public class PlaneManager {
     private final BdvHandle bdvHandle;
     private final BdvStackSource bdvStackSource;
     private final Image3DUniverse universe;
+    private final Point3dOverlay point3dOverlay;
 
     private final Color3f alignedPlaneColour = new Color3f(1, 0, 0);
     // TODO - make this threshold user definable - makes sense for microns, but possibly not for other units
     private final double distanceBetweenPlanesThreshold = 1E-10;
 
+    private HashMap<String, PointsToFitPlaneDisplay> tempPlaneNameToPointDisplay; // stores point displays of planes that are yet to be initialised
+
     // Given image content is used to define the extent of planes (only shown within bounds of that image)
     // and where points are shown (again attached to that image)
     public PlaneManager( BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent ) {
         planeNameToPlane = new HashMap<>();
+        tempPlaneNameToPointDisplay = new HashMap<>();
 
         this.bdvStackSource = bdvStackSource;
         BdvFunctions.showOverlay( new ModeOverlay( this), "mode_text",
                 Bdv.options().addTo( bdvStackSource ) );
         this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
+        this.point3dOverlay = new Point3dOverlay( imageContent );
 
-        this.planeCreator = new PlaneCreator( universe, imageContent, bdvStackSource, new Point3dOverlay( imageContent ) );
+        this.planeCreator = new PlaneCreator( universe, imageContent, bdvStackSource, point3dOverlay );
     }
 
     public Plane getPlane( String planeName ) {
@@ -108,19 +117,31 @@ public class PlaneManager {
     }
 
     public void addPlane( PlaneSettings planeSettings ){
-        Plane plane = planeCreator.createPlane( planeSettings );
+
+        // this is necessary as points to fit plane can be added before the plane is actually made by e.g. fitting to points
+        Plane plane;
+        if ( tempPlaneNameToPointDisplay.containsKey( planeSettings.name ) ) {
+            plane = planeCreator.createPlane( planeSettings, tempPlaneNameToPointDisplay.get( planeSettings.name ) );
+            tempPlaneNameToPointDisplay.remove( planeSettings.name );
+        } else {
+            plane = planeCreator.createPlane( planeSettings );
+        }
+
         planeNameToPlane.put( planeSettings.name, plane);
     }
-    public void addPlaneAtCurrentView( String planeName ){
-        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
 
+    public void addPlane( String planeName, Vector3d planeNormal, Vector3d planePoint ) {
         PlaneSettings planeSettings = new PlaneSettings();
         planeSettings.name = planeName;
-        planeSettings.normal = planeDefinition.get(0);
-        planeSettings.point = planeDefinition.get(1);
+        planeSettings.normal = planeNormal;
+        planeSettings.point = planePoint;
 
-        Plane plane = planeCreator.createPlane( planeSettings );
-        planeNameToPlane.put(planeName, plane);
+        addPlane( planeSettings );
+    }
+
+    public void addPlaneAtCurrentView( String planeName ){
+        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
+        addPlane( planeName, planeDefinition.get(0), planeDefinition.get(1) );
     }
 
     public void addBlockPlane( BlockPlaneSettings blockPlaneSettings ) {
@@ -128,16 +149,33 @@ public class PlaneManager {
         planeNameToPlane.put( blockPlaneSettings.name, plane );
     }
 
-    public void addBlockPlaneAtCurrentView( String planeName ) {
-        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
-
+    public void addBlockPlane( String planeName, Vector3d planeNormal, Vector3d planePoint ) {
         BlockPlaneSettings settings = new BlockPlaneSettings();
         settings.name = planeName;
-        settings.normal = planeDefinition.get(0);
-        settings.point = planeDefinition.get(1);
+        settings.normal = planeNormal;
+        settings.point = planePoint;
 
-        Plane plane = planeCreator.createBlockPlane( settings );
-        planeNameToPlane.put(planeName, plane);
+        addBlockPlane( settings );
+    }
+
+    public void addBlockPlaneAtCurrentView( String planeName ) {
+        ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
+        addBlockPlane( planeName, planeDefinition.get(0), planeDefinition.get(1) );
+    }
+
+    public PointsToFitPlaneDisplay getPointsToFitPlaneDisplay( String planeName ) {
+        if ( checkNamedPlaneExists( planeName ) ) {
+            return getPlane(planeName).getPointsToFitPlaneDisplay();
+        } else {
+            if ( !tempPlaneNameToPointDisplay.containsKey( planeName ) ) {
+                tempPlaneNameToPointDisplay.put(planeName, new PointsToFitPlaneDisplay(planeName, bdvStackSource, point3dOverlay));
+            }
+            return tempPlaneNameToPointDisplay.getOrDefault( planeName, null );
+        }
+    }
+
+    public VertexDisplay getVertexDisplay( String planeName ) {
+        return getBlockPlane( planeName ).getVertexDisplay();
     }
 
     public void updatePlane( Vector3d planeNormal, Vector3d planePoint, String planeName ) {
@@ -179,13 +217,61 @@ public class PlaneManager {
         }
     }
 
+    private void fitPlaneToPoints( String planeName, ArrayList<RealPoint> points ) {
+        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( points );
+
+        if ( checkNamedPlaneExists( planeName ) ) {
+            updatePlane( planeDefinition.get(0), planeDefinition.get(1), planeName );
+        } else {
+            addPlane( planeName, planeDefinition.get(0), planeDefinition.get(1) );
+        }
+
+        getPlane( planeName ).setVisible( true );
+    }
+
+    private void fitBlockPlaneToPoints( String planeName, ArrayList<RealPoint> points ) {
+        ArrayList<Vector3d> planeDefinition = GeometryUtils.fitPlaneToPoints( points );
+
+        if ( checkNamedPlaneExists( planeName ) ) {
+            updatePlane( planeDefinition.get(0), planeDefinition.get(1), planeName );
+        } else {
+            addBlockPlane( planeName, planeDefinition.get(0), planeDefinition.get(1) );
+        }
+
+        getPlane( planeName ).setVisible( true );
+    }
+
+    public void fitBlockPlaneToPoints( String planeName ) {
+        ArrayList<RealPoint> points = getPointsToFitPlaneDisplay( planeName ).getPointsToFitPlane();
+
+        if ( points.size() >= 3 ) {
+            fitBlockPlaneToPoints( planeName, points );
+        } else {
+            IJ.log ("Need at least 3 points to fit plane");
+        }
+    }
+
+    public void fitPlaneToPoints( String planeName ) {
+        ArrayList<RealPoint> points = getPointsToFitPlaneDisplay( planeName ).getPointsToFitPlane();
+
+        if ( points.size() >= 3 ) {
+            fitPlaneToPoints( planeName, points );
+        } else {
+            IJ.log ("Need at least 3 points to fit plane");
+        }
+    }
+
     public ArrayList<PointOverlay2d> getAll2dPointOverlays() {
         ArrayList<PointOverlay2d> pointOverlays = new ArrayList<>();
         for ( Plane plane: planeNameToPlane.values() ) {
-            pointOverlays.add( plane.getPointsToFitPlane2dOverlay() );
+            pointOverlays.add( plane.getPointsToFitPlaneDisplay().getPoint2dOverlay() );
             if ( plane instanceof BlockPlane ) {
-                pointOverlays.add( ((BlockPlane) plane).getVertexPoints2dOverlay() );
+                pointOverlays.add( ((BlockPlane) plane).getVertexDisplay().get2dOverlay() );
             }
+        }
+
+        for( PointsToFitPlaneDisplay display: tempPlaneNameToPointDisplay.values() ) {
+            pointOverlays.add( display.getPoint2dOverlay() );
         }
 
         return pointOverlays;
@@ -268,18 +354,24 @@ public class PlaneManager {
 
     public void removeNamedPlane (String name) {
         if ( checkNamedPlaneExists(name) ) {
-            Plane plane = getPlane( name );
-            plane.removeAllPointsToFitPlane();
-            bdvHandle.getViewerPanel().getDisplay().overlays().remove( plane.getPointsToFitPlane2dOverlay() );
+            PointsToFitPlaneDisplay pointsToFitPlaneDisplay = getPointsToFitPlaneDisplay( name );
+            pointsToFitPlaneDisplay.removeAllPointsToFitPlane();
+            bdvHandle.getViewerPanel().getDisplay().overlays().remove( pointsToFitPlaneDisplay.getPoint2dOverlay() );
 
-            if ( plane instanceof BlockPlane ) {
-                BlockPlane blockPlane = (BlockPlane) plane;
-                blockPlane.removeAllVertices();
-                bdvHandle.getViewerPanel().getDisplay().overlays().remove( blockPlane.getVertexPoints2dOverlay() );
+            if ( getPlane( name ) instanceof BlockPlane ) {
+                VertexDisplay vertexDisplay = getVertexDisplay( name );
+                vertexDisplay.removeAllVertices();
+                bdvHandle.getViewerPanel().getDisplay().overlays().remove( vertexDisplay.get2dOverlay() );
             }
 
             planeNameToPlane.remove( name );
             universe.removeContent( name );
+        }
+
+        if ( tempPlaneNameToPointDisplay.containsKey( name ) ) {
+            PointsToFitPlaneDisplay display = tempPlaneNameToPointDisplay.get( name );
+            bdvHandle.getViewerPanel().getDisplay().overlays().remove( display.getPoint2dOverlay() );
+            tempPlaneNameToPointDisplay.remove( name );
         }
 
     }

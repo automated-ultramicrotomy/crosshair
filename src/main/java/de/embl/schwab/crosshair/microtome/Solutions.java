@@ -77,7 +77,7 @@ class Solutions {
         calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
                 microtome.getInitialTargetOffset(), microtome.getInitialTargetTilt() );
         Plane targetPlane = planeManager.getPlane( Crosshair.target );
-        calculateDistance( planeManager.getBlockPlane( Crosshair.block ).getAssignedVertices(), targetPlane.getNormal(), targetPlane.getPoint(),
+        calculateDistance( planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices(), targetPlane.getNormal(), targetPlane.getPoint(),
                 solutionKnife );
         checkSolutionValid();
     }

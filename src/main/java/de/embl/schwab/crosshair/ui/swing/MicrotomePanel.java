@@ -453,8 +453,7 @@ public class MicrotomePanel extends CrosshairPanel {
         boolean allVerticesExist = false;
         if ( blockExists ) {
             allVerticesExist = true;
-            BlockPlane blockPlane = planeManager.getBlockPlane( Crosshair.block );
-            Map<VertexPoint, RealPoint> assignedVertices =  blockPlane.getAssignedVertices();
+            Map<VertexPoint, RealPoint> assignedVertices =  planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices();
 
             for ( VertexPoint vertexPoint: VertexPoint.values() ) {
                 if ( !assignedVertices.containsKey( vertexPoint ) ) {

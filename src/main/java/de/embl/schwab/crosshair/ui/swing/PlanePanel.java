@@ -135,12 +135,12 @@ import java.util.Map;
 
                     // check if there are already vertex points
                     Plane plane = planeManager.getPlane(planeName);
-                    if (plane instanceof BlockPlane && ((BlockPlane) plane).getVertices().size() > 0) {
+                    if (plane instanceof BlockPlane && ((BlockPlane) plane).getVertexDisplay().getVertices().size() > 0) {
                         int result = JOptionPane.showConfirmDialog(null, "If you track a block plane, you will lose all current vertex points. Continue?", "Are you sure?",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE);
                         if (result == JOptionPane.YES_OPTION) {
-                            ((BlockPlane) plane).removeAllVertices();
+                            ((BlockPlane) plane).getVertexDisplay().removeAllVertices();
                             enablePlaneTracking(trackButton, planeName);
                         }
                     } else {

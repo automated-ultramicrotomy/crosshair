@@ -2,8 +2,6 @@ package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.points.PointOverlay2d;
-import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.ui.swing.*;
 import ij3d.Content;
 import ij3d.Image3DUniverse;

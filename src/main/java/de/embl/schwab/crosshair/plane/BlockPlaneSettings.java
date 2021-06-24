@@ -22,7 +22,7 @@ public class BlockPlaneSettings extends PlaneSettings {
 
     public BlockPlaneSettings( BlockPlane blockPlane ) {
         super( blockPlane );
-        this.vertices = blockPlane.getVertices();
-        this.assignedVertices = blockPlane.getAssignedVertices();
+        this.vertices = blockPlane.getVertexDisplay().getVertices();
+        this.assignedVertices = blockPlane.getVertexDisplay().getAssignedVertices();
     }
 }

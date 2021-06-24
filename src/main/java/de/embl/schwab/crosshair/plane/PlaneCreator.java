@@ -2,7 +2,9 @@ package de.embl.schwab.crosshair.plane;
 
 import bdv.util.Bdv;
 import customnode.CustomTriangleMesh;
-import de.embl.schwab.crosshair.points.Point3dOverlay;
+import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
+import de.embl.schwab.crosshair.points.VertexDisplay;
+import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -28,30 +30,36 @@ public class PlaneCreator {
         this.point3dOverlay = point3dOverlay;
     }
 
+    private class CentroidAndMesh {
+        public Vector3d centroid;
+        public Content mesh;
+    }
+
     public Plane createPlane( PlaneSettings planeSettings ) {
 
-        // intersection points with image bounds, these will form the vertices of the plane mesh
-        ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints( planeSettings.normal, planeSettings.point );
-        Vector3d planeCentroid = GeometryUtils.getCentroid(intersectionPoints);
+        CentroidAndMesh centroidAndMesh = createCentroidAndMesh( planeSettings );
 
-        Content meshContent = createMeshContent( intersectionPoints, planeSettings.normal, planeSettings.color,
-                planeSettings.transparency, planeSettings.isVisible, planeSettings.name );
+        return new Plane( planeSettings, centroidAndMesh.centroid, centroidAndMesh.mesh,
+                new PointsToFitPlaneDisplay( planeSettings.pointsToFitPlane, planeSettings.name, bdv, point3dOverlay) );
+    }
 
-        return new Plane( planeSettings, planeCentroid, meshContent, bdv, point3dOverlay );
+    public Plane createPlane( PlaneSettings planeSettings, PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
+
+        CentroidAndMesh centroidAndMesh = createCentroidAndMesh( planeSettings );
+
+        return new Plane( planeSettings, centroidAndMesh.centroid, centroidAndMesh.mesh, pointsToFitPlaneDisplay );
     }
 
     public BlockPlane createBlockPlane( BlockPlaneSettings blockPlaneSettings ) {
 
-        // intersection points with image bounds, these will form the vertices of the plane mesh
-        ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints( blockPlaneSettings.normal,
-                blockPlaneSettings.point) ;
-        Vector3d planeCentroid = GeometryUtils.getCentroid(intersectionPoints);
+        CentroidAndMesh centroidAndMesh = createCentroidAndMesh( blockPlaneSettings );
+        PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
+                blockPlaneSettings.pointsToFitPlane, blockPlaneSettings.name, bdv, point3dOverlay );
+        VertexDisplay vertexDisplay = new VertexDisplay(
+                blockPlaneSettings.vertices, blockPlaneSettings.assignedVertices, blockPlaneSettings.name, bdv, point3dOverlay );
 
-        Content meshContent = createMeshContent( intersectionPoints, blockPlaneSettings.normal,
-                blockPlaneSettings.color, blockPlaneSettings.transparency, blockPlaneSettings.isVisible,
-                blockPlaneSettings.name );
-
-        return new BlockPlane( blockPlaneSettings, planeCentroid, meshContent, bdv, point3dOverlay );
+        return new BlockPlane( blockPlaneSettings, centroidAndMesh.centroid, centroidAndMesh.mesh,
+                pointsToFitPlaneDisplay, vertexDisplay );
     }
 
     public void updatePlaneOrientation( Plane plane, Vector3d newNormal, Vector3d newPoint ) {
@@ -67,6 +75,22 @@ public class PlaneCreator {
                 plane.isVisible(), plane.getName() );
 
         plane.updatePlaneOrientation( newNormal, newPoint, newCentroid, meshContent );
+    }
+
+    private CentroidAndMesh createCentroidAndMesh( PlaneSettings settings ) {
+        CentroidAndMesh centroidAndMesh = new CentroidAndMesh();
+
+        // intersection points with image bounds, these will form the vertices of the plane mesh
+        ArrayList<Vector3d> intersectionPoints = calculateIntersectionPoints( settings.normal,
+                settings.point) ;
+        centroidAndMesh.centroid = GeometryUtils.getCentroid(intersectionPoints);
+
+        Content meshContent = createMeshContent( intersectionPoints, settings.normal,
+                settings.color, settings.transparency, settings.isVisible,
+                settings.name );
+        centroidAndMesh.mesh = meshContent;
+
+        return centroidAndMesh;
     }
 
     private Content createMeshContent( ArrayList<Vector3d> intersectionPoints, Vector3d planeNormal,
