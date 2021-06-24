@@ -30,17 +30,27 @@ public class BlockPlane extends Plane {
     // visualisation 2d
     private transient VertexPoints2dOverlay vertexPoints2dOverlay;
 
-    public BlockPlane( String name, Vector3d normal, Vector3d point, Vector3d centroid, Content mesh, Color3f color,
-                       float transparency, boolean isVisible, Bdv bdv, Point3dOverlay point3dOverlay ) {
+    public BlockPlane( BlockPlaneSettings settings, Vector3d centroid, Content mesh,
+                       Bdv bdv, Point3dOverlay point3dOverlay ) {
 
-        super( name, normal, point, centroid, mesh, color, transparency, isVisible, bdv, point3dOverlay );
-        this.vertices = new ArrayList<>();
-        this.assignedVertices = new HashMap<>();
+        super( settings, centroid, mesh, bdv, point3dOverlay );
+        this.vertices = settings.vertices;
+        this.assignedVertices = settings.assignedVertices;
         this.isVertexSelected = false;
 
         this.vertexPoints2dOverlay = new VertexPoints2dOverlay( this );
-        BdvFunctions.showOverlay( vertexPoints2dOverlay, name + "-vertex_points",
+        BdvFunctions.showOverlay( vertexPoints2dOverlay, settings.name + "-vertex_points",
                 Bdv.options().addTo(bdv) );
+
+        if ( vertices.size() > 0 ) {
+            for ( RealPoint vertex: vertices ) {
+                point3dOverlay.addPoint( vertex );
+            }
+
+            for ( Map.Entry<VertexPoint, RealPoint> entry : settings.assignedVertices.entrySet() ) {
+                displayAssignedVertex( entry.getKey(), entry.getValue() );
+            }
+        }
     }
 
     public boolean isVertexSelected() {
@@ -90,6 +100,10 @@ public class BlockPlane extends Plane {
         removeAssignedVertex( vertex );
         assignedVertices.put( vertexPoint, vertex );
 
+        displayAssignedVertex( vertexPoint, vertex );
+    }
+
+    private void displayAssignedVertex( VertexPoint vertexPoint, RealPoint vertex ) {
         RealPoint vertexCopy = new RealPoint( vertex );
         point3dOverlay.renamePoint3D( vertexCopy, vertexPoint.toShortString() );
         bdv.getBdvHandle().getViewerPanel().requestRepaint();
@@ -175,5 +189,10 @@ public class BlockPlane extends Plane {
         isVertexSelected = false;
         selectedVertex = null;
         bdv.getBdvHandle().getViewerPanel().requestRepaint();
+    }
+
+    @Override
+    public BlockPlaneSettings getSettings() {
+        return new BlockPlaneSettings( this );
     }
 }

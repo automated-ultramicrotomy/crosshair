@@ -29,7 +29,7 @@ public class PlaneManager {
     private boolean isInPointMode = false;
     private boolean isInVertexMode = false;
 
-    private PlaneCreator planeCreator;
+    private final PlaneCreator planeCreator;
     private final Map<String, Plane> planeNameToPlane;
 
     private final BdvHandle bdvHandle;
@@ -71,8 +71,8 @@ public class PlaneManager {
         return planeNameToPlane.keySet();
     }
 
-    public Map<String, Plane> getPlaneNameToPlane() {
-        return planeNameToPlane;
+    public Collection<Plane> getPlanes() {
+        return planeNameToPlane.values();
     }
 
     public boolean isTrackingPlane() { return isTrackingPlane; }
@@ -107,30 +107,42 @@ public class PlaneManager {
         return planeNameToPlane.containsKey( name );
     }
 
-    public void addPlane( Vector3d planeNormal, Vector3d planePoint, String planeName ){
-        Plane plane = planeCreator.createPlane( planeNormal, planePoint, planeName );
-        planeNameToPlane.put(planeName, plane);
+    public void addPlane( PlaneSettings planeSettings ){
+        Plane plane = planeCreator.createPlane( planeSettings );
+        planeNameToPlane.put( planeSettings.name, plane);
     }
     public void addPlaneAtCurrentView( String planeName ){
         ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
-        Plane plane = planeCreator.createPlane( planeDefinition.get(0), planeDefinition.get(1), planeName );
+
+        PlaneSettings planeSettings = new PlaneSettings();
+        planeSettings.name = planeName;
+        planeSettings.normal = planeDefinition.get(0);
+        planeSettings.point = planeDefinition.get(1);
+
+        Plane plane = planeCreator.createPlane( planeSettings );
         planeNameToPlane.put(planeName, plane);
     }
 
-    public void addBlockPlane( Vector3d planeNormal, Vector3d planePoint, String planeName ) {
-        BlockPlane plane = planeCreator.createBlockPlane( planeNormal, planePoint, planeName );
-        planeNameToPlane.put(planeName, plane);
+    public void addBlockPlane( BlockPlaneSettings blockPlaneSettings ) {
+        BlockPlane plane = planeCreator.createBlockPlane( blockPlaneSettings );
+        planeNameToPlane.put( blockPlaneSettings.name, plane );
     }
 
     public void addBlockPlaneAtCurrentView( String planeName ) {
         ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
-        Plane plane = planeCreator.createBlockPlane( planeDefinition.get(0), planeDefinition.get(1), planeName );
+
+        BlockPlaneSettings settings = new BlockPlaneSettings();
+        settings.name = planeName;
+        settings.normal = planeDefinition.get(0);
+        settings.point = planeDefinition.get(1);
+
+        Plane plane = planeCreator.createBlockPlane( settings );
         planeNameToPlane.put(planeName, plane);
     }
 
     public void updatePlane( Vector3d planeNormal, Vector3d planePoint, String planeName ) {
         if ( checkNamedPlaneExists( planeName ) ) {
-            planeCreator.updatePlane( getPlane( planeName ), planeNormal, planePoint );
+            planeCreator.updatePlaneOrientation( getPlane( planeName ), planeNormal, planePoint );
         }
     }
 

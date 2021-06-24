@@ -5,12 +5,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.io.ImageContentSettings;
-import de.embl.schwab.crosshair.io.PlaneMapDeserializer;
+import de.embl.schwab.crosshair.io.PlaneSettingsListDeserializer;
 import de.embl.schwab.crosshair.io.Settings;
 import de.embl.schwab.crosshair.io.Solution;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.BlockPlaneSettings;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.plane.PlaneSettings;
+import ij.IJ;
 import ij3d.Content;
 
 import javax.swing.*;
@@ -22,7 +25,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SavePanel extends CrosshairPanel {
@@ -155,7 +160,12 @@ public class SavePanel extends CrosshairPanel {
 
     private Settings createSettings() {
         Settings settings = new Settings();
-        settings.planeNameToPlane = planeManager.getPlaneNameToPlane();
+
+        List<PlaneSettings> planeSettings = new ArrayList<>();
+        for ( Plane plane: planeManager.getPlanes() ) {
+            planeSettings.add( plane.getSettings() );
+        }
+        settings.planeSettings = planeSettings;
 
         Map<String, ImageContentSettings> imageNameToSettings = new HashMap<>();
         Map<String, Content> imageNameTocontent = imagesPanel.getImageNameToContent();
@@ -210,7 +220,7 @@ public class SavePanel extends CrosshairPanel {
 
     private Settings readSettings( String filePath ) {
         Gson gson = new GsonBuilder().
-                registerTypeAdapter( new TypeToken<Map<String, Plane>>(){}.getType(), new PlaneMapDeserializer()).create();
+                registerTypeAdapter( new TypeToken<List<PlaneSettings>>(){}.getType(), new PlaneSettingsListDeserializer()).create();
 
         try {
             FileReader fileReader = new FileReader(filePath);
@@ -221,68 +231,53 @@ public class SavePanel extends CrosshairPanel {
         }
     }
 
+    private void loadImageSettings( Content imageContent, ImageContentSettings imageSettings ) {
+        imageContent.setColor( imageSettings.imageColour );
+        imageContent.setTransparency( imageSettings.imageTransparency );
+
+        // TODO - if null, set to the default lut, need to look up what this is and recreate it
+        if ( imageSettings.redLut != null & imageSettings.greenLut != null &
+                imageSettings.blueLut != null & imageSettings.alphaLut != null) {
+            // transfer function
+            imageContent.setLUT( imageSettings.redLut, imageSettings.greenLut,
+                    imageSettings.blueLut, imageSettings.alphaLut );
+        }
+    }
+
     private void loadSettings( Settings settings ) {
-        // if (microtomeManager.isMicrotomeModeActive()) {
-        //     microtomePanel.exitMicrotomeMode();
-        // }
-        //
-        // if ( !planeManager.isTrackingPlane() ) {
-        //     for (String planeName : planeManager.getPlaneNames()) {
-        //         planeManager.removeNamedPlane(planeName);
-        //     }
-        //
-        //     // add planes from settings
-        //
-        //     Map<String, Vector3d> settingsPlaneNormals = settingsToSave.getPlaneNormals();
-        //     for (String planeName : settingsPlaneNormals.keySet()) {
-        //         planeManager.updatePlane(settingsPlaneNormals.get(planeName), settingsToSave.getPlanePoints().get(planeName), planeName);
-        //     }
-        //
-        //     planeManager.getPlane( Crosshair.target).setColor( settingsToSave.getTargetPlaneColour().get() );
-        //     planeManager.getPlane( Crosshair.block).setColor( settingsToSave.getBlockPlaneColour().get() );
-        //     planeManager.getPlane( Crosshair.target).setTransparency( settingsToSave.getTargetTransparency() );
-        //     planeManager.getPlane( Crosshair.block).setTransparency( settingsToSave.getBlockTransparency() );
-        //
-        //     for (RealPoint point : settingsToSave.getPoints()) {
-        //         planeManager.addRemovePointFromPointList(planeManager.getPointsToFitPlane(), point);
-        //     }
-        //
-        //     for (RealPoint point : settingsToSave.getBlockVertices()) {
-        //         planeManager.addRemovePointFromPointList(planeManager.getBlockVertices(), point);
-        //     }
-        //
-        //     for (Map.Entry<String, RealPoint> entry : settingsToSave.getNamedVertices().entrySet()) {
-        //         planeManager.nameVertex(entry.getKey(), entry.getValue());
-        //     }
-        //
-        //     imageContent.setColor(settingsToSave.getImageColour());
-        //     imageContent.setTransparency(settingsToSave.getImageTransparency());
-        //
-        //     // TODO - if null, set to the default lut, need to look up what this is and recreate it
-        //     if (settingsToSave.getRedLut() != null & settingsToSave.getBlueLut() != null & settingsToSave.getGreenLut() != null & settingsToSave.getAlphaLut() != null) {
-        //         // transfer function
-        //         imageContent.setLUT(settingsToSave.getRedLut(), settingsToSave.getGreenLut(), settingsToSave.getBlueLut(), settingsToSave.getAlphaLut());
-        //     }
-        //
-        //     // Set everything to be visible if not already
-        //     if (!planeManager.getVisiblityNamedPlane( Crosshair.target )) {
-        //         planeManager.togglePlaneVisbility( Crosshair.target );
-        //     }
-        //
-        //     if (!planeManager.getVisiblityNamedPlane( Crosshair.block )) {
-        //         planeManager.togglePlaneVisbility( Crosshair.block );
-        //     }
-        //
-        //     if (!otherPanel.check3DPointsVisible()) {
-        //         otherPanel.toggleVisiblity3DPoints();
-        //     }
-        //
-        //     if (!pointOverlay.checkPointsVisible()) {
-        //         pointOverlay.toggleShowPoints();
-        //     }
-        // } else {
-        //     IJ.log("Cant load settings when tracking a plane");
-        // }
+        if ( microtomeManager.isMicrotomeModeActive() ) {
+            microtomePanel.exitMicrotomeMode();
+        }
+
+        if ( !planeManager.isTrackingPlane() ) {
+
+            // setup plane settings
+            // make a copy, so not modifying as we loop
+            ArrayList<String> planeNames = new ArrayList<>( planeManager.getPlaneNames() );
+            for ( String planeName : planeNames ) {
+                planeManager.removeNamedPlane(planeName);
+            }
+
+            for ( PlaneSettings planeSettings: settings.planeSettings ) {
+                if ( planeSettings instanceof BlockPlaneSettings ) {
+                    planeManager.addBlockPlane( (BlockPlaneSettings) planeSettings );
+                } else {
+                    planeManager.addPlane( planeSettings );
+                }
+            }
+
+            // setup image settings
+            Map<String, Content> imageNameToContent = imagesPanel.getImageNameToContent();
+            for ( String imageName: settings.imageNameToSettings.keySet() ) {
+                loadImageSettings( imageNameToContent.get( imageName ), settings.imageNameToSettings.get( imageName ) );
+            }
+
+            if ( !otherPanel.check3DPointsVisible() ) {
+                otherPanel.toggleVisiblity3DPoints();
+            }
+        } else {
+            IJ.log("Cant load settings when tracking a plane");
+        }
 
     }
 }

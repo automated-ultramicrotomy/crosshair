@@ -43,28 +43,33 @@ public class Plane {
     private final ArrayList<RealPoint> pointsToFitPlane; // points used to fit this plane
     private double distanceBetweenPlanesThreshold = 1E-10; // distance used to be 'on' plane
 
-    public Plane( String name, Vector3d normal, Vector3d point, Vector3d centroid, Content mesh, Color3f color,
-                  float transparency, boolean isVisible, Bdv bdv, Point3dOverlay point3dOverlay ) {
-        this.name = name;
-        this.normal = normal;
-        this.point = point;
+    public Plane( PlaneSettings planeSettings, Vector3d centroid, Content mesh, Bdv bdv, Point3dOverlay point3dOverlay ) {
+        this.name = planeSettings.name;
+        this.normal = planeSettings.normal;
+        this.point = planeSettings.point;
         this.centroid = centroid;
 
-        this.transparency = transparency;
-        this.isVisible = isVisible;
+        this.transparency = planeSettings.transparency;
+        this.isVisible = planeSettings.isVisible;
         this.mesh = mesh;
-        this.color = color;
+        this.color = planeSettings.color;
 
         this.bdv = bdv;
         this.point3dOverlay = point3dOverlay;
 
-        this.pointsToFitPlane = new ArrayList<>();
+        this.pointsToFitPlane = planeSettings.pointsToFitPlane;
         this.pointsToFitPlane2dOverlay = new PointsToFitPlane2dOverlay( this );
         BdvFunctions.showOverlay( pointsToFitPlane2dOverlay, name + "-points_to_fit_plane",
                 Bdv.options().addTo(bdv) );
+
+        if ( pointsToFitPlane.size() > 0 ) {
+            for ( RealPoint point: pointsToFitPlane ) {
+                point3dOverlay.addPoint( point );
+            }
+        }
     }
 
-    public void updatePlane( Vector3d normal, Vector3d point, Vector3d centroid, Content mesh ) {
+    public void updatePlaneOrientation(Vector3d normal, Vector3d point, Vector3d centroid, Content mesh ) {
         this.normal = normal;
         this.point = point;
         this.centroid = centroid;
@@ -127,6 +132,10 @@ public class Plane {
         return pointsToFitPlane;
     }
 
+    public double getDistanceBetweenPlanesThreshold() {
+        return distanceBetweenPlanesThreshold;
+    }
+
     public void addOrRemoveCurrentPositionFromPointsToFitPlane() {
         RealPoint point = getCurrentMousePosition( bdv.getBdvHandle() );
 
@@ -182,5 +191,9 @@ public class Plane {
 
     public PointsToFitPlane2dOverlay getPointsToFitPlane2dOverlay() {
         return pointsToFitPlane2dOverlay;
+    }
+
+    public PlaneSettings getSettings() {
+        return new PlaneSettings( this );
     }
 }
