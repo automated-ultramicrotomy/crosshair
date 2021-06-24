@@ -2,21 +2,12 @@ package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
-import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.plane.BlockPlane;
-import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.vecmath.Vector3d;
-
-import javax.swing.*;
-import java.util.ArrayList;
 
 public class AccuracyBdvBehaviours {
 

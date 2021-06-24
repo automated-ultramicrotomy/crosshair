@@ -1,6 +1,5 @@
 package de.embl.schwab.crosshair.points.overlays;
 
-import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 
 import java.awt.*;

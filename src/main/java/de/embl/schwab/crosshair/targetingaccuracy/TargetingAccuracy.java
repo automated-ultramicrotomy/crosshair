@@ -1,23 +1,14 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvFunctions;
-import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
-import de.embl.schwab.crosshair.bdv.BdvBehaviours;
-import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
-import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.type.numeric.ARGBType;
-import org.scijava.plugin.Parameter;
-
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;

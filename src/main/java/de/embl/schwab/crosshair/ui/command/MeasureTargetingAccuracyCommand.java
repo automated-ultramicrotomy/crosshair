@@ -1,24 +1,12 @@
 package de.embl.schwab.crosshair.ui.command;
 
-import bdv.util.BdvFunctions;
-import bdv.util.BdvOptions;
-import bdv.util.BdvStackSource;
-import bdv.viewer.Source;
-import de.embl.cba.bdv.utils.sources.LazySpimSource;
-import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.targetingaccuracy.TargetingAccuracy;
 import ij.IJ;
-import ij3d.Content;
-import ij3d.Image3DUniverse;
-import net.imagej.ImageJ;
-import net.imglib2.type.numeric.ARGBType;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import java.io.File;
-
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
 
 @Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Analysis>Measure Targeting Accuracy" )
 public class MeasureTargetingAccuracyCommand implements Command {

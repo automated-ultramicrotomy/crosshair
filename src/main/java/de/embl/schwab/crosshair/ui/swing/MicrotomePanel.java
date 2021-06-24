@@ -4,7 +4,6 @@ import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import ij.IJ;

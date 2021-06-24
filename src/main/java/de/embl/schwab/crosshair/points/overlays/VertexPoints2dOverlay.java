@@ -1,6 +1,5 @@
 package de.embl.schwab.crosshair.points.overlays;
 
-import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.points.VertexDisplay;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import net.imglib2.RealPoint;

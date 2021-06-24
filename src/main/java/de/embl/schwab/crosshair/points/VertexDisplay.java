@@ -4,7 +4,6 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
-import de.embl.schwab.crosshair.points.overlays.PointsToFitPlane2dOverlay;
 import de.embl.schwab.crosshair.points.overlays.VertexPoints2dOverlay;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;

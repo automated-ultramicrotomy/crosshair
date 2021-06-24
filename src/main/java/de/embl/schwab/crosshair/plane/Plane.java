@@ -1,10 +1,6 @@
 package de.embl.schwab.crosshair.plane;
 
-import bdv.util.Bdv;
-import bdv.util.BdvFunctions;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
-import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
-import de.embl.schwab.crosshair.points.overlays.PointsToFitPlane2dOverlay;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import net.imglib2.RealPoint;
@@ -12,9 +8,6 @@ import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
-import java.util.ArrayList;
-
-import static de.embl.schwab.crosshair.points.PointHelper.*;
 
 public class Plane {
 
@@ -112,46 +105,9 @@ public class Plane {
         return pointsToFitPlaneDisplay;
     }
 
-    // public ArrayList<RealPoint> getPointsToFitPlane() {
-    //     return pointsToFitPlane;
-    // }
-
     public double getDistanceBetweenPlanesThreshold() {
         return distanceBetweenPlanesThreshold;
     }
-
-    // public void addOrRemoveCurrentPositionFromPointsToFitPlane() {
-    //     RealPoint point = getCurrentMousePosition( bdv.getBdvHandle() );
-    //
-    //     // remove point if within a certain distance of an existing point, otherwise add point
-    //     RealPoint matchingPointWithinDistance = getMatchingPointWithinDistance( pointsToFitPlane, point, bdv.getBdvHandle());
-    //
-    //     if ( matchingPointWithinDistance != null ) {
-    //         removePointToFitPlane( matchingPointWithinDistance );
-    //     } else {
-    //         addPointToFitPlane( point );
-    //     }
-    // }
-    //
-    // public void addPointToFitPlane( RealPoint point ) {
-    //     pointsToFitPlane.add( point );
-    //     point3dOverlay.addPoint( point );
-    //     bdv.getBdvHandle().getViewerPanel().requestRepaint();
-    // }
-    //
-    // public void removePointToFitPlane( RealPoint point ) {
-    //     point3dOverlay.removePoint( point );
-    //     pointsToFitPlane.remove( point );
-    //     bdv.getBdvHandle().getViewerPanel().requestRepaint();
-    // }
-    //
-    // public void removeAllPointsToFitPlane() {
-    //     for ( RealPoint point : pointsToFitPlane ) {
-    //         point3dOverlay.removePoint(point);
-    //     }
-    //     pointsToFitPlane.clear();
-    //     bdv.getBdvHandle().getViewerPanel().requestRepaint();
-    // }
 
     public void setDistanceBetweenPlanesThreshold( double distanceBetweenPlanesThreshold ) {
         this.distanceBetweenPlanesThreshold = distanceBetweenPlanesThreshold;
@@ -172,10 +128,6 @@ public class Plane {
             return false;
         }
     }
-
-    // public PointsToFitPlane2dOverlay getPointsToFitPlane2dOverlay() {
-    //     return pointsToFitPlane2dOverlay;
-    // }
 
     public boolean isOrientationSet() {
         return normal != null && point != null;
