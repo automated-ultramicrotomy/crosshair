@@ -34,6 +34,9 @@ public class AccuracyBdvBehaviours {
         if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
         } else {
+            if ( !planeManager.checkNamedPlaneExists( TargetingAccuracy.afterBlock ) ) {
+                planeManager.addPlane( TargetingAccuracy.afterBlock );
+            }
             planeManager.getPointsToFitPlaneDisplay( TargetingAccuracy.afterBlock ).addOrRemoveCurrentPositionFromPointsToFitPlane();
         }
     }
@@ -42,7 +45,9 @@ public class AccuracyBdvBehaviours {
         if ( planeManager.isTrackingPlane() && planeManager.getTrackedPlaneName().equals( TargetingAccuracy.afterBlock ) ) {
             IJ.log("Can't fit to points when tracking after block plane");
         } else {
-            planeManager.fitPlaneToPoints( TargetingAccuracy.afterBlock );
+            if ( planeManager.checkNamedPlaneExists( TargetingAccuracy.afterBlock ) ) {
+                planeManager.fitToPoints(TargetingAccuracy.afterBlock);
+            }
         }
     }
 
@@ -74,18 +79,6 @@ public class AccuracyBdvBehaviours {
                 planeManager.setPointMode( true );
             } else {
                 planeManager.setPointMode( false );
-            }
-        });
-
-        BdvPopupMenus.addAction(bdvHandle, "Toggle Vertex Mode", ( x, y ) ->
-        {
-            if ( !planeManager.isInVertexMode() ) {
-                if ( planeManager.isInPointMode() ) {
-                    planeManager.setPointMode( false );
-                }
-                planeManager.setVertexMode( true );
-            } else {
-                planeManager.setVertexMode( false );
             }
         });
 

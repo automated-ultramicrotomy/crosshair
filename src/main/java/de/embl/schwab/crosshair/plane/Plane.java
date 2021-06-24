@@ -177,6 +177,10 @@ public class Plane {
     //     return pointsToFitPlane2dOverlay;
     // }
 
+    public boolean isOrientationSet() {
+        return normal != null && point != null;
+    }
+
     public PlaneSettings getSettings() {
         return new PlaneSettings( this );
     }

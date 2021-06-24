@@ -447,8 +447,8 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     private boolean checkAllCrosshairPlanesPointsDefined() {
-        boolean targetExists = planeManager.checkNamedPlaneExists( Crosshair.target );
-        boolean blockExists = planeManager.checkNamedPlaneExists( Crosshair.block );
+        boolean targetExists = planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.target );
+        boolean blockExists = planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.block );
 
         boolean allVerticesExist = false;
         if ( blockExists ) {

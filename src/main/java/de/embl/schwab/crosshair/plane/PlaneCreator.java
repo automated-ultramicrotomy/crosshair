@@ -37,29 +37,35 @@ public class PlaneCreator {
 
     public Plane createPlane( PlaneSettings planeSettings ) {
 
-        CentroidAndMesh centroidAndMesh = createCentroidAndMesh( planeSettings );
+        PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
+                planeSettings.pointsToFitPlane, planeSettings.name, bdv, point3dOverlay );
 
-        return new Plane( planeSettings, centroidAndMesh.centroid, centroidAndMesh.mesh,
-                new PointsToFitPlaneDisplay( planeSettings.pointsToFitPlane, planeSettings.name, bdv, point3dOverlay) );
-    }
-
-    public Plane createPlane( PlaneSettings planeSettings, PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
-
-        CentroidAndMesh centroidAndMesh = createCentroidAndMesh( planeSettings );
-
-        return new Plane( planeSettings, centroidAndMesh.centroid, centroidAndMesh.mesh, pointsToFitPlaneDisplay );
+        if ( isOrientationSet( planeSettings ) ) {
+            CentroidAndMesh centroidAndMesh = createCentroidAndMesh(planeSettings);
+            return new Plane( planeSettings, centroidAndMesh.centroid, centroidAndMesh.mesh, pointsToFitPlaneDisplay );
+        } else {
+            return new Plane( planeSettings, null, null, pointsToFitPlaneDisplay );
+        }
     }
 
     public BlockPlane createBlockPlane( BlockPlaneSettings blockPlaneSettings ) {
 
-        CentroidAndMesh centroidAndMesh = createCentroidAndMesh( blockPlaneSettings );
         PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
                 blockPlaneSettings.pointsToFitPlane, blockPlaneSettings.name, bdv, point3dOverlay );
         VertexDisplay vertexDisplay = new VertexDisplay(
                 blockPlaneSettings.vertices, blockPlaneSettings.assignedVertices, blockPlaneSettings.name, bdv, point3dOverlay );
 
-        return new BlockPlane( blockPlaneSettings, centroidAndMesh.centroid, centroidAndMesh.mesh,
-                pointsToFitPlaneDisplay, vertexDisplay );
+        if ( isOrientationSet( blockPlaneSettings ) ) {
+            CentroidAndMesh centroidAndMesh = createCentroidAndMesh( blockPlaneSettings );
+            return new BlockPlane(blockPlaneSettings, centroidAndMesh.centroid, centroidAndMesh.mesh,
+                    pointsToFitPlaneDisplay, vertexDisplay);
+        } else {
+            return new BlockPlane( blockPlaneSettings, null, null, pointsToFitPlaneDisplay, vertexDisplay );
+        }
+    }
+
+    private boolean isOrientationSet( PlaneSettings settings ) {
+        return settings.normal != null && settings.point != null;
     }
 
     public void updatePlaneOrientation( Plane plane, Vector3d newNormal, Vector3d newPoint ) {

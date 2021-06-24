@@ -91,7 +91,7 @@ import java.util.Map;
                     new Dimension(2*buttonDimensions[0], buttonDimensions[1]));
 
             goToButton.addActionListener(e -> {
-                if (planeManager.checkNamedPlaneExists(planeName)) {
+                if (planeManager.checkNamedPlaneExistsAndOrientationIsSet(planeName)) {
                     planeManager.moveViewToNamedPlane(planeName);
                 } else {
                     IJ.log("Plane not initialised");

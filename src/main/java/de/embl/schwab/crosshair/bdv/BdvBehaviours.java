@@ -37,10 +37,11 @@ public class BdvBehaviours {
             IJ.log("Can't change points when in microtome mode");
         } else if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
-        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
+        } else if ( !planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.block )) {
             IJ.log("Block plane doesn't exist - vertices must lie on this plane!");
         } else {
-            planeManager.getVertexDisplay( Crosshair.block ).addOrRemoveCurrentPositionFromVertices();
+            Plane blockPlane = planeManager.getPlane( Crosshair.block );
+            planeManager.getVertexDisplay( Crosshair.block ).addOrRemoveCurrentPositionFromVertices( blockPlane );
         }
     }
 
@@ -49,9 +50,10 @@ public class BdvBehaviours {
             IJ.log("Can't change points when in microtome mode");
         } else if ( planeManager.isTrackingPlane() ) {
             IJ.log("Can't change points when tracking a plane");
-        } else if ( !planeManager.checkNamedPlaneExists( Crosshair.block )) {
-            IJ.log("Block plane doesn't exist" );
         } else {
+            if ( !planeManager.checkNamedPlaneExists( Crosshair.block ) ) {
+                planeManager.addBlockPlane( Crosshair.block );
+            }
             planeManager.getPointsToFitPlaneDisplay( Crosshair.block ).addOrRemoveCurrentPositionFromPointsToFitPlane();
         }
     }
@@ -71,10 +73,10 @@ public class BdvBehaviours {
                         JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     plane.getVertexDisplay().removeAllVertices();
-                    planeManager.fitBlockPlaneToPoints( Crosshair.block );
+                    planeManager.fitToPoints( Crosshair.block );
                 }
             } else {
-                planeManager.fitBlockPlaneToPoints( Crosshair.block );
+                planeManager.fitToPoints( Crosshair.block );
             }
         }
     }
