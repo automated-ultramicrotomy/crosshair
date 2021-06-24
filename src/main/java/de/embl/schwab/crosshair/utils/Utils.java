@@ -1,8 +1,12 @@
 package de.embl.schwab.crosshair.utils;
 
+import bdv.util.BdvHandle;
 import ij3d.Content;
+import ij3d.Image3DUniverse;
 import org.scijava.vecmath.Point3d;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -34,5 +38,17 @@ public class Utils {
         }
         return result;
 
+    }
+
+    public static void spaceOutWindows( BdvHandle bdvHandle, JFrame frame, Image3DUniverse universe ) {
+        // Space out windows like here:
+        // https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java#L369
+        Window viewFrame = SwingUtilities.getWindowAncestor(bdvHandle.getViewerPanel());
+        viewFrame.setLocation(
+                frame.getLocationOnScreen().x + frame.getWidth(),
+                frame.getLocationOnScreen().y );
+
+        universe.getWindow().setLocation(viewFrame.getLocationOnScreen().x + viewFrame.getWidth(),
+                viewFrame.getLocation().y);
     }
 }

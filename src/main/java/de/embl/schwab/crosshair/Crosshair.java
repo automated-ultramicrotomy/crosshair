@@ -12,6 +12,8 @@ import ij3d.Image3DUniverse;
 import javax.swing.*;
 import java.awt.Window;
 
+import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
+
 // TODO - neaten up code structure, possibly clearer labelling of which coordinate system & units are being used
 // TODO - check degree symbols work on mac
 
@@ -53,15 +55,6 @@ public class Crosshair {
 
 		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, bdvHandle, unit);
 
-		// Space out windows like here:
-		// https://github.com/mobie/mobie-viewer-fiji/blob/9f7367902cc0bd01e089f7ce40cdcf0ee0325f1e/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java#L369
-		Window viewFrame = SwingUtilities.getWindowAncestor(bdvHandle.getViewerPanel());
-		viewFrame.setLocation(
-						crosshairFrame.getLocationOnScreen().x + crosshairFrame.getWidth(),
-						crosshairFrame.getLocationOnScreen().y );
-
-		universe.getWindow().setLocation(viewFrame.getLocationOnScreen().x + viewFrame.getWidth(),
-				viewFrame.getLocation().y);
-
+		spaceOutWindows( bdvHandle, crosshairFrame, universe );
 	}
 }

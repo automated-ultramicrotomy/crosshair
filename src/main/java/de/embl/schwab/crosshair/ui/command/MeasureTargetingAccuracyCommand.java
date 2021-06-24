@@ -6,6 +6,7 @@ import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.targetingaccuracy.TargetingAccuracy;
 import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -39,28 +40,7 @@ public class MeasureTargetingAccuracyCommand implements Command {
         } else if ( !crosshairJson.getAbsolutePath().endsWith(".json") ) {
             IJ.log("Not a json file");
         } else {
-            final LazySpimSource beforeSource = new LazySpimSource("before", beforeTargetingXml.getAbsolutePath() );
-            BdvStackSource beforeStackSource = BdvFunctions.show( beforeSource, 1);
-            beforeStackSource.setDisplayRange(0, 255);
-
-            final LazySpimSource afterSource = new LazySpimSource("after", registeredAfterTargetingXml.getAbsolutePath() );
-            BdvStackSource afterStackSource = BdvFunctions.show( afterSource, 1, BdvOptions.options().addTo( beforeStackSource ));
-            afterStackSource.setDisplayRange(0, 255);
-
-            Image3DUniverse universe = new Image3DUniverse();
-            universe.show();
-
-            String unit = beforeSource.getVoxelDimensions().unit();
-
-            for ( Source source: new Source[]{beforeSource, afterSource}) {
-                // Set to arbitrary colour
-                ARGBType colour = new ARGBType(ARGBType.rgba(0, 0, 0, 0));
-                Content imageContent = addSourceToUniverse(universe, source, 300 * 300 * 300, Content.VOLUME, colour, 0.7f, 0, 255);
-                // Reset colour to default for 3D viewer
-                imageContent.setColor(null);
-            }
-
-            // new Crosshair(bdvStackSource, universe, imageContent, unit);
+            new TargetingAccuracy( beforeTargetingXml, registeredAfterTargetingXml, crosshairJson );
         }
     }
 
