@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.ui.swing;
 
 import bdv.util.BdvHandle;
+import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.points.PointOverlay2d;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -16,20 +17,20 @@ public class OtherPanel extends CrosshairPanel {
 
     private ArrayList<Content> imageContents;
     private Image3DUniverse universe;
+    private PlaneManager planeManager;
     private boolean threeDPointsVisible;
-    private ArrayList<PointOverlay2d> pointOverlays;
     private BdvHandle bdvHandle;
     private ArrayList<JButton> microtomeVisibilityButtons;
 
     public OtherPanel() {}
 
-    public void initialisePanel(ArrayList<Content> imageContents, Image3DUniverse universe,
-                                ArrayList<PointOverlay2d> pointOverlays, BdvHandle bdvHandle,
+    public void initialisePanel( ArrayList<Content> imageContents, Image3DUniverse universe,
+                                PlaneManager planeManager,  BdvHandle bdvHandle,
                                 boolean includeMicrotomeButtons ) {
         this.imageContents = imageContents;
         this.universe = universe;
-        this.pointOverlays = pointOverlays;
         this.bdvHandle = bdvHandle;
+        this.planeManager = planeManager;
         threeDPointsVisible = true;
         microtomeVisibilityButtons = new ArrayList<>();
 
@@ -55,7 +56,7 @@ public class OtherPanel extends CrosshairPanel {
         imageContents.add( crosshairFrame.getImageContent() );
 
         initialisePanel( imageContents, crosshairFrame.getUniverse(),
-                crosshairFrame.getPlaneManager().getAll2dPointOverlays(),
+                crosshairFrame.getPlaneManager(),
                 crosshairFrame.getBdvHandle(), true );
     }
 
@@ -100,7 +101,7 @@ public class OtherPanel extends CrosshairPanel {
                 new Dimension(buttonDimensions[0], buttonDimensions[1]));
 
         visbilityButton.addActionListener(e -> {
-            for ( PointOverlay2d pointOverlay: pointOverlays ) {
+            for ( PointOverlay2d pointOverlay: planeManager.getAll2dPointOverlays() ) {
                 pointOverlay.toggleShowPoints();
             }
             bdvHandle.getViewerPanel().requestRepaint();
