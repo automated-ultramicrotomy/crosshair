@@ -4,15 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.io.ImageContentSettings;
-import de.embl.schwab.crosshair.io.PlaneSettingsListDeserializer;
-import de.embl.schwab.crosshair.io.Settings;
-import de.embl.schwab.crosshair.io.Solution;
+import de.embl.schwab.crosshair.io.*;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.BlockPlaneSettings;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.plane.PlaneSettings;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import ij.IJ;
 import ij3d.Content;
 
@@ -220,7 +218,8 @@ public class SavePanel extends CrosshairPanel {
 
     private Settings readSettings( String filePath ) {
         Gson gson = new GsonBuilder().
-                registerTypeAdapter( new TypeToken<List<PlaneSettings>>(){}.getType(), new PlaneSettingsListDeserializer()).create();
+                registerTypeAdapter( new TypeToken<List<PlaneSettings>>(){}.getType(), new PlaneSettingsListDeserializer()).
+                registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointDeserializer() ).create();
 
         try {
             FileReader fileReader = new FileReader(filePath);
