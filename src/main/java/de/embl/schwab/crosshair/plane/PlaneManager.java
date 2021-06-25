@@ -4,6 +4,7 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
+import bdv.viewer.SourceAndConverter;
 import de.embl.schwab.crosshair.bdv.ModeOverlay;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.VertexDisplay;
@@ -324,16 +325,30 @@ public class PlaneManager {
         }
     }
 
+    private SourceAndConverter getMatchingBdvSource( String name ) {
+        for ( SourceAndConverter sac: bdvHandle.getViewerPanel().state().getSources() ) {
+            if (sac.getSpimSource().getName().equals(name)) {
+                return sac;
+            }
+        }
+
+        return null;
+    }
+
     public void removeNamedPlane (String name) {
         if ( checkNamedPlaneExists(name) ) {
             PointsToFitPlaneDisplay pointsToFitPlaneDisplay = getPointsToFitPlaneDisplay( name );
             pointsToFitPlaneDisplay.removeAllPointsToFitPlane();
             bdvHandle.getViewerPanel().getDisplay().overlays().remove( pointsToFitPlaneDisplay.getPoint2dOverlay() );
+            SourceAndConverter pointSource = getMatchingBdvSource( pointsToFitPlaneDisplay.getSourceName() );
+            bdvHandle.getViewerPanel().state().removeSource( pointSource );
 
             if ( getPlane( name ) instanceof BlockPlane ) {
                 VertexDisplay vertexDisplay = getVertexDisplay( name );
                 vertexDisplay.removeAllVertices();
                 bdvHandle.getViewerPanel().getDisplay().overlays().remove( vertexDisplay.get2dOverlay() );
+                SourceAndConverter vertexSource = getMatchingBdvSource( vertexDisplay.getSourceName() );
+                bdvHandle.getViewerPanel().state().removeSource( vertexSource );
             }
 
             planeNameToPlane.remove( name );

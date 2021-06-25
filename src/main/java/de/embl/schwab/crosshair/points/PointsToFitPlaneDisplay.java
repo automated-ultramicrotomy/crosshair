@@ -17,6 +17,7 @@ public class PointsToFitPlaneDisplay {
     private Bdv bdv;
     private Point3dOverlay point3dOverlay;
     private PointsToFitPlane2dOverlay point2dOverlay;
+    private String sourceName;
 
     public PointsToFitPlaneDisplay( String name, Bdv bdv, Point3dOverlay point3dOverlay ) {
         this( new ArrayList<>(), name, bdv, point3dOverlay );
@@ -27,7 +28,8 @@ public class PointsToFitPlaneDisplay {
         this.point2dOverlay = new PointsToFitPlane2dOverlay( this );
         this.point3dOverlay = point3dOverlay;
         this.bdv = bdv;
-        BdvFunctions.showOverlay( point2dOverlay, name + "-points_to_fit_plane",
+        this.sourceName = name + "-points_to_fit_plane";
+        BdvFunctions.showOverlay( point2dOverlay, sourceName,
                 Bdv.options().addTo(bdv) );
 
         for ( RealPoint point: pointsToFitPlane ) {
@@ -41,6 +43,10 @@ public class PointsToFitPlaneDisplay {
 
     public PointsToFitPlane2dOverlay getPoint2dOverlay() {
         return point2dOverlay;
+    }
+
+    public String getSourceName() {
+        return sourceName;
     }
 
     public void addOrRemoveCurrentPositionFromPointsToFitPlane() {

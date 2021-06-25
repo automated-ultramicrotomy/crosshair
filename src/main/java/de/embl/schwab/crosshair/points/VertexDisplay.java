@@ -27,6 +27,7 @@ public class VertexDisplay {
     private VertexPoints2dOverlay vertex2dOverlay;
     private Point3dOverlay vertex3dOverlay;
     private Bdv bdv;
+    private String sourceName;
 
     public VertexDisplay( String name, Bdv bdv, Point3dOverlay point3dOverlay ) {
         this( new ArrayList<>(), new HashMap<>(), name, bdv, point3dOverlay );
@@ -41,8 +42,9 @@ public class VertexDisplay {
         this.vertex2dOverlay = new VertexPoints2dOverlay( this );
         this.vertex3dOverlay = vertex3dOverlay;
         this.bdv = bdv;
+        this.sourceName = name + "-vertex_points";
 
-        BdvFunctions.showOverlay( vertex2dOverlay, name + "-vertex_points",
+        BdvFunctions.showOverlay( vertex2dOverlay, sourceName,
                 Bdv.options().addTo(bdv) );
 
 
@@ -87,6 +89,10 @@ public class VertexDisplay {
 
     public VertexPoints2dOverlay get2dOverlay() {
         return vertex2dOverlay;
+    }
+
+    public String getSourceName() {
+        return sourceName;
     }
 
     public void assignSelectedVertex(VertexPoint vertexPoint ) {
