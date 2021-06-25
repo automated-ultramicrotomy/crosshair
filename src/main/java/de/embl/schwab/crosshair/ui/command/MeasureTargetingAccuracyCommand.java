@@ -2,6 +2,7 @@ package de.embl.schwab.crosshair.ui.command;
 
 import de.embl.schwab.crosshair.targetingaccuracy.TargetingAccuracy;
 import ij.IJ;
+import mpicbg.spim.data.SpimDataException;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -28,7 +29,11 @@ public class MeasureTargetingAccuracyCommand implements Command {
         } else if ( !crosshairJson.getAbsolutePath().endsWith(".json") ) {
             IJ.log("Not a json file");
         } else {
-            new TargetingAccuracy( beforeTargetingXml, registeredAfterTargetingXml, crosshairJson );
+            try {
+                new TargetingAccuracy( beforeTargetingXml, registeredAfterTargetingXml, crosshairJson );
+            } catch (SpimDataException e) {
+                e.printStackTrace();
+            }
         }
     }
 

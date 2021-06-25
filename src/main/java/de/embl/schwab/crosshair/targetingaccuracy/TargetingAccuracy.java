@@ -1,5 +1,7 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
@@ -12,9 +14,17 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.plane.PlaneSettings;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.registration.ViewRegistration;
+import mpicbg.spim.data.registration.ViewTransform;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
+import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.Matrix4d;
+
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
@@ -28,7 +38,35 @@ public class TargetingAccuracy {
     public static final String afterBlock = "after block";
     public static final String beforeTarget = "before target";
 
-    public TargetingAccuracy ( File beforeTargetingXml, File registeredAfterTargetingXml, File crosshairJson ) {
+    private void accountForTransforms( File registeredAfterTargetingXml, Content imageContent ) throws SpimDataException {
+        // The after image is registered to the before, so I also need to shift its 3d to match
+
+        // read any transforms directly from the xml
+        SpimDataMinimal spimDataMinimal = new XmlIoSpimDataMinimal().load( registeredAfterTargetingXml.getAbsolutePath() );
+        List<ViewTransform> transforms = spimDataMinimal.getViewRegistrations().getViewRegistrationsOrdered().get(0).getTransformList();
+
+        // take every transform into account apart from the last (assuming the last is the base transform i.e. voxel size only)
+        AffineTransform3D affine = new AffineTransform3D();
+        for ( int i=0; i<transforms.size() - 1; i ++ ) {
+            affine.concatenate( transforms.get(i).asAffine3D() );
+        }
+
+        double[] flatMatrix = new double[16];
+        double[][] matrix = new double[4][4];
+        affine.toMatrix( matrix );
+
+        for ( int i=0; i<matrix.length; i++ ) {
+            double[] matrixRow = matrix[i];
+            for ( int j = 0; j< matrixRow.length; j++ ) {
+                flatMatrix[ i*4 + j ] = matrixRow[j];
+            }
+        }
+
+        Transform3D imageContentTransform = new Transform3D( flatMatrix );
+        imageContent.setTransform( imageContentTransform );
+    }
+
+    public TargetingAccuracy ( File beforeTargetingXml, File registeredAfterTargetingXml, File crosshairJson ) throws SpimDataException {
 
         final LazySpimSource beforeSource = new LazySpimSource("before", beforeTargetingXml.getAbsolutePath());
         final LazySpimSource afterSource = new LazySpimSource("after", registeredAfterTargetingXml.getAbsolutePath());
@@ -63,6 +101,8 @@ public class TargetingAccuracy {
 
                 imageNameToContent.put( sourceNames[i], imageContent );
             }
+
+            accountForTransforms( registeredAfterTargetingXml, imageNameToContent.get( TargetingAccuracy.after ) );
 
             // we use the before image content to define the extent of the planes. The before x-ray should be the largest,
             // and so give an extent that covers both comfortably
