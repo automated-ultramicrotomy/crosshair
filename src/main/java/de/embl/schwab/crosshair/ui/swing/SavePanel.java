@@ -167,7 +167,7 @@ public class SavePanel extends CrosshairPanel {
         }
         settings.planeSettings = planeSettings;
 
-        Map<String, ImageContentSettings> imageNameToSettings = new HashMap<>();
+        List<ImageContentSettings> imageSettings = new ArrayList<>();
         Map<String, Content> imageNameTocontent = imagesPanel.getImageNameToContent();
         for ( String imageName: imageNameTocontent.keySet() ) {
 
@@ -184,13 +184,13 @@ public class SavePanel extends CrosshairPanel {
             imageContent.getBlueLUT(blueLut);
             imageContent.getAlphaLUT(alphaLut);
 
-            ImageContentSettings imageSettings = new ImageContentSettings( imageContent.getTransparency(),
-                    imageContent.getColor(), redLut, greenLut, blueLut, alphaLut );
-
-            imageNameToSettings.put( imageName, imageSettings );
+            imageSettings.add(
+                    new ImageContentSettings( imageName, imageContent.getTransparency(),
+                    imageContent.getColor(), redLut, greenLut, blueLut, alphaLut ) ) ;
         }
 
-        settings.imageNameToSettings = imageNameToSettings;
+        settings.imageSettings = imageSettings;
+
         return settings;
     }
 
@@ -268,8 +268,8 @@ public class SavePanel extends CrosshairPanel {
 
             // setup image settings
             Map<String, Content> imageNameToContent = imagesPanel.getImageNameToContent();
-            for ( String imageName: settings.imageNameToSettings.keySet() ) {
-                loadImageSettings( imageNameToContent.get( imageName ), settings.imageNameToSettings.get( imageName ) );
+            for ( ImageContentSettings imageSettings: settings.imageSettings ) {
+                loadImageSettings( imageNameToContent.get( imageSettings.name ), imageSettings );
             }
 
             if ( !otherPanel.check3DPointsVisible() ) {

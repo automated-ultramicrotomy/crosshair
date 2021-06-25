@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.io;
 import org.scijava.vecmath.Color3f;
 
 public class ImageContentSettings {
+    public String name;
     public float imageTransparency;
     public Color3f imageColour;
     // 3D Viewer Transfer function
@@ -11,8 +12,9 @@ public class ImageContentSettings {
     public int[] blueLut;
     public int[] alphaLut;
 
-    public ImageContentSettings( float imageTransparency, Color3f imageColour, int[] redLut, int[] greenLut, int[] blueLut,
-                          int[] alphaLut ) {
+    public ImageContentSettings( String name, float imageTransparency, Color3f imageColour, int[] redLut, int[] greenLut,
+                                 int[] blueLut, int[] alphaLut ) {
+        this.name = name;
         this.imageTransparency = imageTransparency;
         this.imageColour = imageColour;
         this.redLut = redLut;
