@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.*;
 import ij3d.Content;
@@ -53,8 +54,8 @@ public class TargetingAccuracyFrame extends JFrame {
         allPanels.add(imagesPanel);
 
         ArrayList<String> planeNames = new ArrayList<>();
-        planeNames.add( TargetingAccuracy.beforeBlock );
         planeNames.add( TargetingAccuracy.beforeTarget );
+        planeNames.add( TargetingAccuracy.beforeBlock );
         planeNames.add( TargetingAccuracy.afterBlock );
         planePanel.initialisePanel( planeManager, planeNames,  new ArrayList<>() );
         otherPanel.initialisePanel( new ArrayList<>( imageNametoContent.values() ), universe, planeManager,

@@ -38,7 +38,7 @@ public class MeasureTargetingAccuracyCommand implements Command {
         MeasureTargetingAccuracyCommand command = new MeasureTargetingAccuracyCommand();
         command.beforeTargetingXml = new File( "C:\\Users\\meechan\\Documents\\temp\\azumi_data\\before.xml");
         command.registeredAfterTargetingXml = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\analysis\\after_registered.xml");
-        command.crosshairJson = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_settings.json" );
+        command.crosshairJson = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_new_format_settings.json" );
         command.run();
     }
 }
