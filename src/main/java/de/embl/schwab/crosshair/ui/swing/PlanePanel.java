@@ -313,6 +313,10 @@ import java.util.Map;
             }
         }
 
+        public Map<String, JButton> getTrackingButtons() {
+            return trackingButtons;
+        }
+
         public void enableAllGoToButtons() {
             for ( JButton button: goToButtons.values() ) {
                 button.setEnabled( true );

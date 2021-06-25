@@ -58,6 +58,17 @@ public class TargetingAccuracyFrame extends JFrame {
         planeNames.add( TargetingAccuracy.beforeBlock );
         planeNames.add( TargetingAccuracy.afterBlock );
         planePanel.initialisePanel( planeManager, planeNames,  new ArrayList<>() );
+
+        // disable and prevent enabling of before target plane tracking
+        JButton targetTrackingButton = planePanel.getTrackingButtons().get( TargetingAccuracy.beforeTarget );
+        targetTrackingButton.setEnabled( false );
+        planePanel.getTrackingButtons().remove( TargetingAccuracy.beforeTarget );
+
+        // disable and prevent enabling of before block plane trakcing
+        JButton blockTrackingButton = planePanel.getTrackingButtons().get( TargetingAccuracy.beforeBlock );
+        blockTrackingButton.setEnabled( false );
+        planePanel.getTrackingButtons().remove( TargetingAccuracy.beforeBlock );
+
         otherPanel.initialisePanel( new ArrayList<>( imageNametoContent.values() ), universe, planeManager,
                 bdvHandle, false );
         imagesPanel.initialisePanel( imageNametoContent, otherPanel, universe );
