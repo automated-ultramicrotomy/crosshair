@@ -46,12 +46,13 @@ public class TargetingAccuracyFrame extends JFrame {
         this.setContentPane(mainPane);
 
         planePanel = new PlanePanel();
-
         allPanels.add(planePanel);
         otherPanel = new OtherPanel();
         allPanels.add(otherPanel);
         imagesPanel = new ImagesPanel();
         allPanels.add(imagesPanel);
+        AccuracySavePanel savePanel = new AccuracySavePanel();
+        allPanels.add( savePanel );
 
         ArrayList<String> planeNames = new ArrayList<>();
         planeNames.add( TargetingAccuracy.beforeTarget );
@@ -72,10 +73,12 @@ public class TargetingAccuracyFrame extends JFrame {
         otherPanel.initialisePanel( new ArrayList<>( imageNametoContent.values() ), universe, planeManager,
                 bdvHandle, false );
         imagesPanel.initialisePanel( imageNametoContent, otherPanel, universe );
+        savePanel.initialisePanel( this );
 
         mainPane.add(imagesPanel);
         mainPane.add(planePanel);
         mainPane.add(otherPanel);
+        mainPane.add( savePanel );
 
         this.pack();
         this.setVisible( true );
@@ -92,5 +95,9 @@ public class TargetingAccuracyFrame extends JFrame {
 
     public PlanePanel getPlanePanel() {
         return planePanel;
+    }
+
+    public PlaneManager getPlaneManager() {
+        return planeManager;
     }
 }
