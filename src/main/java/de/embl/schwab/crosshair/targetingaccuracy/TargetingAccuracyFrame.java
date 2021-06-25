@@ -69,4 +69,16 @@ public class TargetingAccuracyFrame extends JFrame {
         this.setVisible( true );
 
     }
+
+    public ImagesPanel getImagesPanel() {
+        return imagesPanel;
+    }
+
+    public OtherPanel getOtherPanel() {
+        return otherPanel;
+    }
+
+    public PlanePanel getPlanePanel() {
+        return planePanel;
+    }
 }

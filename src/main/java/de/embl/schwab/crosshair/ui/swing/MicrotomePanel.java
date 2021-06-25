@@ -397,7 +397,7 @@ public class MicrotomePanel extends CrosshairPanel {
         }
     }
 
-    void exitMicrotomeMode () {
+    public void exitMicrotomeMode() {
         enterMicrotomeModeButton.setEnabled(true);
         exitMicrotomeModeButton.setEnabled(false);
         enterCuttingModeButton.setVisible(false);

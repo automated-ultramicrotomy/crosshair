@@ -2,6 +2,7 @@ package de.embl.schwab.crosshair.ui.swing;
 
 import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.BoundedValueDouble;
+import de.embl.schwab.crosshair.Crosshair;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import org.scijava.vecmath.Color3f;
@@ -40,7 +41,7 @@ public class ImagesPanel extends CrosshairPanel {
 
     public void initialisePanel ( CrosshairFrame crosshairFrame ) {
         Map<String, Content> imageNameToContent = new HashMap<>();
-        imageNameToContent.put( "image", crosshairFrame.getImageContent() );
+        imageNameToContent.put( Crosshair.image, crosshairFrame.getImageContent() );
 
         initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse() );
     }

@@ -5,6 +5,8 @@ import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
+import de.embl.schwab.crosshair.io.Settings;
+import de.embl.schwab.crosshair.io.SettingsReader;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -67,6 +69,13 @@ public class TargetingAccuracy {
 
             TargetingAccuracyFrame accuracyFrame = new TargetingAccuracyFrame( universe, imageNameToContent, planeManager,
                     beforeStackSource.getBdvHandle(), beforeUnit );
+
+            SettingsReader reader = new SettingsReader();
+            Settings settings = reader.readSettings( crosshairJson.getAbsolutePath() );
+            // rename the image from crosshair to 'before', so it displays nicely in the panel
+            settings.imageSettings.get(0).name = TargetingAccuracy.before;
+            reader.loadSettings( settings, planeManager,
+                    accuracyFrame.getImagesPanel().getImageNameToContent(), accuracyFrame.getOtherPanel() );
 
             spaceOutWindows(beforeStackSource.getBdvHandle(), accuracyFrame, universe);
 

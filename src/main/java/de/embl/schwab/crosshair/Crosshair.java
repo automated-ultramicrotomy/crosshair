@@ -31,6 +31,7 @@ public class Crosshair {
 
 	public static final String target = "target";
 	public static final String block = "block";
+	public static final String image = "image";
 
 	public Crosshair (BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent, String unit) {
 
