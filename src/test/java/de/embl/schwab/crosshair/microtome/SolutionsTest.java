@@ -1,7 +1,7 @@
 package de.embl.schwab.crosshair.microtome;
 
 import com.google.gson.Gson;
-import de.embl.schwab.crosshair.io.Settings;
+import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import org.junit.jupiter.api.BeforeEach;
 

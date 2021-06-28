@@ -1,4 +1,4 @@
-package de.embl.schwab.crosshair.io;
+package de.embl.schwab.crosshair.settings;
 
 import org.scijava.vecmath.Color3f;
 

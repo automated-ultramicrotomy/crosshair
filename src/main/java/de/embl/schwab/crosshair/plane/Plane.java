@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.plane;
 
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
+import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import net.imglib2.RealPoint;
@@ -28,7 +29,7 @@ public class Plane {
 
     private double distanceBetweenPlanesThreshold = 1E-10; // distance used to be 'on' plane
 
-    public Plane( PlaneSettings planeSettings, Vector3d centroid, Content mesh, PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
+    public Plane(PlaneSettings planeSettings, Vector3d centroid, Content mesh, PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
         this.name = planeSettings.name;
         this.normal = planeSettings.normal;
         this.point = planeSettings.point;

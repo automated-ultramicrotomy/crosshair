@@ -1,6 +1,8 @@
-package de.embl.schwab.crosshair.plane;
+package de.embl.schwab.crosshair.settings;
 
+import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.points.VertexPoint;
+import de.embl.schwab.crosshair.settings.PlaneSettings;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Color3f;
 

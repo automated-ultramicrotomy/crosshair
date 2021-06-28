@@ -1,6 +1,5 @@
-package de.embl.schwab.crosshair.io;
+package de.embl.schwab.crosshair.settings;
 
-import de.embl.schwab.crosshair.plane.PlaneSettings;
 import java.util.List;
 
 public class Settings {

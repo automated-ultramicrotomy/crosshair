@@ -2,11 +2,11 @@ package de.embl.schwab.crosshair.legacy;
 
 import com.google.gson.Gson;
 import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.io.ImageContentSettings;
-import de.embl.schwab.crosshair.io.Settings;
-import de.embl.schwab.crosshair.io.SettingsWriter;
-import de.embl.schwab.crosshair.plane.BlockPlaneSettings;
-import de.embl.schwab.crosshair.plane.PlaneSettings;
+import de.embl.schwab.crosshair.settings.ImageContentSettings;
+import de.embl.schwab.crosshair.settings.Settings;
+import de.embl.schwab.crosshair.settings.SettingsWriter;
+import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
+import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.points.VertexPoint;
 
 import java.io.File;

@@ -1,9 +1,11 @@
 package de.embl.schwab.crosshair.ui.swing;
 
 import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.io.*;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.settings.Settings;
+import de.embl.schwab.crosshair.settings.SettingsReader;
+import de.embl.schwab.crosshair.settings.SettingsWriter;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionWriter;
 import ij3d.Content;

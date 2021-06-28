@@ -1,22 +1,5 @@
 package develop;
 
-import bdv.util.BdvFunctions;
-import bdv.util.BdvOptions;
-import bdv.util.BdvStackSource;
-import com.google.gson.Gson;
-import de.embl.cba.bdv.utils.sources.LazySpimSource;
-import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.io.Settings;
-import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.utils.GeometryUtils;
-import ij3d.Content;
-import ij3d.Image3DUniverse;
-import net.imglib2.type.numeric.ARGBType;
-import org.scijava.vecmath.Vector3d;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
 
 public class TestDisplayAll {

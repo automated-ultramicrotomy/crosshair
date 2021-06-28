@@ -1,7 +1,6 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
-import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.ui.swing.*;

@@ -1,4 +1,4 @@
-package de.embl.schwab.crosshair.io;
+package de.embl.schwab.crosshair.settings;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,9 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.io.serialise.PlaneSettingsListDeserializer;
 import de.embl.schwab.crosshair.io.serialise.VertexPointDeserializer;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.plane.BlockPlaneSettings;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.plane.PlaneSettings;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
 import de.embl.schwab.crosshair.ui.swing.OtherPanel;
@@ -25,7 +23,7 @@ public class SettingsReader {
 
     public SettingsReader() {}
 
-    public Settings readSettings( String filePath ) {
+    public Settings readSettings(String filePath ) {
         Gson gson = new GsonBuilder().
                 registerTypeAdapter( new TypeToken<List<PlaneSettings>>(){}.getType(), new PlaneSettingsListDeserializer()).
                 registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointDeserializer() ).create();

@@ -1,10 +1,9 @@
-package de.embl.schwab.crosshair.io;
+package de.embl.schwab.crosshair.settings;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.plane.PlaneSettings;
 import ij3d.Content;
 
 import java.io.FileWriter;
@@ -17,7 +16,7 @@ public class SettingsWriter {
 
     public SettingsWriter() { }
 
-    public Settings createSettings( PlaneManager planeManager, Map<String, Content> imageNameToContent ) {
+    public Settings createSettings(PlaneManager planeManager, Map<String, Content> imageNameToContent ) {
         Settings settings = new Settings();
 
         List<PlaneSettings> planeSettings = new ArrayList<>();

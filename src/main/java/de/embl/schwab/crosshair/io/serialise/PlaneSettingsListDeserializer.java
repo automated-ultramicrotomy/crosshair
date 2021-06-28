@@ -1,8 +1,8 @@
 package de.embl.schwab.crosshair.io.serialise;
 
 import com.google.gson.*;
-import de.embl.schwab.crosshair.plane.BlockPlaneSettings;
-import de.embl.schwab.crosshair.plane.PlaneSettings;
+import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
+import de.embl.schwab.crosshair.settings.PlaneSettings;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

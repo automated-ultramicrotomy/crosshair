@@ -1,16 +1,5 @@
 package develop;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import de.embl.schwab.crosshair.io.Settings;
-import net.imglib2.RealPoint;
-import org.scijava.vecmath.Vector3d;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 public class TestTransformPlanes {
 
     public static void main( String[] args ) {

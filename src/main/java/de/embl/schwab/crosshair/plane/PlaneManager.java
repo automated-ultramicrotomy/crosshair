@@ -10,6 +10,8 @@ import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.VertexDisplay;
 import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
 import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
+import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
+import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.BdvUtils;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
