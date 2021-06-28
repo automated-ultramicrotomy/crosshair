@@ -9,6 +9,8 @@ import org.scijava.plugin.Plugin;
 
 import java.io.File;
 
+import static de.embl.schwab.crosshair.utils.Utils.resetCrossPlatformSwingLookAndFeel;
+
 @Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Analysis>Measure Targeting Accuracy" )
 public class MeasureTargetingAccuracyCommand implements Command {
 
@@ -26,6 +28,8 @@ public class MeasureTargetingAccuracyCommand implements Command {
 
     @Override
     public void run() {
+        resetCrossPlatformSwingLookAndFeel();
+
         if ( !beforeTargetingXml.getAbsolutePath().endsWith(".xml") ||
                 !registeredAfterTargetingXml.getAbsolutePath().endsWith(".xml") ) {
             IJ.log("Not an xml file");

@@ -1,4 +1,4 @@
-package develop;
+package develop.openexamples;
 
 import net.imagej.ImageJ;
 

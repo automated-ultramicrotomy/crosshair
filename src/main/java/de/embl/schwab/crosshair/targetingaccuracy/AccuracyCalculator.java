@@ -41,7 +41,14 @@ public class AccuracyCalculator {
         Vector3d beforeNormal = beforeTarget.getNormal();
         Vector3d afterNormal = afterBlock.getNormal();
 
-        angleError = convertToDegrees( beforeNormal.angle( afterNormal ) );
+        double angle  = convertToDegrees( beforeNormal.angle( afterNormal ) );
+
+        // we want the minimal angle (we don't care about which way the normal is pointing, only its orientation)
+        if (angle > 90) {
+            angle = 180 - angle;
+        }
+
+        angleError = angle;
         return angleError;
     }
 

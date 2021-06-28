@@ -51,4 +51,12 @@ public class Utils {
         universe.getWindow().setLocation(viewFrame.getLocationOnScreen().x + viewFrame.getWidth(),
                 viewFrame.getLocation().y);
     }
+
+    public static void resetCrossPlatformSwingLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName() );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

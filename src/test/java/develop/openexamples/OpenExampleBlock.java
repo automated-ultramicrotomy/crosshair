@@ -1,4 +1,4 @@
-package develop;
+package develop.openexamples;
 
 import de.embl.schwab.crosshair.ui.command.OpenCrosshairFromBdvXmlCommand;
 
