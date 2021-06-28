@@ -90,15 +90,10 @@ public class TargetingAccuracy {
             SettingsReader reader = new SettingsReader();
             Settings settings = reader.readSettings( crosshairSettingsJson.getAbsolutePath() );
             // rename the image from crosshair to 'before', so it displays nicely in the panel
-            settings.imageSettings.get(0).name = TargetingAccuracy.before;
+            settings.imageNameToSettings.get( Crosshair.image ).name = TargetingAccuracy.before;
             // rename planes to nicer names for display
-            for ( PlaneSettings planeSettings : settings.planeSettings ) {
-                if ( planeSettings.name.equals(Crosshair.target) ) {
-                    planeSettings.name = TargetingAccuracy.beforeTarget;
-                } else if ( planeSettings.name.equals( Crosshair.block) ) {
-                    planeSettings.name = TargetingAccuracy.beforeBlock;
-                }
-            }
+            settings.planeNameToSettings.get( Crosshair.target ).name = TargetingAccuracy.beforeTarget;
+            settings.planeNameToSettings.get( Crosshair.block ).name = TargetingAccuracy.beforeBlock;
 
             reader.loadSettings( settings, planeManager,
                     accuracyFrame.getImagesPanel().getImageNameToContent(), accuracyFrame.getOtherPanel() );

@@ -8,8 +8,7 @@ import ij3d.Content;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SettingsWriter {
@@ -19,13 +18,13 @@ public class SettingsWriter {
     public Settings createSettings(PlaneManager planeManager, Map<String, Content> imageNameToContent ) {
         Settings settings = new Settings();
 
-        List<PlaneSettings> planeSettings = new ArrayList<>();
+        Map<String, PlaneSettings> planeSettingsMap = new HashMap<>();
         for ( Plane plane: planeManager.getPlanes() ) {
-            planeSettings.add( plane.getSettings() );
+            planeSettingsMap.put( plane.getName(), plane.getSettings() );
         }
-        settings.planeSettings = planeSettings;
+        settings.planeNameToSettings = planeSettingsMap;
 
-        List<ImageContentSettings> imageSettings = new ArrayList<>();
+        Map<String, ImageContentSettings> imageSettingsMap = new HashMap<>();
         for ( String imageName: imageNameToContent.keySet() ) {
 
             Content imageContent = imageNameToContent.get( imageName );
@@ -41,12 +40,12 @@ public class SettingsWriter {
             imageContent.getBlueLUT(blueLut);
             imageContent.getAlphaLUT(alphaLut);
 
-            imageSettings.add(
+            imageSettingsMap.put( imageName,
                     new ImageContentSettings( imageName, imageContent.getTransparency(),
                             imageContent.getColor(), redLut, greenLut, blueLut, alphaLut ) ) ;
         }
 
-        settings.imageSettings = imageSettings;
+        settings.imageNameToSettings = imageSettingsMap;
 
         return settings;
     }

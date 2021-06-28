@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.settings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import de.embl.schwab.crosshair.io.serialise.PlaneSettingsListDeserializer;
+import de.embl.schwab.crosshair.io.serialise.PlaneSettingsMapDeserializer;
 import de.embl.schwab.crosshair.io.serialise.VertexPointDeserializer;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
@@ -13,10 +13,9 @@ import de.embl.schwab.crosshair.ui.swing.OtherPanel;
 import ij.IJ;
 import ij3d.Content;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class SettingsReader {
@@ -25,16 +24,16 @@ public class SettingsReader {
 
     public Settings readSettings(String filePath ) {
         Gson gson = new GsonBuilder().
-                registerTypeAdapter( new TypeToken<List<PlaneSettings>>(){}.getType(), new PlaneSettingsListDeserializer()).
+                registerTypeAdapter( new TypeToken<Map<String, PlaneSettings>>(){}.getType(), new PlaneSettingsMapDeserializer()).
                 registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointDeserializer() ).create();
 
-        try {
-            FileReader fileReader = new FileReader(filePath);
+        try ( FileReader fileReader = new FileReader(filePath) ) {
             return gson.fromJson(fileReader, Settings.class);
-        } catch (FileNotFoundException e1) {
+        } catch (IOException e1) {
             e1.printStackTrace();
-            return null;
         }
+
+        return null;
     }
 
     private void loadImageSettings( Content imageContent, ImageContentSettings imageSettings ) {
@@ -71,7 +70,7 @@ public class SettingsReader {
                 planeManager.removeNamedPlane(planeName);
             }
 
-            for ( PlaneSettings planeSettings: settings.planeSettings ) {
+            for ( PlaneSettings planeSettings: settings.planeNameToSettings.values() ) {
                 if ( planeSettings instanceof BlockPlaneSettings) {
                     planeManager.addBlockPlane( (BlockPlaneSettings) planeSettings );
                 } else {
@@ -80,7 +79,7 @@ public class SettingsReader {
             }
 
             // setup image settings
-            for ( ImageContentSettings imageSettings: settings.imageSettings ) {
+            for ( ImageContentSettings imageSettings: settings.imageNameToSettings.values() ) {
                 loadImageSettings( imageNameToContent.get( imageSettings.name ), imageSettings );
             }
 

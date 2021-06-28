@@ -6,8 +6,8 @@ import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.io.serialise.VertexPointDeserializer;
 import de.embl.schwab.crosshair.points.VertexPoint;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class SolutionReader {
     public SolutionReader() {}
@@ -16,12 +16,12 @@ public class SolutionReader {
         Gson gson = new GsonBuilder().
                 registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointDeserializer() ).create();
 
-        try {
-            FileReader fileReader = new FileReader(filePath);
+        try ( FileReader fileReader = new FileReader(filePath) ) {
             return gson.fromJson(fileReader, Solution.class);
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return  null;
     }
 }

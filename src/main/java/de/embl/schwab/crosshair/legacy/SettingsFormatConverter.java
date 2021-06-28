@@ -1,6 +1,5 @@
 package de.embl.schwab.crosshair.legacy;
 
-import com.google.gson.Gson;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.settings.ImageContentSettings;
 import de.embl.schwab.crosshair.settings.Settings;
@@ -11,9 +10,8 @@ import de.embl.schwab.crosshair.points.VertexPoint;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsFormatConverter {
 
@@ -25,21 +23,15 @@ public class SettingsFormatConverter {
         this.newFormatJson = newFormatJson;
     }
 
-    private OldFormatSettings readOldSettings() throws FileNotFoundException {
-        Gson gson = new Gson();
-        FileReader fileReader = new FileReader( oldFormatJson.getAbsolutePath() );
-        return gson.fromJson(fileReader, OldFormatSettings.class);
-    }
-
-    private ArrayList<PlaneSettings> makePlaneSettings( OldFormatSettings oldSettings ) {
-        ArrayList<PlaneSettings> planeSettings = new ArrayList<>();
+    private Map<String, PlaneSettings> makePlaneSettings( OldFormatSettings oldSettings ) {
+        Map<String, PlaneSettings> planeSettings = new HashMap<>();
 
         PlaneSettings targetSettings = new PlaneSettings();
         BlockPlaneSettings blockSettings = new BlockPlaneSettings();
 
         targetSettings.name = Crosshair.target;
         blockSettings.name = Crosshair.block;
-        targetSettings.pointsToFitPlane = oldSettings.points;
+        blockSettings.pointsToFitPlane = oldSettings.points;
         blockSettings.vertices = oldSettings.blockVertices;
 
         blockSettings.assignedVertices = new HashMap<>();
@@ -65,33 +57,30 @@ public class SettingsFormatConverter {
             settings.isVisible = true;
         }
 
-        planeSettings.add( targetSettings );
-        planeSettings.add( blockSettings );
+        planeSettings.put( Crosshair.target, targetSettings );
+        planeSettings.put( Crosshair.block, blockSettings );
 
         return planeSettings;
     }
 
-    private ArrayList<ImageContentSettings> makeImageSettings( OldFormatSettings oldFormatSettings ) {
-        ArrayList<ImageContentSettings> imageSettings = new ArrayList<>();
+    private Map<String, ImageContentSettings> makeImageSettings( OldFormatSettings oldFormatSettings ) {
+        Map<String, ImageContentSettings> imageNameToSettings = new HashMap<>();
 
         ImageContentSettings settings = new ImageContentSettings( Crosshair.image, oldFormatSettings.imageTransparency,
                 oldFormatSettings.imageColour, oldFormatSettings.redLut, oldFormatSettings.greenLut,
                 oldFormatSettings.blueLut, oldFormatSettings.alphaLut );
 
-        imageSettings.add( settings );
-        return imageSettings;
+        imageNameToSettings.put( Crosshair.image, settings );
+
+        return imageNameToSettings;
     }
 
     public void convertOldSettingsToNew() {
-        try {
-            OldFormatSettings oldSettings = readOldSettings();
-            Settings settings = new Settings();
-            settings.planeSettings = makePlaneSettings( oldSettings );
-            settings.imageSettings = makeImageSettings( oldSettings );
+        OldFormatSettings oldSettings = new OldFormatSettingsReader().readSettings( oldFormatJson.getAbsolutePath() );
+        Settings settings = new Settings();
+        settings.planeNameToSettings = makePlaneSettings( oldSettings );
+        settings.imageNameToSettings = makeImageSettings( oldSettings );
 
-            new SettingsWriter().writeSettings( settings, newFormatJson.getAbsolutePath() );
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        new SettingsWriter().writeSettings( settings, newFormatJson.getAbsolutePath() );
     }
 }

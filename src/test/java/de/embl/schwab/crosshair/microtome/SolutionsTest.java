@@ -17,7 +17,7 @@ class SolutionsTest {
     @BeforeEach
     public void setUp() throws IOException {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        File exampleJson = new File(classLoader.getResource("exampleBlock.json").getFile());
+        File exampleJson = new File(classLoader.getResource("legacy/exampleBlock.json").getFile());
         try ( FileReader fileReader = new FileReader( exampleJson ) ) {
             Gson gson = new Gson();
             crosshairSettings = gson.fromJson(fileReader, Settings.class);

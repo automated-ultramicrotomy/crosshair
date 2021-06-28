@@ -1,8 +1,8 @@
 package de.embl.schwab.crosshair.settings;
 
-import java.util.List;
+import java.util.Map;
 
 public class Settings {
-    public List<PlaneSettings> planeSettings;
-    public List<ImageContentSettings> imageSettings;
+    public Map<String, PlaneSettings> planeNameToSettings;
+    public Map< String, ImageContentSettings> imageNameToSettings;
 }
