@@ -12,6 +12,7 @@ import org.scijava.vecmath.Vector3d;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static de.embl.schwab.crosshair.utils.GeometryUtils.convertToDegrees;
 import static java.lang.Math.cos;
 
 public class AccuracyCalculator {
@@ -40,7 +41,7 @@ public class AccuracyCalculator {
         Vector3d beforeNormal = beforeTarget.getNormal();
         Vector3d afterNormal = afterBlock.getNormal();
 
-        angleError = beforeNormal.angle( afterNormal );
+        angleError = convertToDegrees( beforeNormal.angle( afterNormal ) );
         return angleError;
     }
 
@@ -60,7 +61,8 @@ public class AccuracyCalculator {
         // compensate for knife angle, to get distance in NS cutting direction
         double NSDist = distanceFromFirstTouchToAfterBlock / cos( GeometryUtils.convertToRadians( solution.getKnife() ));
 
-        return NSDist - solution.getDistanceToCut();
+        distanceError = NSDist - solution.getDistanceToCut();
+        return distanceError;
     }
 
     public void saveAccuracy( String jsonPath ) {
