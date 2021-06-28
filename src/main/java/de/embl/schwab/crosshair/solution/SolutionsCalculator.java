@@ -36,11 +36,6 @@ public class SolutionsCalculator {
         validSolution = false;
     }
 
-    public SolutionsCalculator() {
-        solutionFirstTouchPoint = new Vector3d();
-        validSolution = false;
-    }
-
     public boolean isValidSolution() {
         return validSolution;
     }
@@ -69,17 +64,6 @@ public class SolutionsCalculator {
                 microtome.getInitialTiltAngle(), solutionKnife, solutionTilt,
                 solutionRotation, solutionFirstTouchVertexPoint, distanceToCut, unit);
     }
-
-    // void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
-    //                              Settings settings ) {
-    //     TargetOffsetAndTilt targetOffsetAndTilt = new TargetOffsetAndTilt( settings.getNamedVertices(),
-    //             settings.getPlaneNormals().get( Crosshair.block ), settings.getPlaneNormals().get( Crosshair.target ) );
-    //     calculateRotations( solutionRotation, initialTiltAngle, initialKnifeAngle,
-    //             targetOffsetAndTilt.targetOffset, targetOffsetAndTilt.targetTilt );
-    //     calculateDistance( settings.getNamedVertices(), settings.getPlaneNormals().get( Crosshair.target ),
-    //             settings.getPlanePoints().get( Crosshair.target ), solutionKnife );
-    //     checkSolutionValid();
-    // }
 
     public void setSolutionFromRotation ( double solutionRotation ) {
         calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
