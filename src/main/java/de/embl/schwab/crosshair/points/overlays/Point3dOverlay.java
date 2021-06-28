@@ -6,6 +6,7 @@ import vib.BenesNamedPoint;
 import vib.PointList;
 
 import java.util.Iterator;
+import java.util.List;
 
 // TODO - all 3D points / vertices for all planes are currently in the same point list. This means that overlapping
 // points are not allowed (while this is allowed in the 2D viewer, as each plane gets its own 2D overlay).
@@ -26,14 +27,28 @@ public class Point3dOverlay {
         imageContent.getPointList().add("", position[0], position[1], position[2]);
     }
 
-    public void removePoint( RealPoint point ) {
+    public void removePoints( List<RealPoint> points ) {
+        for( RealPoint point: points ) {
+            removePointFromPointList( point );
+        }
 
+        refreshPoints();
+    }
+
+    public void removePoint( RealPoint point ) {
+        removePointFromPointList( point );
+        refreshPoints();
+    }
+
+    private void removePointFromPointList( RealPoint point ) {
         double[] chosenPointCoord = new double[3];
         point.localize(chosenPointCoord);
 
         int pointIndex = imageContent.getPointList().indexOfPointAt(chosenPointCoord[0], chosenPointCoord[1], chosenPointCoord[2], imageContent.getLandmarkPointSize());
         imageContent.getPointList().remove(pointIndex);
+    }
 
+    private void refreshPoints() {
         //		There's a bug in how the 3D viewer displays points after one is removed. Currently, it just stops
         //		displaying the first point added (rather than the one you actually removed).
         //		Therefore here I remove all points and re-add them, to get the viewer to reset how it draws

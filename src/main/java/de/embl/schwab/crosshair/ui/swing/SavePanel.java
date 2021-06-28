@@ -4,13 +4,14 @@ import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.io.*;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.solution.Solution;
+import de.embl.schwab.crosshair.solution.SolutionWriter;
 import ij3d.Content;
 
 import javax.swing.*;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 
 import static de.embl.schwab.crosshair.io.IoHelper.chooseOpenFilePath;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseSaveFilePath;

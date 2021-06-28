@@ -75,9 +75,7 @@ public class PointsToFitPlaneDisplay {
     }
 
     public void removeAllPointsToFitPlane() {
-        for ( RealPoint point : pointsToFitPlane ) {
-            point3dOverlay.removePoint(point);
-        }
+        point3dOverlay.removePoints( pointsToFitPlane );
         pointsToFitPlane.clear();
         bdv.getBdvHandle().getViewerPanel().requestRepaint();
     }

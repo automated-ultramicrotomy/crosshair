@@ -199,9 +199,7 @@ public class VertexDisplay {
     }
 
     public void removeAllVertices() {
-        for ( RealPoint point : vertices ) {
-            vertex3dOverlay.removePoint( point );
-        }
+        vertex3dOverlay.removePoints( vertices );
 
         assignedVertices.clear();
         vertices.clear();

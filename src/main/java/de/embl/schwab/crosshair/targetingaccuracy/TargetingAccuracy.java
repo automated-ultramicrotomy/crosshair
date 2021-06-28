@@ -12,6 +12,8 @@ import de.embl.schwab.crosshair.io.Settings;
 import de.embl.schwab.crosshair.io.SettingsReader;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.plane.PlaneSettings;
+import de.embl.schwab.crosshair.solution.Solution;
+import de.embl.schwab.crosshair.solution.SolutionReader;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import mpicbg.spim.data.SpimDataException;
@@ -38,35 +40,8 @@ public class TargetingAccuracy {
     public static final String afterBlock = "after block";
     public static final String beforeTarget = "before target";
 
-    private void accountForTransforms( File registeredAfterTargetingXml, Content imageContent ) throws SpimDataException {
-        // The after image is registered to the before, so I also need to shift its 3d to match
-
-        // read any transforms directly from the xml
-        SpimDataMinimal spimDataMinimal = new XmlIoSpimDataMinimal().load( registeredAfterTargetingXml.getAbsolutePath() );
-        List<ViewTransform> transforms = spimDataMinimal.getViewRegistrations().getViewRegistrationsOrdered().get(0).getTransformList();
-
-        // take every transform into account apart from the last (assuming the last is the base transform i.e. voxel size only)
-        AffineTransform3D affine = new AffineTransform3D();
-        for ( int i=0; i<transforms.size() - 1; i ++ ) {
-            affine.concatenate( transforms.get(i).asAffine3D() );
-        }
-
-        double[] flatMatrix = new double[16];
-        double[][] matrix = new double[4][4];
-        affine.toMatrix( matrix );
-
-        for ( int i=0; i<matrix.length; i++ ) {
-            double[] matrixRow = matrix[i];
-            for ( int j = 0; j< matrixRow.length; j++ ) {
-                flatMatrix[ i*4 + j ] = matrixRow[j];
-            }
-        }
-
-        Transform3D imageContentTransform = new Transform3D( flatMatrix );
-        imageContent.setTransform( imageContentTransform );
-    }
-
-    public TargetingAccuracy ( File beforeTargetingXml, File registeredAfterTargetingXml, File crosshairJson ) throws SpimDataException {
+    public TargetingAccuracy ( File beforeTargetingXml, File registeredAfterTargetingXml,
+                               File crosshairSettingsJson, File crosshairSolutionJson ) throws SpimDataException {
 
         final LazySpimSource beforeSource = new LazySpimSource("before", beforeTargetingXml.getAbsolutePath());
         final LazySpimSource afterSource = new LazySpimSource("after", registeredAfterTargetingXml.getAbsolutePath());
@@ -109,11 +84,13 @@ public class TargetingAccuracy {
             PlaneManager planeManager = new PlaneManager(beforeStackSource, universe, imageNameToContent.get( TargetingAccuracy.before ));
             new AccuracyBdvBehaviours( beforeStackSource.getBdvHandle(), planeManager );
 
+            Solution solution = new SolutionReader().readSolution( crosshairSolutionJson.getAbsolutePath() );
+
             TargetingAccuracyFrame accuracyFrame = new TargetingAccuracyFrame( universe, imageNameToContent, planeManager,
-                    beforeStackSource.getBdvHandle(), beforeUnit );
+                    beforeStackSource.getBdvHandle(), beforeUnit, solution );
 
             SettingsReader reader = new SettingsReader();
-            Settings settings = reader.readSettings( crosshairJson.getAbsolutePath() );
+            Settings settings = reader.readSettings( crosshairSettingsJson.getAbsolutePath() );
             // rename the image from crosshair to 'before', so it displays nicely in the panel
             settings.imageSettings.get(0).name = TargetingAccuracy.before;
             // rename planes to nicer names for display
@@ -132,4 +109,34 @@ public class TargetingAccuracy {
 
         }
     }
+
+    private void accountForTransforms( File registeredAfterTargetingXml, Content imageContent ) throws SpimDataException {
+        // The after image is registered to the before, so I also need to shift its 3d to match
+
+        // read any transforms directly from the xml
+        SpimDataMinimal spimDataMinimal = new XmlIoSpimDataMinimal().load( registeredAfterTargetingXml.getAbsolutePath() );
+        List<ViewTransform> transforms = spimDataMinimal.getViewRegistrations().getViewRegistrationsOrdered().get(0).getTransformList();
+
+        // take every transform into account apart from the last (assuming the last is the base transform i.e. voxel size only)
+        AffineTransform3D affine = new AffineTransform3D();
+        for ( int i=0; i<transforms.size() - 1; i ++ ) {
+            affine.concatenate( transforms.get(i).asAffine3D() );
+        }
+
+        double[] flatMatrix = new double[16];
+        double[][] matrix = new double[4][4];
+        affine.toMatrix( matrix );
+
+        for ( int i=0; i<matrix.length; i++ ) {
+            double[] matrixRow = matrix[i];
+            for ( int j = 0; j< matrixRow.length; j++ ) {
+                flatMatrix[ i*4 + j ] = matrixRow[j];
+            }
+        }
+
+        Transform3D imageContentTransform = new Transform3D( flatMatrix );
+        imageContent.setTransform( imageContentTransform );
+    }
+
+
 }

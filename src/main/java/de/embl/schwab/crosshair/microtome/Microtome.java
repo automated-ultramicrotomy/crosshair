@@ -10,7 +10,7 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Vector3d;
 
-class Microtome {
+public class Microtome {
     private final Image3DUniverse universe;
     private final PlaneManager planeManager;
     private final BdvStackSource bdvStackSource;
@@ -70,7 +70,7 @@ class Microtome {
 
     private double knifeTargetAngleThreshold;
 
-    Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
+    public Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
         this.universe = universe;
         this.planeManager = planeManager;
         this.bdvStackSource = bdvStackSource;
@@ -88,75 +88,75 @@ class Microtome {
 
     }
 
-    double getKnife() {
+    public double getKnife() {
         return knife;
     }
 
-    double getTilt() {
+    public double getTilt() {
         return tilt;
     }
 
-    double getRotation() {
+    public double getRotation() {
         return rotation;
     }
 
-    double getInitialTiltAngle() {
+    public double getInitialTiltAngle() {
         return initialTiltAngle;
     }
 
-    double getInitialKnifeAngle() {
+    public double getInitialKnifeAngle() {
         return initialKnifeAngle;
     }
 
-    Image3DUniverse getUniverse() {
+    public Image3DUniverse getUniverse() {
         return universe;
     }
 
-    PlaneManager getPlaneManager() {
+    public PlaneManager getPlaneManager() {
         return planeManager;
     }
 
-    Vector3d getCurrentKnifeCentre() {
+    public Vector3d getCurrentKnifeCentre() {
         return currentKnifeCentre;
     }
 
-    Vector3d getCurrentKnifeNormal() {
+    public Vector3d getCurrentKnifeNormal() {
         return currentKnifeNormal;
     }
 
-    Vector3d getCurrentArcCentre() {
+    public Vector3d getCurrentArcCentre() {
         return currentArcCentre;
     }
 
-    Vector3d getCurrentHolderFront() {
+    public Vector3d getCurrentHolderFront() {
         return currentHolderFront;
     }
 
-    Content getImageContent() {
+    public Content getImageContent() {
         return imageContent;
     }
 
-    double getInitialTargetOffset() {
+    public double getInitialTargetOffset() {
         return initialTargetOffset;
     }
 
-    double getInitialTargetTilt() {
+    public double getInitialTargetTilt() {
         return initialTargetTilt;
     }
 
-    Matrix4d getCurrentBlockTransform() {
+    public Matrix4d getCurrentBlockTransform() {
         return currentBlockTransform;
     }
 
-    Vector3d getCurrentEdgeVector() {
+    public Vector3d getCurrentEdgeVector() {
         return currentEdgeVector;
     }
 
-    BdvStackSource getBdvStackSource() {
+    public BdvStackSource getBdvStackSource() {
         return bdvStackSource;
     }
 
-    double getAngleKnifeTarget() {
+    public double getAngleKnifeTarget() {
         return angleKnifeTarget;
     }
 

@@ -2,6 +2,7 @@ package de.embl.schwab.crosshair.microtome;
 
 import com.google.gson.Gson;
 import de.embl.schwab.crosshair.io.Settings;
+import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
@@ -10,7 +11,7 @@ import java.io.IOException;
 
 class SolutionsTest {
 
-    private Solutions solutions;
+    private SolutionsCalculator solutions;
     private Settings crosshairSettings;
 
     @BeforeEach
@@ -20,7 +21,7 @@ class SolutionsTest {
         try ( FileReader fileReader = new FileReader( exampleJson ) ) {
             Gson gson = new Gson();
             crosshairSettings = gson.fromJson(fileReader, Settings.class);
-            this.solutions = new Solutions();
+            this.solutions = new SolutionsCalculator();
         }
     }
 

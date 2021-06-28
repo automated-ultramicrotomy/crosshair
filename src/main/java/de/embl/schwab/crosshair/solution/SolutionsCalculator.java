@@ -1,6 +1,7 @@
-package de.embl.schwab.crosshair.microtome;
+package de.embl.schwab.crosshair.solution;
 
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.microtome.Microtome;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.points.VertexPoint;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 import static java.lang.Math.*;
 
-class Solutions {
+public class SolutionsCalculator {
 
     private Microtome microtome;
     private PlaneManager planeManager;
@@ -24,42 +25,49 @@ class Solutions {
 
     private boolean validSolution;
 
-    private String solutionFirstTouchName;
-    private Vector3d solutionFirstTouch;
+    private VertexPoint solutionFirstTouchVertexPoint;
+    private Vector3d solutionFirstTouchPoint;
     private double distanceToCut;
 
-    Solutions( Microtome microtome ) {
+    public SolutionsCalculator( Microtome microtome ) {
         this.microtome = microtome;
         this.planeManager = microtome.getPlaneManager();
-        solutionFirstTouch = new Vector3d();
+        solutionFirstTouchPoint = new Vector3d();
         validSolution = false;
     }
 
-    Solutions() {
-        solutionFirstTouch = new Vector3d();
+    public SolutionsCalculator() {
+        solutionFirstTouchPoint = new Vector3d();
         validSolution = false;
     }
 
-    boolean isValidSolution() {
+    public boolean isValidSolution() {
         return validSolution;
     }
 
-    double getSolutionTilt() {
+    public double getSolutionTilt() {
         return solutionTilt;
     }
 
-    double getSolutionKnife() {
+    public double getSolutionKnife() {
         return solutionKnife;
     }
 
-    double getSolutionRotation() { return solutionRotation; }
+    public double getSolutionRotation() { return solutionRotation; }
 
-    double getDistanceToCut() {
+    public double getDistanceToCut() {
         return distanceToCut;
     }
 
-    String getSolutionFirstTouchName() {
-        return solutionFirstTouchName;
+    public VertexPoint getSolutionFirstTouchVertexPoint() {
+        return solutionFirstTouchVertexPoint;
+    }
+
+    // note this rounds values to 4dp for nicer formatting when saving, don't use these values directly for calculations
+    public Solution getSolution( String unit ) {
+        return new Solution( microtome.getInitialKnifeAngle(),
+                microtome.getInitialTiltAngle(), solutionKnife, solutionTilt,
+                solutionRotation, solutionFirstTouchVertexPoint, distanceToCut, unit);
     }
 
     // void setSolutionFromRotation( double solutionRotation, double initialTiltAngle, double initialKnifeAngle,
@@ -73,7 +81,7 @@ class Solutions {
     //     checkSolutionValid();
     // }
 
-    void setSolutionFromRotation (double solutionRotation) {
+    public void setSolutionFromRotation ( double solutionRotation ) {
         calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
                 microtome.getInitialTargetOffset(), microtome.getInitialTargetTilt() );
         Plane targetPlane = planeManager.getPlane( Crosshair.target );
@@ -164,22 +172,22 @@ class Solutions {
 
         //  Assign first touch to point with maximum distance
         if (maxDistanceIndex == 0) {
-            solutionFirstTouch.set(topLeft);
-            solutionFirstTouchName = VertexPoint.TopLeft.toString();
+            solutionFirstTouchPoint.set(topLeft);
+            solutionFirstTouchVertexPoint = VertexPoint.TopLeft;
         } else if (maxDistanceIndex == 1) {
-            solutionFirstTouch.set(topRight);
-            solutionFirstTouchName = VertexPoint.TopRight.toString();
+            solutionFirstTouchPoint.set(topRight);
+            solutionFirstTouchVertexPoint = VertexPoint.TopRight;
         } else if (maxDistanceIndex == 2) {
-            solutionFirstTouch.set(bottomLeft);
-            solutionFirstTouchName = VertexPoint.BottomLeft.toString();
+            solutionFirstTouchPoint.set(bottomLeft);
+            solutionFirstTouchVertexPoint = VertexPoint.BottomLeft;
         } else if (maxDistanceIndex == 3) {
-            solutionFirstTouch.set(bottomRight);
-            solutionFirstTouchName = VertexPoint.BottomRight.toString();
+            solutionFirstTouchPoint.set(bottomRight);
+            solutionFirstTouchVertexPoint = VertexPoint.BottomRight;
         }
 
         // Calculate perpendicular distance to target
         Vector3d firstTouchToTarget = new Vector3d();
-        firstTouchToTarget.sub(targetPoint, solutionFirstTouch);
+        firstTouchToTarget.sub(targetPoint, solutionFirstTouchPoint);
         double perpDist = abs(firstTouchToTarget.dot(targetNormal));
 
         // Compensate for offset between perpendicular distance and true N-S of microtome

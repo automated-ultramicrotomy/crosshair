@@ -18,19 +18,24 @@ public class MeasureTargetingAccuracyCommand implements Command {
     @Parameter(label="Registered after targeting image xml")
     public File registeredAfterTargetingXml;
 
-    @Parameter(label="Crosshair json")
-    public File crosshairJson;
+    @Parameter(label="Crosshair settings json")
+    public File crosshairSettingsJson;
+
+    @Parameter(label="Crosshair solution json")
+    public File crosshairSolutionJson;
 
     @Override
     public void run() {
         if ( !beforeTargetingXml.getAbsolutePath().endsWith(".xml") ||
                 !registeredAfterTargetingXml.getAbsolutePath().endsWith(".xml") ) {
             IJ.log("Not an xml file");
-        } else if ( !crosshairJson.getAbsolutePath().endsWith(".json") ) {
+        } else if ( !crosshairSettingsJson.getAbsolutePath().endsWith(".json") ||
+                !crosshairSolutionJson.getAbsolutePath().endsWith(".json") ) {
             IJ.log("Not a json file");
         } else {
             try {
-                new TargetingAccuracy( beforeTargetingXml, registeredAfterTargetingXml, crosshairJson );
+                new TargetingAccuracy( beforeTargetingXml, registeredAfterTargetingXml,
+                        crosshairSettingsJson, crosshairSolutionJson );
             } catch (SpimDataException e) {
                 e.printStackTrace();
             }
@@ -43,7 +48,8 @@ public class MeasureTargetingAccuracyCommand implements Command {
         MeasureTargetingAccuracyCommand command = new MeasureTargetingAccuracyCommand();
         command.beforeTargetingXml = new File( "C:\\Users\\meechan\\Documents\\temp\\azumi_data\\before.xml");
         command.registeredAfterTargetingXml = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\analysis\\after_registered.xml");
-        command.crosshairJson = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_new_format_settings.json" );
+        command.crosshairSettingsJson = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_new_format_settings.json" );
+        command.crosshairSolutionJson = new File( "C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_solution.json.json" );
         command.run();
     }
 }

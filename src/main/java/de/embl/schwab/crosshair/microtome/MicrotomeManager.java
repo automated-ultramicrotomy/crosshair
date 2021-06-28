@@ -2,7 +2,8 @@ package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.io.Solution;
+import de.embl.schwab.crosshair.solution.Solution;
+import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
 import de.embl.schwab.crosshair.ui.swing.VertexAssignmentPanel;
 import ij.IJ;
@@ -20,7 +21,7 @@ public class MicrotomeManager {
 
     private Microtome microtome;
     private MicrotomeSetup microtomeSetup;
-    private Solutions solutions;
+    private SolutionsCalculator solutions;
     private Cutting cutting;
 
     private String unit;
@@ -33,18 +34,14 @@ public class MicrotomeManager {
 
         this.microtome = new Microtome(universe, planeManager, bdvStackSource, imageContent);
         this.microtomeSetup = new MicrotomeSetup(microtome);
-        this.solutions = new Solutions(microtome);
+        this.solutions = new SolutionsCalculator(microtome);
         this.cutting = new Cutting(microtome);
         this.unit = unit;
 
     }
 
     public Solution getCurrentSolution() {
-        Solution currentSolution = new Solution(microtome.getInitialKnifeAngle(),
-                microtome.getInitialTiltAngle(), solutions.getSolutionKnife(), solutions.getSolutionTilt(),
-                solutions.getSolutionRotation(), solutions.getSolutionFirstTouchName(), solutions.getDistanceToCut(), unit);
-
-        return currentSolution;
+        return solutions.getSolution( unit );
     }
 
     public void setMicrotomePanel(MicrotomePanel microtomePanel) {
@@ -134,7 +131,7 @@ public class MicrotomeManager {
                 microtomePanel.setFirstTouchLabel("");
                 microtomePanel.setDistanceToCutLabel(0);
             } else {
-                microtomePanel.setFirstTouchLabel( solutions.getSolutionFirstTouchName() );
+                microtomePanel.setFirstTouchLabel( solutions.getSolutionFirstTouchVertexPoint().toString() );
                 microtomePanel.setDistanceToCutLabel( solutions.getDistanceToCut() );
             }
         } else {

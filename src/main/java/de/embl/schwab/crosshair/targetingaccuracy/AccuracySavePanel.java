@@ -5,6 +5,7 @@ import de.embl.schwab.crosshair.io.*;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.*;
+import ij.IJ;
 import ij3d.Content;
 
 import javax.swing.*;
@@ -59,7 +60,7 @@ public class AccuracySavePanel extends CrosshairPanel {
         saveMeasures = new JButton("Save Measures");
         saveMeasures.setActionCommand("save_measures");
         saveMeasures.addActionListener(saveLoadListener);
-        saveMeasures.setEnabled(false);
+        saveMeasures.setEnabled(true);
         add(saveMeasures);
     }
 
@@ -84,7 +85,23 @@ public class AccuracySavePanel extends CrosshairPanel {
                 }
 
             } else if (e.getActionCommand().equals("save_measures")) {
-                // pass
+                if ( planeManager.checkNamedPlaneExists( TargetingAccuracy.beforeTarget ) &&
+                planeManager.checkNamedPlaneExists(TargetingAccuracy.beforeBlock) &&
+                planeManager.checkNamedPlaneExists(TargetingAccuracy.afterBlock) ) {
+                    String filePath = chooseSaveFilePath();
+                    if (filePath != null) {
+                        AccuracyCalculator accuracyCalculator =
+                                new AccuracyCalculator(planeManager.getPlane(TargetingAccuracy.beforeTarget),
+                                        planeManager.getBlockPlane(TargetingAccuracy.beforeBlock),
+                                        planeManager.getPlane(TargetingAccuracy.afterBlock),
+                                        accuracyFrame.getSolution());
+                        accuracyCalculator.calculateAngleError();
+                        accuracyCalculator.calculateDistanceError();
+                        accuracyCalculator.saveAccuracy(filePath);
+                    }
+                } else {
+                    IJ.log( "Not all planes are initialised!" );
+                }
             }
         }
     }

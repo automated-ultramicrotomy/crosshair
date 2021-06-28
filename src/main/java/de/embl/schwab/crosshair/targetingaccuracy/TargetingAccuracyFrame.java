@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.targetingaccuracy;
 import bdv.util.BdvHandle;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.ui.swing.*;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -17,6 +18,7 @@ public class TargetingAccuracyFrame extends JFrame {
     private final PlaneManager planeManager;
     private final BdvHandle bdvHandle;
     private final String unit;
+    private final Solution solution;
 
     private ArrayList<CrosshairPanel> allPanels;
     private PlanePanel planePanel;
@@ -26,12 +28,13 @@ public class TargetingAccuracyFrame extends JFrame {
     // primary image is the one fed to the planemanager to control extent of planes and points in the 3d view.
     // For accuracy measuring purposes, it should be the block before trimming
     public TargetingAccuracyFrame( Image3DUniverse universe, Map<String, Content> imageNametoContent,
-                                  PlaneManager planeManager, BdvHandle bdvHandle, String unit  ) {
+                                  PlaneManager planeManager, BdvHandle bdvHandle, String unit, Solution solution  ) {
 
         this.universe = universe;
         this.planeManager = planeManager;
         this.bdvHandle = bdvHandle;
         this.unit = unit;
+        this.solution = solution;
 
         allPanels = new ArrayList<>();
 
@@ -99,5 +102,13 @@ public class TargetingAccuracyFrame extends JFrame {
 
     public PlaneManager getPlaneManager() {
         return planeManager;
+    }
+
+    public Solution getSolution() {
+        return solution;
+    }
+
+    public String getUnit() {
+        return unit;
     }
 }
