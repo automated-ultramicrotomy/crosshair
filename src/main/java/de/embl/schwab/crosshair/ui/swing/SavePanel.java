@@ -102,6 +102,9 @@ public class SavePanel extends CrosshairPanel {
                 }
 
             } else if (e.getActionCommand().equals("save_solution")) {
+                // ensure any editing of the solution rotation text field is properly commited
+                microtomePanel.commitSolutionRotationSlider();
+
                 if ( microtomeManager.isValidSolution() ) {
                     String filePath = chooseSaveFilePath();
 

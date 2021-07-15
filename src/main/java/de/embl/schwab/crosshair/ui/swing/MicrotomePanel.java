@@ -1,6 +1,5 @@
 package de.embl.schwab.crosshair.ui.swing;
 
-import bdv.tools.brightness.SliderPanelDouble;
 import bdv.util.*;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
@@ -21,6 +20,15 @@ import java.util.*;
 
 public class MicrotomePanel extends CrosshairPanel {
 
+    private final String cuttingDepthString = "Cutting Depth";
+    private final String initialKnifeString = "Initial Knife";
+    private final String initialTiltString = "Initial Tilt";
+    private final String solutionRotationString = "Solution Rotation";
+    private final String enterMicrotomeModeCommand = "enter_microtome_mode";
+    private final String exitMicrotomeModeCommand = "exit_microtome_mode";
+    private final String enterCuttingModeCommand = "enter_cutting_mode";
+    private final String exitCuttingModeCommand = "exit_cutting_mode";
+
     private MicrotomeManager microtomeManager;
     private PlaneManager planeManager;
 
@@ -32,6 +40,7 @@ public class MicrotomePanel extends CrosshairPanel {
     private BoundedValueDouble rotationSolution;
     private BoundedValueDouble cuttingDepth;
 
+    private Map<String, SliderPanelDouble> sliderPanelsDouble;
     private Map<String, JPanel> sliderPanels;
 
     private JLabel firstTouchLabel;
@@ -74,6 +83,7 @@ public class MicrotomePanel extends CrosshairPanel {
         displayDecimalPlaces = 4;
 
         sliderPanels = new HashMap<>();
+        sliderPanelsDouble = new HashMap<>();
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
@@ -137,11 +147,11 @@ public class MicrotomePanel extends CrosshairPanel {
 
         // Initial knife angle
         initialKnifeAngle =
-                addSliderToPanel(initialMicrotomeSetup, "Initial Knife", -30, 30, 0);
+                addSliderToPanel(initialMicrotomeSetup, initialKnifeString, -30, 30, 0);
 
         // Initial tilt angle
         initialTiltAngle =
-                addSliderToPanel(initialMicrotomeSetup, "Initial Tilt", -20, 20, 0);
+                addSliderToPanel(initialMicrotomeSetup, initialTiltString, -20, 20, 0);
 
         panel.add(initialMicrotomeSetup);
     }
@@ -159,14 +169,14 @@ public class MicrotomePanel extends CrosshairPanel {
 
         ActionListener microtomeModeListener = new microtomeModeListener();
         enterMicrotomeModeButton = new JButton("Enter Microtome Mode");
-        enterMicrotomeModeButton.setActionCommand("enter_microtome_mode");
+        enterMicrotomeModeButton.setActionCommand( enterMicrotomeModeCommand );
         enterMicrotomeModeButton.addActionListener(microtomeModeListener);
         toggleMicrotomeModePanel.add(enterMicrotomeModeButton);
         planePanel.addButtonAffectedByTracking( Crosshair.target, enterMicrotomeModeButton );
         planePanel.addButtonAffectedByTracking( Crosshair.block, enterMicrotomeModeButton );
 
         exitMicrotomeModeButton = new JButton("Exit Microtome Mode");
-        exitMicrotomeModeButton.setActionCommand("exit_microtome_mode");
+        exitMicrotomeModeButton.setActionCommand( exitMicrotomeModeCommand );
         exitMicrotomeModeButton.addActionListener(microtomeModeListener);
         toggleMicrotomeModePanel.add(exitMicrotomeModeButton);
         exitMicrotomeModeButton.setEnabled(false);
@@ -191,7 +201,7 @@ public class MicrotomePanel extends CrosshairPanel {
         // Rotation solution
         SolutionListener solutionListener = new SolutionListener();
         rotationSolution =
-                addSliderToPanel(microtomeControls, "Solution Rotation", -180, 180, 0, solutionListener);
+                addSliderToPanel(microtomeControls, solutionRotationString, -180, 180, 0, solutionListener);
 
         panel.add(microtomeControls);
     }
@@ -207,13 +217,13 @@ public class MicrotomePanel extends CrosshairPanel {
         JPanel toggleCuttingModePanel = new JPanel();
         toggleCuttingModePanel.setLayout(new GridLayout(1, 2));
         enterCuttingModeButton = new JButton("Enter Cutting Mode");
-        enterCuttingModeButton.setActionCommand("enter_cutting_mode");
+        enterCuttingModeButton.setActionCommand( enterCuttingModeCommand );
         enterCuttingModeButton.addActionListener(cuttingModeListener);
         toggleCuttingModePanel.add(enterCuttingModeButton);
         enterCuttingModeButton.setVisible(false);
 
         exitCuttingModeButton = new JButton("Exit Cutting Mode");
-        exitCuttingModeButton.setActionCommand("exit_cutting_mode");
+        exitCuttingModeButton.setActionCommand( exitCuttingModeCommand );
         exitCuttingModeButton.addActionListener(cuttingModeListener);
         toggleCuttingModePanel.add(exitCuttingModeButton);
         exitCuttingModeButton.setEnabled(false);
@@ -227,7 +237,7 @@ public class MicrotomePanel extends CrosshairPanel {
         // min max arbitrary here, these are set when microtome mode is initialised, depends on final location of knife and
         // holder after scaling
         cuttingDepth =
-                addSliderToPanel(cuttingControlsPanel, "Cutting Depth", 0, 100, 0, cuttingListener);
+                addSliderToPanel(cuttingControlsPanel, cuttingDepthString, 0, 100, 0, cuttingListener);
 
         cuttingUnitsPanel = new JPanel();
         cuttingUnitsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -312,9 +322,11 @@ public class MicrotomePanel extends CrosshairPanel {
         panel.add(sliderPanel);
 
         //        Don't want to disable initial angles, these aren't directly tied to microtome movements
-        if (!sliderName.equals("Initial Knife") & !sliderName.equals("Initial Tilt")) {
+        if (!sliderName.equals( initialKnifeString ) & !sliderName.equals( initialTiltString )) {
             sliderPanels.put(sliderName, sliderPanel);
         }
+
+        sliderPanelsDouble.put( sliderName, s );
 
         refreshGui();
         return s;
@@ -328,7 +340,7 @@ public class MicrotomePanel extends CrosshairPanel {
     private void enableSliders () {
         // using setEnabled doesn't work with these bdv.tools style sliders, so we just change the visibility
         for (String sliderName : sliderPanels.keySet()) {
-            if (!sliderName.equals("Cutting Depth")) {
+            if (!sliderName.equals( cuttingDepthString )) {
                 sliderPanels.get(sliderName).setVisible(true);
             }
         }
@@ -352,9 +364,9 @@ public class MicrotomePanel extends CrosshairPanel {
 
     class microtomeModeListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if (e.getActionCommand().equals("enter_microtome_mode")) {
+            if (e.getActionCommand().equals( enterMicrotomeModeCommand )) {
                 enterMicrotomeMode();
-            } else if (e.getActionCommand().equals("exit_microtome_mode")) {
+            } else if (e.getActionCommand().equals( exitMicrotomeModeCommand )) {
                 exitMicrotomeMode();
             }
         }
@@ -362,12 +374,21 @@ public class MicrotomePanel extends CrosshairPanel {
 
     class cuttingModeListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if (e.getActionCommand().equals("enter_cutting_mode")) {
+            if (e.getActionCommand().equals( enterCuttingModeCommand )) {
                 enterCuttingMode();
-            } else if (e.getActionCommand().equals("exit_cutting_mode")) {
+            } else if (e.getActionCommand().equals( exitCuttingModeCommand )) {
                 exitCuttingMode();
             }
         }
+    }
+
+    private void commitInitialAngleSliders() {
+        sliderPanelsDouble.get( initialKnifeString ).commitSpinnerEdits();
+        sliderPanelsDouble.get( initialTiltString ).commitSpinnerEdits();
+    }
+
+    public void commitSolutionRotationSlider() {
+        sliderPanelsDouble.get( solutionRotationString ).commitSpinnerEdits();
     }
 
     private void enterMicrotomeMode () {
@@ -376,6 +397,9 @@ public class MicrotomePanel extends CrosshairPanel {
             exitMicrotomeModeButton.setEnabled(true);
             enterCuttingModeButton.setVisible(true);
             exitCuttingModeButton.setVisible(true);
+
+            // ensure any editing of the slider text fields is properly committed
+            commitInitialAngleSliders();
             double initialKnifeAngle = this.initialKnifeAngle.getCurrentValue();
             double initialTiltAngle = this.initialTiltAngle.getCurrentValue();
             microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
@@ -423,10 +447,10 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     private void enterCuttingMode () {
-        sliderPanels.get("Cutting Depth").setVisible(true);
+        sliderPanels.get( cuttingDepthString ).setVisible(true);
         cuttingUnitsPanel.setVisible(true);
         // Disable all other microtome sliders
-        disableSliders("Cutting Depth");
+        disableSliders( cuttingDepthString );
         microtomeManager.enterCuttingMode();
         cuttingDepth.setCurrentValue(0);
         enterCuttingModeButton.setEnabled(false);
@@ -436,7 +460,7 @@ public class MicrotomePanel extends CrosshairPanel {
     }
 
     private void exitCuttingMode () {
-        sliderPanels.get("Cutting Depth").setVisible(false);
+        sliderPanels.get( cuttingDepthString ).setVisible(false);
         cuttingUnitsPanel.setVisible(false);
         enableSliders();
         microtomeManager.exitCuttingMode();
