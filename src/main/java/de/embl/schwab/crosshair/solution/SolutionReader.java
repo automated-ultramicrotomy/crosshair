@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.solution;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import de.embl.schwab.crosshair.io.serialise.VertexPointDeserializer;
+import de.embl.schwab.crosshair.io.serialise.VertexPointAdapter;
 import de.embl.schwab.crosshair.points.VertexPoint;
 
 import java.io.FileReader;
@@ -14,7 +14,7 @@ public class SolutionReader {
 
     public Solution readSolution( String filePath ) {
         Gson gson = new GsonBuilder().
-                registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointDeserializer() ).create();
+                registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointAdapter() ).create();
 
         try ( FileReader fileReader = new FileReader(filePath) ) {
             return gson.fromJson(fileReader, Solution.class);

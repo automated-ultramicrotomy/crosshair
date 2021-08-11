@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.io.serialise.PlaneSettingsMapDeserializer;
-import de.embl.schwab.crosshair.io.serialise.VertexPointDeserializer;
+import de.embl.schwab.crosshair.io.serialise.VertexPointAdapter;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.points.VertexPoint;
@@ -25,7 +25,7 @@ public class SettingsReader {
     public Settings readSettings(String filePath ) {
         Gson gson = new GsonBuilder().
                 registerTypeAdapter( new TypeToken<Map<String, PlaneSettings>>(){}.getType(), new PlaneSettingsMapDeserializer()).
-                registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointDeserializer() ).create();
+                registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointAdapter() ).create();
 
         try ( FileReader fileReader = new FileReader(filePath) ) {
             return gson.fromJson(fileReader, Settings.class);
