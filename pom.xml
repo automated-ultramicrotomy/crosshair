@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>30.0.0</version>
+		<version>31.1.0</version>
 	</parent>
 	<artifactId>crosshair</artifactId>
 	<url>https://github.com/K-Meech/crosshair</url>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>Crosshair</name>
 	<description>Assisted 3D targeting via an ultramicrotome</description>
 	<inceptionYear>2020</inceptionYear>
@@ -55,8 +55,8 @@
 	</contributors>
 	<mailingLists>
 		<mailingList>
-			<name>ImageJ Forum</name>
-			<archive>http://forum.imagej.net/</archive>
+			<name>Image.sc Forum</name>
+			<archive>https://forum.image.sc/</archive>
 		</mailingList>
 	</mailingLists>
 	<scm>
@@ -79,8 +79,8 @@
 		<scijava.app.directory>C:\Users\meechan\Documents\CrosshairUpload\Fiji.app</scijava.app.directory>
 		<enforcer.skip>true</enforcer.skip>
 
-		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
+<!--		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>-->
+<!--		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>-->
 		<imagej-utils.version>0.6.4-SNAPSHOT</imagej-utils.version>
 	</properties>
 
@@ -99,12 +99,10 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
-			<version>${bigdataviewer-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
-			<version>${bigdataviewer-vistools.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
