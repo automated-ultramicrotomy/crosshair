@@ -159,7 +159,7 @@ public class VertexDisplay {
         RealPoint matchingPointWithinDistance = getMatchingPointWithinDistance( vertices, point, bdv.getBdvHandle());
 
         if ( matchingPointWithinDistance != null ) {
-            removeVertex( point );
+            removeVertex( matchingPointWithinDistance );
         } else {
             addVertex( point );
         }
@@ -175,7 +175,7 @@ public class VertexDisplay {
         vertices.remove( point );
         vertex3dOverlay.removePoint( point );
 
-        if ( selectedVertex.equals( point ) ) {
+        if ( selectedVertex != null && selectedVertex.equals( point ) ) {
             selectedVertex = null;
             isVertexSelected = false;
         }
