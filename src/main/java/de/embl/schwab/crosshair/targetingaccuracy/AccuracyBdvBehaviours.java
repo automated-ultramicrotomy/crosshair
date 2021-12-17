@@ -9,6 +9,8 @@ import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 
+import static de.embl.schwab.crosshair.utils.BdvUtils.flipCurrentView;
+
 public class AccuracyBdvBehaviours {
 
     private final BdvHandle bdvHandle;
@@ -39,6 +41,14 @@ public class AccuracyBdvBehaviours {
             if ( planeManager.checkNamedPlaneExists( TargetingAccuracy.afterBlock ) ) {
                 planeManager.fitToPoints(TargetingAccuracy.afterBlock);
             }
+        }
+    }
+
+    private void addFlipViewBehaviour() {
+        if ( planeManager.isTrackingPlane() ) {
+            IJ.log("Can't flip view while tracking a plane.");
+        } else {
+            flipCurrentView( bdvHandle );
         }
     }
 
@@ -76,6 +86,11 @@ public class AccuracyBdvBehaviours {
         BdvPopupMenus.addAction(bdvHandle, "Fit To Points", ( x, y ) ->
         {
                 addFitToPointsBehaviour();
+        });
+
+        BdvPopupMenus.addAction(bdvHandle, "Flip view", ( x, y ) ->
+        {
+            addFlipViewBehaviour();
         });
 
     }

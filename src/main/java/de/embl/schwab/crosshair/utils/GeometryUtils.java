@@ -8,6 +8,7 @@ import net.imglib2.util.LinAlgHelpers;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
+import org.apache.commons.math3.util.Precision;
 import org.scijava.vecmath.AxisAngle4d;
 import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Point3f;
@@ -539,6 +540,39 @@ public final class GeometryUtils {
         trans.add(origin);
 
         ret.setTranslation(trans);
+    }
+
+    public static double[] findPerpendicularVector( double[] vector ) {
+        // give one possible perpendicular vector
+        // based on https://math.stackexchange.com/questions/133177/finding-a-unit-vector-perpendicular-to-another-vector/413235
+
+        double epsilon = 1E-9;
+        int nonZeroIndex = 0;
+        for ( int i=0; i<vector.length; i++) {
+            if ( vector[i] != 0 ) {
+                nonZeroIndex = i;
+                break;
+            }
+        }
+
+        int otherIndex;
+        if ( nonZeroIndex == 0 ) {
+            otherIndex = 1;
+        } else {
+            otherIndex = 0;
+        }
+
+        double[] perpendicularVector = new double[3];
+        perpendicularVector[otherIndex] = vector[nonZeroIndex];
+        perpendicularVector[nonZeroIndex] = -vector[otherIndex];
+
+        LinAlgHelpers.normalize(perpendicularVector);
+        if ( !Precision.equals( LinAlgHelpers.dot(vector, perpendicularVector), 0, epsilon ) ) {
+            // vectors should be perpendicular, if not throw error
+            throw new UnsupportedOperationException();
+        }
+
+        return perpendicularVector;
     }
 
 }
