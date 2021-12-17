@@ -14,6 +14,7 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionReader;
+import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import mpicbg.spim.data.SpimDataException;
@@ -48,6 +49,7 @@ public class TargetingAccuracy {
         String afterUnit = afterSource.getVoxelDimensions().unit();
 
         if (!beforeUnit.equals(afterUnit)) {
+            IJ.log("before and after images don't have the same units. Please correct the units and try again.");
             throw new UnsupportedOperationException("before and after images don't use the same units");
         } else {
 
