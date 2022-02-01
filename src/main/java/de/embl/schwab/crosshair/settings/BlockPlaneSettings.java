@@ -27,4 +27,18 @@ public class BlockPlaneSettings extends PlaneSettings {
         this.vertices = blockPlane.getVertexDisplay().getVertices();
         this.assignedVertices = blockPlane.getVertexDisplay().getAssignedVertices();
     }
+
+    public BlockPlaneSettings( PlaneSettings planeSettings ) {
+        this.vertices = new ArrayList<>();
+        this.assignedVertices = new HashMap<>();
+
+        this.name = planeSettings.name;
+        this.normal = planeSettings.normal;
+        this.point = planeSettings.point;
+        this.color = planeSettings.color;
+        this.transparency = planeSettings.transparency;
+        this.isVisible = planeSettings.isVisible;
+        this.pointsToFitPlane = planeSettings.pointsToFitPlane;
+        this.distanceBetweenPlanesThreshold = planeSettings.distanceBetweenPlanesThreshold;
+    }
 }

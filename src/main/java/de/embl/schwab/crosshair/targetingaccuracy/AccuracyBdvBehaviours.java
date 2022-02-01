@@ -2,6 +2,8 @@ package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
+import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -31,6 +33,17 @@ public class AccuracyBdvBehaviours {
                 planeManager.addPlane( TargetingAccuracy.afterBlock );
             }
             planeManager.getPointsToFitPlaneDisplay( TargetingAccuracy.afterBlock ).addOrRemoveCurrentPositionFromPointsToFitPlane();
+        }
+    }
+
+    private void addVertexBehaviour() {
+        if ( planeManager.isTrackingPlane() ) {
+            IJ.log("Can't change points when tracking a plane");
+        } else if ( !planeManager.checkNamedPlaneExistsAndOrientationIsSet( TargetingAccuracy.beforeTarget )) {
+            IJ.log("Before target plane doesn't exist - vertices must lie on this plane!");
+        } else {
+            Plane blockPlane = planeManager.getPlane( TargetingAccuracy.beforeTarget );
+            planeManager.getVertexDisplay( TargetingAccuracy.beforeTarget ).addOrRemoveCurrentPositionFromVertices( blockPlane );
         }
     }
 
@@ -68,6 +81,8 @@ public class AccuracyBdvBehaviours {
         behaviours.behaviour( ( ClickBehaviour ) ( x, y ) -> {
             if ( planeManager.isInPointMode() ) {
                 addPointBehaviour();
+            } else if ( planeManager.isInVertexMode() ) {
+                addVertexBehaviour();
             }
         }, "Left Click behaviours", "button1" );
 
@@ -80,6 +95,18 @@ public class AccuracyBdvBehaviours {
                 planeManager.setPointMode( true );
             } else {
                 planeManager.setPointMode( false );
+            }
+        });
+
+        BdvPopupMenus.addAction(bdvHandle, "Toggle Target Vertex Mode", ( x, y ) ->
+        {
+            if ( !planeManager.isInVertexMode() ) {
+                if ( planeManager.isInPointMode() ) {
+                    planeManager.setPointMode( false );
+                }
+                planeManager.setVertexMode( true );
+            } else {
+                planeManager.setVertexMode( false );
             }
         });
 

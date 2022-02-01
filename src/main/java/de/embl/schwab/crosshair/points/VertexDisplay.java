@@ -27,6 +27,7 @@ public class VertexDisplay {
     private VertexPoints2dOverlay vertex2dOverlay;
     private Point3dOverlay vertex3dOverlay;
     private Bdv bdv;
+    private String name;
     private String sourceName;
 
     public VertexDisplay( String name, Bdv bdv, Point3dOverlay point3dOverlay ) {
@@ -42,6 +43,7 @@ public class VertexDisplay {
         this.vertex2dOverlay = new VertexPoints2dOverlay( this );
         this.vertex3dOverlay = vertex3dOverlay;
         this.bdv = bdv;
+        this.name = name;
         this.sourceName = name + "-vertex_points";
 
         BdvFunctions.showOverlay( vertex2dOverlay, sourceName,
@@ -124,7 +126,7 @@ public class VertexDisplay {
         if ( plane.isPointOnPlane( point ) ) {
             addOrRemoveVertex( point );
         } else {
-            IJ.log("Vertex points must lie on the block plane");
+            IJ.log("Vertex points must lie on the " + name + " plane");
         }
     }
 

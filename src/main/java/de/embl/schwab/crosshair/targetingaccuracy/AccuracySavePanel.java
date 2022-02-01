@@ -1,6 +1,8 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.settings.SettingsWriter;
@@ -80,6 +82,14 @@ public class AccuracySavePanel extends CrosshairPanel {
                 if (filePath != null) {
                     SettingsReader reader = new SettingsReader();
                     Settings settings = reader.readSettings(filePath);
+
+                    // if before target isn't a block plane, make it one so that vertices can be added for the point
+                    // to plane distance measure.
+                    if (!(settings.planeNameToSettings.get( TargetingAccuracy.beforeTarget )
+                            instanceof BlockPlaneSettings)) {
+                        settings.planeNameToSettings.put( TargetingAccuracy.beforeTarget,
+                                new BlockPlaneSettings( settings.planeNameToSettings.get( TargetingAccuracy.beforeTarget )) );
+                    }
                     reader.loadSettings( settings, planeManager, imagesPanel.getImageNameToContent(), otherPanel );
                 }
 

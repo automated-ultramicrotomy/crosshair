@@ -8,6 +8,7 @@ import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.plane.PlaneManager;
@@ -96,6 +97,10 @@ public class TargetingAccuracy {
             // rename planes to nicer names for display
             settings.planeNameToSettings.get( Crosshair.target ).name = TargetingAccuracy.beforeTarget;
             settings.planeNameToSettings.get( Crosshair.block ).name = TargetingAccuracy.beforeBlock;
+
+            // make before target into a BlockPlane, so it can also have vertices for the point to plane distance measure
+            settings.planeNameToSettings.put( Crosshair.target,
+                    new BlockPlaneSettings( settings.planeNameToSettings.get( Crosshair.target )) );
 
             reader.loadSettings( settings, planeManager,
                     accuracyFrame.getImagesPanel().getImageNameToContent(), accuracyFrame.getOtherPanel() );
