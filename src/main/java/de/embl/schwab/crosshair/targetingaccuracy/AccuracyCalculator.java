@@ -11,6 +11,7 @@ import org.scijava.vecmath.Vector3d;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static de.embl.schwab.crosshair.utils.GeometryUtils.convertToDegrees;
 import static java.lang.Math.cos;
@@ -18,17 +19,19 @@ import static java.lang.Math.cos;
 public class AccuracyCalculator {
 
     private transient BlockPlane beforeBlock;
-    private transient Plane beforeTarget;
+    private transient BlockPlane beforeTarget;
     private transient Plane afterBlock;
     private transient Solution solution;
 
     private double angleError;
-    private double distanceError;
-    private String anglesUnit;
     // i.e. did you cut the distance the solution told you to?
+    private double solutionDistanceError;
+    // i.e. shortest distance between point at centre of before target and after block plane
+    private double targetPointToPlaneDistanceError;
+    private String anglesUnit;
     private String distanceUnit;
 
-    public AccuracyCalculator( Plane beforeTarget, BlockPlane beforeBlock, Plane afterBlock, Solution solution ) {
+    public AccuracyCalculator( BlockPlane beforeTarget, BlockPlane beforeBlock, Plane afterBlock, Solution solution ) {
         this.beforeBlock = beforeBlock;
         this.beforeTarget = beforeTarget;
         this.afterBlock = afterBlock;
@@ -53,7 +56,7 @@ public class AccuracyCalculator {
     }
 
     // return actual cut distance - the solution cut distance
-    public double calculateDistanceError() {
+    public double calculateSolutionDistanceError() {
         // Given the current orientation of your after block, how far did you cut? (if you started from the predicted
         // first touch point) [note if your angle was so far off that you didn't start cutting from the same first touch
         // point this measure will be off]
@@ -66,10 +69,24 @@ public class AccuracyCalculator {
                 firstTouch, afterBlock.getNormal(), afterBlock.getPoint() );
 
         // compensate for knife angle, to get distance in NS cutting direction
+        // [note this assumes your actual knife angle was the same as the one from the solution i.e. no knife angle error]
         double NSDist = distanceFromFirstTouchToAfterBlock / cos( GeometryUtils.convertToRadians( solution.getKnife() ));
 
-        distanceError = NSDist - solution.getDistanceToCut();
-        return distanceError;
+        solutionDistanceError = NSDist - solution.getDistanceToCut();
+        return solutionDistanceError;
+    }
+
+    public double calculateTargetPointToPlaneDistanceError() {
+        // Calculate shortest distance between target vertex (placed at the centre of the structure of interest on the
+        // before target plane) and the after block plane.
+        ArrayList<RealPoint> vertices = beforeTarget.getVertexDisplay().getVertices();
+        Vector3d targetPoint = new Vector3d( vertices.get(0).positionAsDoubleArray() );
+
+        // shortest distance to after block
+        targetPointToPlaneDistanceError = GeometryUtils.distanceFromPointToPlane(
+                targetPoint, afterBlock.getNormal(), afterBlock.getPoint() );
+
+        return targetPointToPlaneDistanceError;
     }
 
     public void saveAccuracy( String jsonPath ) {
