@@ -26,6 +26,7 @@ import java.util.*;
 
 import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
 import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
+import static de.embl.schwab.crosshair.utils.GeometryUtils.getPlaneDefinitionFromViewTransform;
 
 public class PlaneManager {
 
@@ -257,34 +258,6 @@ public class PlaneManager {
         bdvHandle.getViewerPanel().state().getViewerTransform( transform );
 
         return getPlaneDefinitionFromViewTransform(transform);
-    }
-
-    private ArrayList<Vector3d> getPlaneDefinitionFromViewTransform(AffineTransform3D affineTransform3D) {
-        final ArrayList< double[] > viewerPoints = new ArrayList<>();
-
-        viewerPoints.add( new double[]{ 0, 0, 0 });
-        viewerPoints.add( new double[]{ 0, 100, 0 });
-        viewerPoints.add( new double[]{ 100, 0, 0 });
-
-        final ArrayList< double[] > globalPoints = new ArrayList<>();
-        for ( int i = 0; i < 3; i++ )
-        {
-            globalPoints.add( new double[ 3 ] );
-        }
-
-        for ( int i = 0; i < 3; i++ )
-        {
-            affineTransform3D.inverse().apply( viewerPoints.get( i ), globalPoints.get( i ) );
-        }
-
-        ArrayList<Vector3d> planeDefinition = new ArrayList<>();
-
-        Vector3d planeNormal = GeometryUtils.calculateNormalFromPoints(globalPoints);
-        Vector3d planePoint = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
-        planeDefinition.add(planeNormal);
-        planeDefinition.add(planePoint);
-
-        return planeDefinition;
     }
 
     public double[] getGlobalViewCentre () {

@@ -2,9 +2,11 @@ package de.embl.schwab.crosshair.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
+import de.embl.schwab.crosshair.plane.Plane;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import org.apache.commons.math3.util.Precision;
+import org.scijava.vecmath.Vector3d;
 
 import java.util.ArrayList;
 import java.util.stream.DoubleStream;
@@ -20,6 +22,44 @@ public class BdvUtils {
             currentNormalVector[i] = currentNormalVector[i]*-1;
         }
         levelCurrentView( bdv, currentNormalVector );
+    }
+
+    public static void shiftCurrentView( Bdv bdv, Plane plane, Vector3d blockNormal ) {
+        // shift view to a set number of microns below given plane (parallel to plane, but in the same general
+        // direction as block normal - i.e, moving further into the block, away from the surface)
+        int nMicrons = 1;
+
+        final AffineTransform3D transform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( transform );
+        ArrayList<Vector3d> planeDefinition = GeometryUtils.getPlaneDefinitionFromViewTransform(transform);
+
+        Vector3d currentPlaneNormal = planeDefinition.get(0);
+        boolean normalsParallel = GeometryUtils.checkVectorsParallel( plane.getNormal(), currentPlaneNormal );
+
+        double[] targetNormal = new double[3];
+        plane.getNormal().get( targetNormal );
+
+        double[] targetCentroid = new double[3];
+        plane.getCentroid().get( targetCentroid );
+
+        Vector3d shiftedCentroid = new Vector3d( plane.getCentroid() );
+        Vector3d shiftedNormal = new Vector3d( plane.getNormal() );
+        shiftedNormal.normalize();
+        shiftedNormal.scale(nMicrons);
+
+        // shift in same general direction as given block normal
+        if ( blockNormal.dot( plane.getNormal() ) < 0 ) {
+            shiftedNormal.scale(-1);
+        }
+
+        shiftedCentroid.add( shiftedNormal );
+        double[] shiftedCentroidArray = new double[3];
+        shiftedCentroid.get(shiftedCentroidArray);
+
+        moveToPosition(bdv, shiftedCentroidArray, 0, 0);
+        if (!normalsParallel) {
+            BdvUtils.levelCurrentView(bdv, targetNormal);
+        }
     }
 
     // from https://github.com/tischi/imagej-utils/blob/f9b84aae6b3bd922ed723fd6b24ac510f86af8eb/src/main/java/de/embl/cba/bdv/utils/BdvUtils.java#L422

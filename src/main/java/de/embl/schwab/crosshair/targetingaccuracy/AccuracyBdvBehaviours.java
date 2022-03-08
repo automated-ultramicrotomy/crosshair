@@ -3,15 +3,22 @@ package de.embl.schwab.crosshair.targetingaccuracy;
 import bdv.util.BdvHandle;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import ij.IJ;
+import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.vecmath.Vector3d;
+
+import java.util.Map;
 
 import static de.embl.schwab.crosshair.utils.BdvUtils.flipCurrentView;
+import static de.embl.schwab.crosshair.utils.BdvUtils.shiftCurrentView;
 
 public class AccuracyBdvBehaviours {
 
@@ -62,6 +69,39 @@ public class AccuracyBdvBehaviours {
             IJ.log("Can't flip view while tracking a plane.");
         } else {
             flipCurrentView( bdvHandle );
+        }
+    }
+
+    private void addShiftViewBehaviour() {
+        if ( planeManager.isTrackingPlane() ) {
+            IJ.log("Can't shift view while tracking a plane.");
+        } else {
+            BlockPlane blockPlane = (BlockPlane) planeManager.getPlane( TargetingAccuracy.beforeBlock );
+            double[] topLeft = new double[3];
+            double[] bottomLeft = new double[3];
+            double[] bottomRight = new double[3];
+            Map<VertexPoint, RealPoint> assignedVertices = blockPlane.getVertexDisplay().getAssignedVertices();
+            assignedVertices.get( VertexPoint.TopLeft ).localize(topLeft);
+            assignedVertices.get( VertexPoint.BottomLeft ).localize(bottomLeft);
+            assignedVertices.get( VertexPoint.BottomRight ).localize(bottomRight);
+
+            // all points as vectors
+            Vector3d topLeftV = new Vector3d(topLeft);
+            Vector3d bottomLeftV = new Vector3d(bottomLeft);
+            Vector3d bottomRightV = new Vector3d(bottomRight);
+
+            // Normal pointing out of block face
+            Vector3d edgeVector = new Vector3d();
+            edgeVector.sub(bottomRightV, bottomLeftV);
+
+            Vector3d upVector = new Vector3d();
+            upVector.sub(topLeftV, bottomLeftV);
+
+            Vector3d normalInBlock = new Vector3d();
+            normalInBlock.cross(upVector, edgeVector);
+            normalInBlock.normalize();
+
+            shiftCurrentView( bdvHandle, planeManager.getPlane(TargetingAccuracy.afterBlock), normalInBlock );
         }
     }
 
@@ -118,6 +158,11 @@ public class AccuracyBdvBehaviours {
         BdvPopupMenus.addAction(bdvHandle, "Flip view", ( x, y ) ->
         {
             addFlipViewBehaviour();
+        });
+
+        BdvPopupMenus.addAction(bdvHandle, "Shift view", ( x, y ) ->
+        {
+            addShiftViewBehaviour();
         });
 
     }
