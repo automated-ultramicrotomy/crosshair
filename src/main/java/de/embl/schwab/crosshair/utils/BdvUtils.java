@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.utils;
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import de.embl.schwab.crosshair.plane.Plane;
+import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 import org.apache.commons.math3.util.Precision;
@@ -60,6 +61,10 @@ public class BdvUtils {
         if (!normalsParallel) {
             BdvUtils.levelCurrentView(bdv, targetNormal);
         }
+
+        Vector3d difference = new Vector3d(shiftedCentroid);
+        difference.sub(plane.getCentroid());
+        IJ.log("moved " + difference.length());
     }
 
     // from https://github.com/tischi/imagej-utils/blob/f9b84aae6b3bd922ed723fd6b24ac510f86af8eb/src/main/java/de/embl/cba/bdv/utils/BdvUtils.java#L422
