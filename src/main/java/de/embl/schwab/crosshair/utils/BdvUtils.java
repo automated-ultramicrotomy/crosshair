@@ -28,7 +28,7 @@ public class BdvUtils {
     public static void shiftCurrentView( Bdv bdv, Plane plane, Vector3d blockNormal ) {
         // shift view to a set number of microns below given plane (parallel to plane, but in the same general
         // direction as block normal - i.e, moving further into the block, away from the surface)
-        int nMicrons = 1;
+        int nMicrons = 3;
 
         final AffineTransform3D transform = new AffineTransform3D();
         bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( transform );
