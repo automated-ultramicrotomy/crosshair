@@ -78,6 +78,10 @@ public class BdvBehaviours {
         }
     }
 
+    private void addImageBehaviour() {
+        // add row
+    }
+
     private void installBehaviours() {
         final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
         behaviours.install( bdvHandle.getTriggerbindings(), Crosshair.target );
@@ -138,6 +142,11 @@ public class BdvBehaviours {
         BdvPopupMenus.addAction(bdvHandle, "Fit To Points", ( x, y ) ->
         {
                 addFitToPointsBehaviour();
+        });
+
+        BdvPopupMenus.addAction(bdvHandle, "Add image", ( x, y ) ->
+        {
+            addImageBehaviour();
         });
 
     }

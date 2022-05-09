@@ -74,7 +74,7 @@ public class TargetingAccuracyFrame extends JFrame {
 
         otherPanel.initialisePanel( new ArrayList<>( imageNametoContent.values() ), universe, planeManager,
                 bdvHandle, false );
-        imagesPanel.initialisePanel( imageNametoContent, otherPanel, universe );
+        imagesPanel.initialisePanel( imageNametoContent, otherPanel, universe, this );
         savePanel.initialisePanel( this );
 
         mainPane.add(imagesPanel);

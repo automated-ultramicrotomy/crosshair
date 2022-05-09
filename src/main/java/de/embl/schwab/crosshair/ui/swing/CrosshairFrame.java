@@ -77,8 +77,7 @@ public class CrosshairFrame extends JFrame {
         mainPane.add(microtomePanel);
         mainPane.add(savePanel);
 
-        this.pack();
-        this.setVisible( true );
+        refreshGui();
 
     }
 
@@ -127,4 +126,9 @@ public class CrosshairFrame extends JFrame {
     }
 
     public String getUnit() { return unit; }
+
+    public void refreshGui() {
+        this.pack();
+        this.setVisible( true );
+    }
 }

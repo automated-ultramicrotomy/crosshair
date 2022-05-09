@@ -21,19 +21,34 @@ public class ImagesPanel extends CrosshairPanel {
     private Map<String, Content> imageNameToContent;
     private Image3DUniverse universe;
     private OtherPanel otherPanel;
+    private JScrollPane scrollPane;
+    private JPanel imageButtonsContainer;
+    private JFrame parentFrame;
 
     public ImagesPanel() {}
 
-    public void initialisePanel( Map<String, Content> imageNameToContent, OtherPanel otherPanel, Image3DUniverse universe ) {
+    public void initialisePanel( Map<String, Content> imageNameToContent, OtherPanel otherPanel,
+                                 Image3DUniverse universe, JFrame parentFrame ) {
         this.imageNameToContent = imageNameToContent;
         this.otherPanel = otherPanel;
         this.universe = universe;
+        this.parentFrame = parentFrame;
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Images"),
                 BorderFactory.createEmptyBorder(5,5,5,5)));
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
+        scrollPane = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+        scrollPane.setBorder( BorderFactory.createEmptyBorder() );
+        add(scrollPane);
+
+        imageButtonsContainer = new JPanel();
+        imageButtonsContainer.setLayout( new BoxLayout( imageButtonsContainer, BoxLayout.PAGE_AXIS ));
+        imageButtonsContainer.setBorder( BorderFactory.createEmptyBorder() );
+        scrollPane.setViewportView( imageButtonsContainer );
+
         for (String imageName: imageNameToContent.keySet() ) {
             addImageToPanel( imageName );
         }
@@ -43,7 +58,8 @@ public class ImagesPanel extends CrosshairPanel {
         Map<String, Content> imageNameToContent = new HashMap<>();
         imageNameToContent.put( Crosshair.image, crosshairFrame.getImageContent() );
 
-        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse() );
+        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse(),
+                crosshairFrame );
     }
 
     public Map<String, Content> getImageNameToContent() {
@@ -92,7 +108,7 @@ public class ImagesPanel extends CrosshairPanel {
         panel.add(visbilityButton);
     }
 
-    private void addImageToPanel(String imageName) {
+    public void addImageToPanel(String imageName) {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
@@ -110,16 +126,26 @@ public class ImagesPanel extends CrosshairPanel {
         addTransparencyButton(panel, buttonDimensions, imageName);
         addVisibilityButton(panel, buttonDimensions, imageName);
 
-        add(panel);
+        imageButtonsContainer.add(panel);
         refreshGui();
     }
 
     private void refreshGui() {
         this.revalidate();
         this.repaint();
+
+        // scroll to bottom, so any new panels are visible
+        scrollPane.validate();
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setValue( vertical.getMaximum() );
+
+        // scroll pane resizes up to four images, then requires user resizing
+        if ( imageButtonsContainer.getComponentCount() < 5 ) {
+            parentFrame.pack();
+        }
     }
 
-    public void addTransparencyButton(JPanel panel, int[] buttonDimensions,
+    private void addTransparencyButton(JPanel panel, int[] buttonDimensions,
                                       String imageName ) {
         JButton button = new JButton("T");
         button.setPreferredSize(new Dimension(
@@ -168,7 +194,7 @@ public class ImagesPanel extends CrosshairPanel {
         panel.add(button);
     }
 
-    public class TransparencyUpdateListener implements BoundedValueDouble.UpdateListener {
+    private class TransparencyUpdateListener implements BoundedValueDouble.UpdateListener {
         final private BoundedValueDouble transparencyValue;
         private final SliderPanelDouble transparencySlider;
         private final String imageName;
