@@ -22,4 +22,4 @@ Then click 'Apply Changes'
 ## User guide
 
 A short user guide is provided in the wiki:
-https://github.com/K-Meech/crosshair/wiki
+https://github.com/automated-ultramicrotomy/crosshair/wiki
