@@ -23,3 +23,7 @@ Then click 'Apply Changes'
 
 A short user guide is provided in the wiki:
 https://github.com/automated-ultramicrotomy/crosshair/wiki
+
+## Cite
+
+If you use Crosshair in your work, please cite our [preprint on biorxiv](https://www.biorxiv.org/content/10.1101/2022.06.02.491151v1)
