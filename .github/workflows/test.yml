@@ -1,0 +1,32 @@
+name: test
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+          cache: maven
+          
+      - name: Set up CI environment
+        run: .github/setup.sh
+#      - name: Install blosc
+#        run: sudo apt install libblosc-dev
+#      - name: Install xvfb 
+#        run: sudo apt-get install xvfb
+      - name: Run mvn test
+        run: mvn test # for testing with graphics prepend: xvfb-run --auto-servernum
