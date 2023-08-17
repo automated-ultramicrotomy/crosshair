@@ -13,11 +13,19 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to convert old format Crosshair settings files to the new format
+ */
 public class SettingsFormatConverter {
 
     private final File oldFormatJson;
     private final File newFormatJson;
 
+    /**
+     * Create a settings format converter
+     * @param oldFormatJson Settings json file in old format to convert
+     * @param newFormatJson Settings json file to write new format settings into
+     */
     public SettingsFormatConverter( File oldFormatJson, File newFormatJson ) {
         this.oldFormatJson = oldFormatJson;
         this.newFormatJson = newFormatJson;
@@ -75,6 +83,10 @@ public class SettingsFormatConverter {
         return imageNameToSettings;
     }
 
+    /**
+     * Reads settings from the old format settings json file, converts them to the new format,
+     * then writes to the new format settings json file
+     */
     public void convertOldSettingsToNew() {
         OldFormatSettings oldSettings = new OldFormatSettingsReader().readSettings( oldFormatJson.getAbsolutePath() );
         Settings settings = new Settings();

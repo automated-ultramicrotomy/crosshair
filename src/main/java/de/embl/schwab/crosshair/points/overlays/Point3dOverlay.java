@@ -8,6 +8,9 @@ import vib.PointList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Class to manage points in the 3D viewer
+ */
 // TODO - all 3D points / vertices for all planes are currently in the same point list. This means that overlapping
 // points are not allowed (while this is allowed in the 2D viewer, as each plane gets its own 2D overlay).
 // This is a limitation of ImageJ 3D Viewer. All point lists must be assocated with an imagecontent, and only one per
@@ -17,16 +20,28 @@ public class Point3dOverlay {
 
     private Content imageContent;
 
+    /**
+     * Make a 3D point overlay for the given image content
+     * @param imageContent image content (displayed in 3D viewer) to associate points with
+     */
     public Point3dOverlay( Content imageContent ) {
         this.imageContent = imageContent;
     }
 
+    /**
+     * Add point
+     * @param point 3D point
+     */
     public void addPoint( RealPoint point ) {
         double[] position = new double[3];
         point.localize(position);
         imageContent.getPointList().add("", position[0], position[1], position[2]);
     }
 
+    /**
+     * Remove given points
+     * @param points List of 3D points to remove
+     */
     public void removePoints( List<RealPoint> points ) {
         for( RealPoint point: points ) {
             removePointFromPointList( point );
@@ -35,6 +50,10 @@ public class Point3dOverlay {
         refreshPoints();
     }
 
+    /**
+     * Remove given point
+     * @param point 3D point
+     */
     public void removePoint( RealPoint point ) {
         removePointFromPointList( point );
         refreshPoints();
@@ -61,6 +80,11 @@ public class Point3dOverlay {
         }
     }
 
+    /**
+     * Rename the given 3D point
+     * @param point 3D point to rename
+     * @param name new name
+     */
     public void renamePoint3D( RealPoint point, String name ) {
         // rename any points with that name to "" to enforce only one point with each name
         BenesNamedPoint existingPointWithName = imageContent.getPointList().get(name);

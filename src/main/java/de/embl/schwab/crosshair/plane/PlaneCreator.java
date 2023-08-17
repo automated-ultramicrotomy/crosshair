@@ -18,6 +18,9 @@ import org.scijava.vecmath.Vector3d;
 
 import java.util.ArrayList;
 
+/**
+ * Class to handle creation of planes
+ */
 public class PlaneCreator {
 
     private final Image3DUniverse universe; // universe to add all planes to
@@ -25,6 +28,13 @@ public class PlaneCreator {
     private final Bdv bdv; // bdv instance to assign to plane, needed to keep 2d point overlays up to date
     private final Point3dOverlay point3dOverlay; // 3d point overlay to assign to plane
 
+    /**
+     * Create a plane creator
+     * @param universe universe of the 3D viewer
+     * @param imageContent image content displayed in 3D viewer (used to define bounds of the planes)
+     * @param bdv BigDataViewer window
+     * @param point3dOverlay point overlay for 3D viewer
+     */
     public PlaneCreator(Image3DUniverse universe, Content imageContent, Bdv bdv, Point3dOverlay point3dOverlay ) {
         this.universe = universe;
         this.imageContent = imageContent;
@@ -37,6 +47,11 @@ public class PlaneCreator {
         public Content mesh;
     }
 
+    /**
+     * Create a plane with the given settings
+     * @param planeSettings plane settings
+     * @return a Plane object
+     */
     public Plane createPlane( PlaneSettings planeSettings ) {
 
         PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
@@ -50,6 +65,11 @@ public class PlaneCreator {
         }
     }
 
+    /**
+     * Create a block plane (representing the block face)
+     * @param blockPlaneSettings block plane settings
+     * @return a block plane object
+     */
     public BlockPlane createBlockPlane( BlockPlaneSettings blockPlaneSettings ) {
 
         PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
@@ -70,6 +90,12 @@ public class PlaneCreator {
         return settings.normal != null && settings.point != null;
     }
 
+    /**
+     * Update plane orientation
+     * @param plane plane to update
+     * @param newNormal the new plane normal
+     * @param newPoint the new plane point
+     */
     public void updatePlaneOrientation( Plane plane, Vector3d newNormal, Vector3d newPoint ) {
         if ( universe.contains( plane.getName() ) ) {
             universe.removeContent( plane.getName() );

@@ -8,10 +8,13 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class for point overlay in the 2D BigDataViewer window
+ * same as https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/PointsOverlay.java
+ * but sets size to zero after certain distance
+ */
 public abstract class PointOverlay2d extends BdvOverlay {
-    // same as https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/PointsOverlay.java
-    // but sets size to zero after certain distance
-    // could make it nicer like in the bdv workshop, where they make the size taper off in a sphere
+    // TODO- could make it nicer like in the bdv workshop, where they make the size taper off in a sphere
 
     private boolean showPoints = true;
 
@@ -19,6 +22,9 @@ public abstract class PointOverlay2d extends BdvOverlay {
         return showPoints;
     }
 
+    /**
+     * Toggle visibility of points
+     */
     public void toggleShowPoints () {
         if (showPoints) {
             showPoints = false;
@@ -27,6 +33,12 @@ public abstract class PointOverlay2d extends BdvOverlay {
         }
     }
 
+    /**
+     * Draw points in the BigDataViewer window
+     * @param points 3D points to draw
+     * @param color colour of points
+     * @param graphics graphics 2D
+     */
     protected void drawPoints( List< ? extends RealLocalizable> points, Color color, final Graphics2D graphics ) {
 
         if ( !showPoints ) {
@@ -53,6 +65,12 @@ public abstract class PointOverlay2d extends BdvOverlay {
         }
     }
 
+    /**
+     * Draw text next to points in the BigDataViewer window
+     * @param pointLabelToPoint map of text labels to 3D points
+     * @param color colour of text
+     * @param graphics graphics 2D
+     */
     protected void drawTextOnPoints( Map< String,  ? extends RealLocalizable> pointLabelToPoint,
                                      Color color, final Graphics2D graphics ) {
 

@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for vertex points overlay in the 2D BigDataViewer window
+ */
 public class VertexPoints2dOverlay extends PointOverlay2d {
 
     private final VertexDisplay vertexDisplay;
@@ -16,10 +19,18 @@ public class VertexPoints2dOverlay extends PointOverlay2d {
     private final Color colVertex = new Color(0, 255, 255);
     private final Color colSelected = new Color(153, 0, 76);
 
+    /**
+     * Create a vertex overlay
+     * @param vertexDisplay vertex display
+     */
     public VertexPoints2dOverlay( VertexDisplay vertexDisplay ) {
         this.vertexDisplay = vertexDisplay;
     }
 
+    /**
+     * Draw vertex points to BigDataViewer window
+     * @param g graphics 2D
+     */
     @Override
     protected void draw(Graphics2D g) {
         if ( vertexDisplay.isVertexSelected() ) {

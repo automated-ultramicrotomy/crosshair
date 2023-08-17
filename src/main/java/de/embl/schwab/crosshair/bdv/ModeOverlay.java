@@ -5,11 +5,18 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 
 import java.awt.*;
 
+/**
+ * Class to display the current Crosshair mode as an overlay on the BigDataViewer window
+ */
 public class ModeOverlay extends BdvOverlay  {
 
     private PlaneManager planeManager;
     private Color colModeText = new Color(255, 255, 255);
 
+    /**
+     * Create a BigDataViewer overlay for the Crosshair mode text
+     * @param planeManager Crosshair plane manager
+     */
     public ModeOverlay( PlaneManager planeManager ) {
         this.planeManager = planeManager;
     }

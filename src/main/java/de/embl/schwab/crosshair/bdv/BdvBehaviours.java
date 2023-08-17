@@ -15,12 +15,22 @@ import org.scijava.ui.behaviour.util.Behaviours;
 
 import javax.swing.*;
 
+/**
+ * Class to control custom interactions with the BigDataViewer window
+ * For example, clicking to add points or fitting a plane to points
+ */
 public class BdvBehaviours {
 
     private BdvHandle bdvHandle;
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
 
+    /**
+     * Adds custom behaviours to the BigDataViewer window referenced by bdvHandle
+     * @param bdvHandle bdvHandle of the BigDataViewer window
+     * @param planeManager Crosshair plane manager
+     * @param microtomeManager Crosshair microtome manager
+     */
     public BdvBehaviours (BdvHandle bdvHandle, PlaneManager planeManager, MicrotomeManager microtomeManager) {
         this.bdvHandle = bdvHandle;
         this.planeManager = planeManager;
