@@ -12,7 +12,7 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["imagej-utils"],
+      "matchPackageNames": ["de.embl.cba:imagej-utils"],
       "enabled": false
     }
   ]
