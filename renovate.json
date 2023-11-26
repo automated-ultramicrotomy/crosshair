@@ -7,6 +7,6 @@
     ":disableDependencyDashboard",
     ":label(renovate)",
     ":maintainLockFilesMonthly",
-    ":noUnscheduledUpdates",
+    ":noUnscheduledUpdates"
   ]
 }
