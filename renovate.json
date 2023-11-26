@@ -1,6 +1,20 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:best-practices",
+    "schedule:monthly",
+    ":assignAndReview(K-Meech)",
+    ":disableDependencyDashboard",
+    ":label(renovate)",
+    ":maintainLockFilesMonthly",
+    ":noUnscheduledUpdates",
+  ],
+  "packageRules": [
+    {
+      description: "Combine updates together",
+      groupName: "automated-ultramicrotomy/crosshair",
+      matchDepNames: ["automated-ultramicrotomy/crosshair"],
+    },
+  ],
 }
+
