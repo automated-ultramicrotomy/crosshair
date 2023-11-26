@@ -9,5 +9,11 @@
     ":maintainLockFilesMonthly",
     ":noUnscheduledUpdates",
     "group:all"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["imagej-utils"],
+      "enabled": false
+    }
   ]
 }
