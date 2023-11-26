@@ -11,9 +11,9 @@
   ],
   "packageRules": [
     {
-      description: "Combine updates together",
-      groupName: "automated-ultramicrotomy/crosshair",
-      matchDepNames: ["automated-ultramicrotomy/crosshair"],
+      "description": "Combine updates together",
+      "groupName": "automated-ultramicrotomy/crosshair",
+      "matchDepNames": ["automated-ultramicrotomy/crosshair"],
     },
   ],
 }
