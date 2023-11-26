@@ -8,5 +8,5 @@
     ":label(renovate)",
     ":maintainLockFilesMonthly",
     ":noUnscheduledUpdates",
-  ],
+  ]
 }
