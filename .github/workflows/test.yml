@@ -4,9 +4,28 @@ on:
   pull_request:
     branches:
       - master
+
+    # Only run if src, pom or github actions files change
+    # Other changes like docs / readme / license don't require tests to be re-run
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/**'
+
   push:
     branches:
       - master
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/**'
+
+# Prevent multiple runs of the same workflow on the same branch at the same time
+# e.g. if new commits pushed to a PR, will cancel any current runs before starting
+# a new one
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

@@ -76,7 +76,6 @@
 		<package-name>de.embl.schwab.crosshair</package-name>
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>EMBL</license.copyrightOwners>
-		<scijava.app.directory>C:\Users\meechan\Documents\CrosshairUpload\Fiji.app</scijava.app.directory>
 		<enforcer.skip>true</enforcer.skip>
 
 <!--		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>-->
@@ -120,7 +119,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 		<dependency>
