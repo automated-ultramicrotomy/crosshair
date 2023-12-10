@@ -9,28 +9,35 @@ import java.util.ArrayList;
 
 public class PointHelper {
 
+    /**
+     * Get current position of mouse in BigDataViewer window (in global coordinates)
+     * @param bdvHandle BigDataViewer handle
+     * @return mouse position
+     */
     public static RealPoint getCurrentMousePosition ( BdvHandle bdvHandle ) {
         RealPoint point = new RealPoint(3);
         bdvHandle.getViewerPanel().getGlobalMouseCoordinates(point);
         return point;
     }
 
-    public static boolean pointIsNearExistingPoint( ArrayList<RealPoint> points, RealPoint point, BdvHandle bdvHandle ) {
-        double[] pointViewerCoords = convertToViewerCoordinates( point, bdvHandle );
-
-        for ( int i = 0; i < points.size(); i++ )
-        {
-            RealPoint currentPoint = points.get(i);
-            double[] currentPointViewerCoords = convertToViewerCoordinates( currentPoint, bdvHandle );
-            double distance = GeometryUtils.distanceBetweenPoints(pointViewerCoords, currentPointViewerCoords);
-            if (distance < 5) {
-                return true;
-            }
-        }
-
-        return false;
+    /**
+     * Get current position of mouse in BigDataViewer window (in viewer coordinates)
+     * @param bdvHandle BigDataViewer handle
+     * @return mouse position
+     */
+    public static double[] getCurrentPositionViewerCoordinates ( BdvHandle bdvHandle ) {
+        RealPoint point = getCurrentMousePosition( bdvHandle );
+        return convertToViewerCoordinates( point, bdvHandle );
     }
 
+    /**
+     * Check if the given 'point' is within a small distance of any of the 'points'. If so, return the first matching
+     * point (distance between points is checked in viewer coordinates of Bdv)
+     * @param points Points to match to
+     * @param point Point
+     * @param bdvHandle BigDataViewer handle
+     * @return Matching point (if any) or null
+     */
     public static RealPoint getMatchingPointWithinDistance( ArrayList<RealPoint> points, RealPoint point, BdvHandle bdvHandle ) {
         double[] pointViewerCoords = convertToViewerCoordinates( point, bdvHandle );
 
@@ -47,12 +54,12 @@ public class PointHelper {
         return null;
     }
 
-    public static double[] getCurrentPositionViewerCoordinates ( BdvHandle bdvHandle ) {
-        RealPoint point = getCurrentMousePosition( bdvHandle );
-        return convertToViewerCoordinates( point, bdvHandle );
-    }
-
-
+    /**
+     * Convert global coordinates to viewer coordinates (for the given BigDataViewer window)
+     * @param point Point to convert
+     * @param bdvHandle BigDataViewer handle
+     * @return Point in viewer coordinates
+     */
     public static double[] convertToViewerCoordinates ( RealPoint point, BdvHandle bdvHandle ) {
         final AffineTransform3D transform = new AffineTransform3D();
         bdvHandle.getViewerPanel().state().getViewerTransform( transform );

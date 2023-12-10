@@ -1,5 +1,8 @@
 package de.embl.schwab.crosshair.points;
 
+/**
+ * Enum for vertex assignments (i.e. block face corner assignments)
+ */
 public enum VertexPoint {
 
     TopLeft,

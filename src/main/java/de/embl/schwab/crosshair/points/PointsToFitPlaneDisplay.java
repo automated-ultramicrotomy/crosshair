@@ -4,6 +4,7 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
 import de.embl.schwab.crosshair.points.overlays.PointsToFitPlane2dOverlay;
+import ij3d.Content;
 import net.imglib2.RealPoint;
 
 import java.util.ArrayList;
@@ -11,22 +12,39 @@ import java.util.ArrayList;
 import static de.embl.schwab.crosshair.points.PointHelper.getCurrentMousePosition;
 import static de.embl.schwab.crosshair.points.PointHelper.getMatchingPointWithinDistance;
 
+/**
+ * Class to control 2D and 3D display of points used to fit a specific plane
+ * Each plane will get its own PointsToFitPlaneDisplay.
+ */
 public class PointsToFitPlaneDisplay {
 
     private final ArrayList<RealPoint> pointsToFitPlane; // points used to fit this plane
-    private Bdv bdv;
-    private Point3dOverlay point3dOverlay;
-    private PointsToFitPlane2dOverlay point2dOverlay;
-    private String sourceName;
+    private final Bdv bdv;
+    private final Point3dOverlay point3dOverlay;
+    private final PointsToFitPlane2dOverlay point2dOverlay;
+    private final String sourceName;
 
-    public PointsToFitPlaneDisplay( String name, Bdv bdv, Point3dOverlay point3dOverlay ) {
-        this( new ArrayList<>(), name, bdv, point3dOverlay );
+    /**
+     * Create a points to fit plane display (starting with no points)
+     * @param name Plane name
+     * @param bdv BigDataViewer window to show 2D points on
+     * @param imageContent image content (displayed in 3D viewer) to show 3D points on
+     */
+    public PointsToFitPlaneDisplay( String name, Bdv bdv, Content imageContent ) {
+        this( new ArrayList<>(), name, bdv, imageContent );
     }
 
-    public PointsToFitPlaneDisplay( ArrayList<RealPoint> pointsToFitPlane, String name, Bdv bdv, Point3dOverlay point3dOverlay ) {
+    /**
+     * Create a points to fit plane display (starting with list of points)
+     * @param pointsToFitPlane List of points to fit plane
+     * @param name Plane name
+     * @param bdv BigDataViewer window to show 2D points on
+     * @param imageContent image content (displayed in 3D viewer) to show 3D points on
+     */
+    public PointsToFitPlaneDisplay( ArrayList<RealPoint> pointsToFitPlane, String name, Bdv bdv, Content imageContent ) {
         this.pointsToFitPlane = pointsToFitPlane;
         this.point2dOverlay = new PointsToFitPlane2dOverlay( this );
-        this.point3dOverlay = point3dOverlay;
+        this.point3dOverlay = new Point3dOverlay( imageContent );
         this.bdv = bdv;
         this.sourceName = name + "-points_to_fit_plane";
         BdvFunctions.showOverlay( point2dOverlay, sourceName,
@@ -49,6 +67,10 @@ public class PointsToFitPlaneDisplay {
         return sourceName;
     }
 
+    /**
+     * Add point at current mouse position in BigDataViewer window. If there's already a point there, then
+     * remove it instead.
+     */
     public void addOrRemoveCurrentPositionFromPointsToFitPlane() {
         RealPoint point = getCurrentMousePosition( bdv.getBdvHandle() );
 

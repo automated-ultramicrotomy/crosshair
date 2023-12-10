@@ -8,7 +8,6 @@ import bdv.viewer.SourceAndConverter;
 import de.embl.schwab.crosshair.bdv.ModeOverlay;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.VertexDisplay;
-import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
 import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
@@ -44,7 +43,6 @@ public class PlaneManager {
     private final BdvHandle bdvHandle;
     private final BdvStackSource bdvStackSource;
     private final Image3DUniverse universe;
-    private final Point3dOverlay point3dOverlay;
 
     private final Color3f alignedPlaneColour = new Color3f(1, 0, 0);
     // TODO - make this threshold user definable - makes sense for microns, but possibly not for other units
@@ -66,9 +64,8 @@ public class PlaneManager {
                 Bdv.options().addTo( bdvStackSource ) );
         this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
-        this.point3dOverlay = new Point3dOverlay( imageContent );
 
-        this.planeCreator = new PlaneCreator( universe, imageContent, bdvStackSource, point3dOverlay );
+        this.planeCreator = new PlaneCreator( universe, imageContent, bdvStackSource );
     }
 
     public Plane getPlane( String planeName ) {

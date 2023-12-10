@@ -4,7 +4,6 @@ import bdv.util.Bdv;
 import customnode.CustomTriangleMesh;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.VertexDisplay;
-import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
@@ -26,20 +25,17 @@ public class PlaneCreator {
     private final Image3DUniverse universe; // universe to add all planes to
     private final Content imageContent; // 3d image content used to define bounds of plane
     private final Bdv bdv; // bdv instance to assign to plane, needed to keep 2d point overlays up to date
-    private final Point3dOverlay point3dOverlay; // 3d point overlay to assign to plane
 
     /**
      * Create a plane creator
      * @param universe universe of the 3D viewer
      * @param imageContent image content displayed in 3D viewer (used to define bounds of the planes)
      * @param bdv BigDataViewer window
-     * @param point3dOverlay point overlay for 3D viewer
      */
-    public PlaneCreator(Image3DUniverse universe, Content imageContent, Bdv bdv, Point3dOverlay point3dOverlay ) {
+    public PlaneCreator(Image3DUniverse universe, Content imageContent, Bdv bdv ) {
         this.universe = universe;
         this.imageContent = imageContent;
         this.bdv = bdv;
-        this.point3dOverlay = point3dOverlay;
     }
 
     private class CentroidAndMesh {
@@ -55,7 +51,7 @@ public class PlaneCreator {
     public Plane createPlane( PlaneSettings planeSettings ) {
 
         PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
-                planeSettings.pointsToFitPlane, planeSettings.name, bdv, point3dOverlay );
+                planeSettings.pointsToFitPlane, planeSettings.name, bdv, imageContent );
 
         if ( isOrientationSet( planeSettings ) ) {
             CentroidAndMesh centroidAndMesh = createCentroidAndMesh(planeSettings);
@@ -73,9 +69,9 @@ public class PlaneCreator {
     public BlockPlane createBlockPlane( BlockPlaneSettings blockPlaneSettings ) {
 
         PointsToFitPlaneDisplay pointsToFitPlaneDisplay = new PointsToFitPlaneDisplay(
-                blockPlaneSettings.pointsToFitPlane, blockPlaneSettings.name, bdv, point3dOverlay );
+                blockPlaneSettings.pointsToFitPlane, blockPlaneSettings.name, bdv, imageContent );
         VertexDisplay vertexDisplay = new VertexDisplay(
-                blockPlaneSettings.vertices, blockPlaneSettings.assignedVertices, blockPlaneSettings.name, bdv, point3dOverlay );
+                blockPlaneSettings.vertices, blockPlaneSettings.assignedVertices, blockPlaneSettings.name, bdv, imageContent );
 
         if ( isOrientationSet( blockPlaneSettings ) ) {
             CentroidAndMesh centroidAndMesh = createCentroidAndMesh( blockPlaneSettings );

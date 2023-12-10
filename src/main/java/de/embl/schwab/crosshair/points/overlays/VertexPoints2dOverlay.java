@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * Class for vertex points overlay in the 2D BigDataViewer window
+ * There is one of these per block plane displayed in Crosshair
  */
 public class VertexPoints2dOverlay extends PointOverlay2d {
 
@@ -20,7 +21,7 @@ public class VertexPoints2dOverlay extends PointOverlay2d {
     private final Color colSelected = new Color(153, 0, 76);
 
     /**
-     * Create a vertex overlay
+     * Create a 2D vertex overlay
      * @param vertexDisplay vertex display
      */
     public VertexPoints2dOverlay( VertexDisplay vertexDisplay ) {

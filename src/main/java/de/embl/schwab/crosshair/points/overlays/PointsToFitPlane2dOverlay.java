@@ -5,7 +5,8 @@ import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import java.awt.*;
 
 /**
- * Class for point to fit plane overlay in the 2D BigDataViewer window
+ * Class for points to fit plane overlay in the 2D BigDataViewer window
+ * There is one of these per plane displayed in Crosshair
  */
 public class PointsToFitPlane2dOverlay extends PointOverlay2d {
 
