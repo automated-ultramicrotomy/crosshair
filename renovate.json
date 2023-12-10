@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "schedule:monthly",
+    ":assignAndReview(K-Meech)",
+    ":disableDependencyDashboard",
+    ":label(renovate)",
+    ":maintainLockFilesMonthly",
+    ":noUnscheduledUpdates",
+    "group:all"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["de.embl.cba:imagej-utils"],
+      "enabled": false
+    }
+  ]
+}
