@@ -31,6 +31,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Cancel jobs after 30 minutes
+    timeout-minutes: 30
+
     steps:
       - uses: actions/checkout@v4
 
@@ -40,12 +43,10 @@ jobs:
           java-version: '8'
           distribution: 'zulu'
           cache: maven
-          
-      - name: Set up CI environment
-        run: .github/setup.sh
+
 #      - name: Install blosc
 #        run: sudo apt install libblosc-dev
 #      - name: Install xvfb 
 #        run: sudo apt-get install xvfb
-      - name: Run mvn test
-        run: mvn test # for testing with graphics prepend: xvfb-run --auto-servernum
+      - name: Build with maven
+        run: mvn -B package --file pom.xml # for testing with graphics prepend: xvfb-run --auto-servernum
