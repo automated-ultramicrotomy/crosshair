@@ -80,7 +80,7 @@
 
 <!--		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>-->
 <!--		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>-->
-		<imagej-utils.version>0.6.4-SNAPSHOT</imagej-utils.version>
+		<imagej-utils.version>0.6.4</imagej-utils.version>
 	</properties>
 
 	<repositories>
@@ -110,6 +110,16 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>3D_Viewer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt</artifactId>
+			<classifier>${scijava.natives.classifier.gluegen}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all</artifactId>
+			<classifier>${scijava.natives.classifier.jogl}</classifier>
 		</dependency>
 		<dependency>
 			<groupId>de.embl.cba</groupId>
