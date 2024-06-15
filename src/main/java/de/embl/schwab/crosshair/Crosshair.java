@@ -50,7 +50,7 @@ public class Crosshair {
 	 */
 	public Crosshair(Source<Object> imageSource) {
 
-		BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
+		BdvSource bdvSource = BdvFunctions.show(imageSource, 1);
 		Image3DUniverse universe = new Image3DUniverse();
 		universe.show();
 
@@ -63,7 +63,7 @@ public class Crosshair {
 		// Reset colour to default for 3D viewer
 		imageContent.setColor(null);
 
-		initialiseCrosshair(bdvStackSource, universe, imageContent, unit);
+		initialiseCrosshair(bdvSource, universe, imageContent, unit);
 	}
 
 	/**
@@ -83,17 +83,17 @@ public class Crosshair {
 		final String unit = imagePlus.getCalibration().getUnit();
 
 		final Img wrap = ImageJFunctions.wrap(imagePlus);
-		BdvStackSource bdvStackSource = BdvFunctions.show(wrap, "raw", Bdv.options()
+		BdvSource bdvSource = BdvFunctions.show(wrap, "raw", Bdv.options()
 				.sourceTransform(pw, ph, pd));
 
-		initialiseCrosshair(bdvStackSource, universe, imageContent, unit);
+		initialiseCrosshair(bdvSource, universe, imageContent, unit);
 	}
 
-	private void initialiseCrosshair(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent, String unit) {
+	private void initialiseCrosshair(BdvSource bdvSource, Image3DUniverse universe, Content imageContent, String unit) {
 
-		bdvStackSource.setDisplayRange(min, max);
+		bdvSource.setDisplayRange(min, max);
 
-		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
+		BdvHandle bdvHandle = bdvSource.getBdvHandle();
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
 		universe.getPointListDialog().setVisible(false);
@@ -103,9 +103,9 @@ public class Crosshair {
 		// Still places so (0,0) of image == (0,0) in global coordinate system, just bounding box is wrapped tight to
 		// only regions of the image > 0
 
-		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+		PlaneManager planeManager = new PlaneManager(bdvSource, universe, imageContent);
 
-		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
+		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvSource, unit);
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
 		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, bdvHandle, unit);

@@ -4,7 +4,7 @@ import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvOptions;
-import bdv.util.BdvStackSource;
+import bdv.util.BdvSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
@@ -54,9 +54,9 @@ public class TargetingAccuracy {
             throw new UnsupportedOperationException("before and after images don't use the same units");
         } else {
 
-            BdvStackSource beforeStackSource = BdvFunctions.show(beforeSource, 1);
+            BdvSource beforeStackSource = BdvFunctions.show(beforeSource, 1);
             beforeStackSource.setDisplayRange(0, 255);
-            BdvStackSource afterStackSource = BdvFunctions.show(afterSource, 1, BdvOptions.options().addTo(beforeStackSource));
+            BdvSource afterStackSource = BdvFunctions.show(afterSource, 1, BdvOptions.options().addTo(beforeStackSource));
             afterStackSource.setDisplayRange(0, 255);
 
             Image3DUniverse universe = new Image3DUniverse();

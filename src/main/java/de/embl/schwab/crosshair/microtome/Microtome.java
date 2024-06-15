@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.microtome;
 
-import bdv.util.BdvStackSource;
+import bdv.util.BdvSource;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
@@ -16,7 +16,7 @@ import org.scijava.vecmath.Vector3d;
 public class Microtome {
     private final Image3DUniverse universe;
     private final PlaneManager planeManager;
-    private final BdvStackSource bdvStackSource;
+    private final BdvSource bdvSource;
     private final Content imageContent;
 
     // current angles in degrees for knife, tilt and rotation
@@ -77,13 +77,13 @@ public class Microtome {
      * Create a microtome
      * @param universe universe of the 3D viewer
      * @param planeManager plane manager
-     * @param bdvStackSource BigDataViewer stack source
+     * @param bdvSource BigDataViewer source
      * @param imageContent image content displayed in 3D viewer
      */
-    public Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
+    public Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvSource bdvSource, Content imageContent) {
         this.universe = universe;
         this.planeManager = planeManager;
-        this.bdvStackSource = bdvStackSource;
+        this.bdvSource = bdvSource;
         this.imageContent = imageContent;
 
         rotationAxis = new Vector3d(0, 1, 0);
@@ -213,10 +213,10 @@ public class Microtome {
     }
 
     /**
-     * @return BigDataViewer stack source
+     * @return BigDataViewer source
      */
-    public BdvStackSource getBdvStackSource() {
-        return bdvStackSource;
+    public BdvSource getBdvSource() {
+        return bdvSource;
     }
 
     /**

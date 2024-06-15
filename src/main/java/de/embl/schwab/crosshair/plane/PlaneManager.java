@@ -1,9 +1,6 @@
 package de.embl.schwab.crosshair.plane;
 
-import bdv.util.Bdv;
-import bdv.util.BdvFunctions;
-import bdv.util.BdvHandle;
-import bdv.util.BdvStackSource;
+import bdv.util.*;
 import bdv.viewer.SourceAndConverter;
 import de.embl.schwab.crosshair.bdv.ModeOverlay;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
@@ -41,7 +38,7 @@ public class PlaneManager {
     private final Map<String, Plane> planeNameToPlane;
 
     private final BdvHandle bdvHandle;
-    private final BdvStackSource bdvStackSource;
+    private final BdvSource bdvSource;
     private final Image3DUniverse universe;
 
     private final Color3f alignedPlaneColour = new Color3f(1, 0, 0);
@@ -50,22 +47,22 @@ public class PlaneManager {
 
     /**
      * Create a plane manager
-     * @param bdvStackSource BigDataViewer stack source
+     * @param bdvSource BigDataViewer source
      * @param universe universe of the 3D viewer
      * @param imageContent image content displayed in 3D viewer (This image content is used to define the
      *                     extent of planes (only shown within bounds of that image) and where points are shown
      *                     (again attached to that image))
      */
-    public PlaneManager( BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent ) {
+    public PlaneManager( BdvSource bdvSource, Image3DUniverse universe, Content imageContent ) {
         planeNameToPlane = new HashMap<>();
 
-        this.bdvStackSource = bdvStackSource;
+        this.bdvSource = bdvSource;
         BdvFunctions.showOverlay( new ModeOverlay( this), "mode_text",
-                Bdv.options().addTo( bdvStackSource ) );
-        this.bdvHandle = bdvStackSource.getBdvHandle();
+                Bdv.options().addTo( bdvSource ) );
+        this.bdvHandle = bdvSource.getBdvHandle();
         this.universe = universe;
 
-        this.planeCreator = new PlaneCreator( universe, imageContent, bdvStackSource );
+        this.planeCreator = new PlaneCreator( universe, imageContent, bdvSource );
     }
 
     public Plane getPlane( String planeName ) {
@@ -386,7 +383,7 @@ public class PlaneManager {
     public double[] getGlobalViewCentre () {
         final AffineTransform3D transform = new AffineTransform3D();
         bdvHandle.getViewerPanel().state().getViewerTransform( transform );
-        double[] centrePointView = getBdvWindowCentre(bdvStackSource);
+        double[] centrePointView = getBdvWindowCentre(bdvSource);
         double[] centrePointGlobal = new double[3];
         transform.inverse().apply(centrePointView, centrePointGlobal);
 
@@ -420,9 +417,9 @@ public class PlaneManager {
 
             double[] targetCentroid = new double[3];
             plane.getCentroid().get( targetCentroid );
-            moveToPosition(bdvStackSource, targetCentroid, 0, 0);
+            moveToPosition(bdvSource, targetCentroid, 0, 0);
             if (!normalsParallel) {
-                BdvUtils.levelCurrentView(bdvStackSource, targetNormal);
+                BdvUtils.levelCurrentView(bdvSource, targetNormal);
             }
         }
     }

@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.microtome;
 
-import bdv.util.BdvStackSource;
+import bdv.util.BdvSource;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionsCalculator;
@@ -26,13 +26,13 @@ public class MicrotomeManager {
 
     private String unit;
 
-    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource, String unit) {
+    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvSource bdvSource, String unit) {
 
         this.planeManager = planeManager;
         microtomeModeActive = false;
         cuttingModeActive = false;
 
-        this.microtome = new Microtome(universe, planeManager, bdvStackSource, imageContent);
+        this.microtome = new Microtome(universe, planeManager, bdvSource, imageContent);
         this.microtomeSetup = new MicrotomeSetup(microtome);
         this.solutions = new SolutionsCalculator(microtome);
         this.cutting = new Cutting(microtome);
