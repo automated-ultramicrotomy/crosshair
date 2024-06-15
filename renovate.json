@@ -7,7 +7,6 @@
     ":disableDependencyDashboard",
     ":label(renovate)",
     ":maintainLockFilesMonthly",
-    ":noUnscheduledUpdates",
     "group:all"
   ],
   "packageRules": [
