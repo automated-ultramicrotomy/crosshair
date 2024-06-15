@@ -10,6 +10,9 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.Matrix4d;
 import org.scijava.vecmath.Vector3d;
 
+/**
+ * Class to represent the current state of the ultramicrotome
+ */
 public class Microtome {
     private final Image3DUniverse universe;
     private final PlaneManager planeManager;
@@ -70,6 +73,13 @@ public class Microtome {
 
     private double knifeTargetAngleThreshold;
 
+    /**
+     * Create a microtome
+     * @param universe universe of the 3D viewer
+     * @param planeManager plane manager
+     * @param bdvStackSource BigDataViewer stack source
+     * @param imageContent image content displayed in 3D viewer
+     */
     public Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
         this.universe = universe;
         this.planeManager = planeManager;
@@ -88,144 +98,268 @@ public class Microtome {
 
     }
 
+    /**
+     * @return Current knife angle in degrees
+     */
     public double getKnife() {
         return knife;
     }
 
+    /**
+     * @return Current sample tilt angle in degrees
+     */
     public double getTilt() {
         return tilt;
     }
 
+    /**
+     * @return Current sample rotation angle in degrees
+     */
     public double getRotation() {
         return rotation;
     }
 
+    /**
+     * @return Initial sample tilt angle in degrees
+     */
     public double getInitialTiltAngle() {
         return initialTiltAngle;
     }
 
+    /**
+     * @return Initial knife angle in degrees
+     */
     public double getInitialKnifeAngle() {
         return initialKnifeAngle;
     }
 
+    /**
+     * @return universe of the 3D viewer
+     */
     public Image3DUniverse getUniverse() {
         return universe;
     }
 
+    /**
+     * @return Crosshair plane manager
+     */
     public PlaneManager getPlaneManager() {
         return planeManager;
     }
 
+    /**
+     * @return position of centre of knife in 3D viewer
+     */
     public Vector3d getCurrentKnifeCentre() {
         return currentKnifeCentre;
     }
 
+    /**
+     * @return Knife normal vector at current rotation (in 3D viewer)
+     */
     public Vector3d getCurrentKnifeNormal() {
         return currentKnifeNormal;
     }
 
+    /**
+     * @return position of centre of arc in 3D viewer
+     */
     public Vector3d getCurrentArcCentre() {
         return currentArcCentre;
     }
 
+    /**
+     * @return position of front of sample holder in 3D viewer
+     */
     public Vector3d getCurrentHolderFront() {
         return currentHolderFront;
     }
 
+    /**
+     * @return image content displayed in 3D viewer
+     */
     public Content getImageContent() {
         return imageContent;
     }
 
+    /**
+     * @return Initial target offset angle in degrees (calculated from the input planes & points,
+     * offset from block face to target)
+     */
     public double getInitialTargetOffset() {
         return initialTargetOffset;
     }
 
+    /**
+     * @return Initial target tilt angle in degrees (calculated from the input planes & points,
+     * tilt from block face to target)
+     */
     public double getInitialTargetTilt() {
         return initialTargetTilt;
     }
 
+    /**
+     * @return Transformation matrix for block to current position (under current microtome settings)
+     */
     public Matrix4d getCurrentBlockTransform() {
         return currentBlockTransform;
     }
 
+    /**
+     * @return Vector from left to right along knife edge under current knife angle
+     */
     public Vector3d getCurrentEdgeVector() {
         return currentEdgeVector;
     }
 
+    /**
+     * @return BigDataViewer stack source
+     */
     public BdvStackSource getBdvStackSource() {
         return bdvStackSource;
     }
 
+    /**
+     * @return angle in degrees between the current knife normal and current target plane normal
+     */
     public double getAngleKnifeTarget() {
         return angleKnifeTarget;
     }
 
+    /**
+     * Set transformation matrix of arc components (arc + holder front + holder back)
+     * @param arcComponentsInitialTransform Transformation matrix
+     */
     void setArcComponentsInitialTransform(Matrix4d arcComponentsInitialTransform) {
         this.arcComponentsInitialTransform = arcComponentsInitialTransform;
     }
 
+    /**
+     * Set current position of arc centre in 3D viewer
+     * @param currentArcCentre position of arc centre
+     */
     void setCurrentArcCentre(Vector3d currentArcCentre) {
         this.currentArcCentre = currentArcCentre;
     }
 
+    /**
+     * Set current position of sample holder front in 3D viewer
+     * @param currentHolderFront position of sample holder front
+     */
     void setCurrentHolderFront(Vector3d currentHolderFront) {
         this.currentHolderFront = currentHolderFront;
     }
 
+    /**
+     * Set initial target plane normal vector
+     * @param initialTargetNormal normal vector
+     */
     void setInitialTargetNormal(Vector3d initialTargetNormal) {
         this.initialTargetNormal = initialTargetNormal;
     }
 
+    /**
+     * Set current target plane normal vector
+     * @param currentTargetNormal normal vector
+     */
     void setCurrentTargetNormal(Vector3d currentTargetNormal) {
         this.currentTargetNormal = currentTargetNormal;
     }
 
+    /**
+     * Set angle in degrees between the current knife normal and current target plane normal
+     * @param angleKnifeTarget angle in degrees
+     */
     void setAngleKnifeTarget(double angleKnifeTarget) {
         this.angleKnifeTarget = angleKnifeTarget;
     }
 
+    /**
+     * Set initial target plane offset angle
+     * @param initialTargetOffset target offset angle in degrees
+     */
     void setInitialTargetOffset(double initialTargetOffset) {
         this.initialTargetOffset = initialTargetOffset;
     }
 
+    /**
+     * Set initial target plane tilt angle
+     * @param initialTargetTilt target tilt angle in degrees
+     */
     void setInitialTargetTilt(double initialTargetTilt) {
         this.initialTargetTilt = initialTargetTilt;
     }
 
+    /**
+     * Set initial block transform
+     * @param initialBlockTransform transformation matrix
+     */
     void setInitialBlockTransform(Matrix4d initialBlockTransform) {
         this.initialBlockTransform = initialBlockTransform;
     }
 
+    /**
+     * Set initial knife angle
+     * @param initialKnifeAngle initial knife angle in degrees
+     */
     void setInitialKnifeAngle(double initialKnifeAngle) {
         this.initialKnifeAngle = initialKnifeAngle;
     }
 
+    /**
+     * Set initial sample tilt angle
+     * @param initialTiltAngle initial sample tilt angle in degrees
+     */
     void setInitialTiltAngle(double initialTiltAngle) {
         this.initialTiltAngle = initialTiltAngle;
     }
 
+    /**
+     * Set knife initial transform
+     * @param knifeInitialTransform transformation matrix
+     */
     void setKnifeInitialTransform(Matrix4d knifeInitialTransform) {
         this.knifeInitialTransform = knifeInitialTransform;
     }
 
+    /**
+     * Set current position of knife centre in 3D viewer
+     * @param currentKnifeCentre position of knife centre
+     */
     void setCurrentKnifeCentre(Vector3d currentKnifeCentre) {
         this.currentKnifeCentre = currentKnifeCentre;
     }
 
+    /**
+     * Set microtome object names
+     * @param microtomeObjectNames Array of object names
+     */
     void setMicrotomeObjectNames(String[] microtomeObjectNames) {
         this.microtomeObjectNames = microtomeObjectNames;
     }
 
+    /**
+     * Set sample rotation angle
+     * @param rotation sample rotation angle in degrees
+     */
     void setRotation(double rotation) {
         this.rotation = rotation;
         updateTiltRotationBlock();
     }
 
+    /**
+     * Set sample tilt angle
+     * @param tilt sample tilt angle in degrees
+     */
     void setTilt(double tilt) {
         this.tilt = tilt;
         updateTiltRotationBlock();
     }
 
+    /**
+     * Set knife angle
+     * @param knife knife angle in degrees
+     */
     void setKnife(double knife) {
         this.knife = knife;
         Vector3d axis = new Vector3d(new double[] {0, 0, 1});
@@ -305,6 +439,9 @@ public class Microtome {
         }
     }
 
+    /**
+     * Reset the ultramicrotome
+     */
     void resetMicrotome () {
         initialBlockTransform.setIdentity();
 

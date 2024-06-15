@@ -7,6 +7,7 @@ import de.embl.schwab.crosshair.points.overlays.Point3dOverlay;
 import de.embl.schwab.crosshair.points.overlays.VertexPoints2dOverlay;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij.IJ;
+import ij3d.Content;
 import net.imglib2.RealPoint;
 
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ import java.util.Map;
 import static de.embl.schwab.crosshair.points.PointHelper.getCurrentMousePosition;
 import static de.embl.schwab.crosshair.points.PointHelper.getMatchingPointWithinDistance;
 
+/**
+ * Class to control 2D and 3D display of vertices (i.e. named block face corners)
+ * Each block plane will get its own VertexDisplay.
+ */
 public class VertexDisplay {
 
     private final ArrayList<RealPoint> vertices; // all vertex points placed on the block plane
@@ -24,24 +29,38 @@ public class VertexDisplay {
     private transient boolean isVertexSelected;
     private transient RealPoint selectedVertex;
 
-    private VertexPoints2dOverlay vertex2dOverlay;
-    private Point3dOverlay vertex3dOverlay;
-    private Bdv bdv;
-    private String name;
-    private String sourceName;
+    private final VertexPoints2dOverlay vertex2dOverlay;
+    private final Point3dOverlay vertex3dOverlay;
+    private final Bdv bdv;
+    private final String name;
+    private final String sourceName;
 
-    public VertexDisplay( String name, Bdv bdv, Point3dOverlay point3dOverlay ) {
-        this( new ArrayList<>(), new HashMap<>(), name, bdv, point3dOverlay );
+    /**
+     * Create a vertex display (starting with no vertices)
+     * @param name Block plane name
+     * @param bdv BigDataViewer window to show 2D vertices on
+     * @param imageContent image content (displayed in 3D viewer) to show 3D vertices on
+     */
+    public VertexDisplay( String name, Bdv bdv, Content imageContent ) {
+        this( new ArrayList<>(), new HashMap<>(), name, bdv, imageContent );
     }
 
+    /**
+     * Create a vertex display (starting with list of vertices)
+     * @param vertices List of vertices
+     * @param assignedVertices Map of vertex assignment to vertex (e.g. top left, top right..)
+     * @param name Block plane name
+     * @param bdv BigDataViewer window to show 2D vertices on
+     * @param imageContent image content (displayed in 3D viewer) to show 3D vertices on
+     */
     public VertexDisplay( ArrayList<RealPoint> vertices, Map<VertexPoint, RealPoint> assignedVertices,
-                                    String name, Bdv bdv, Point3dOverlay vertex3dOverlay ) {
+                                    String name, Bdv bdv, Content imageContent ) {
         this.vertices = vertices;
         this.assignedVertices = assignedVertices;
         this.isVertexSelected = false;
 
         this.vertex2dOverlay = new VertexPoints2dOverlay( this );
-        this.vertex3dOverlay = vertex3dOverlay;
+        this.vertex3dOverlay = new Point3dOverlay( imageContent );
         this.bdv = bdv;
         this.name = name;
         this.sourceName = name + "-vertex_points";
@@ -97,6 +116,10 @@ public class VertexDisplay {
         return sourceName;
     }
 
+    /**
+     * Assign selected vertex as top left, top right etc...
+     * @param vertexPoint  Assignment
+     */
     public void assignSelectedVertex(VertexPoint vertexPoint ) {
         if ( !isVertexSelected ) {
             IJ.log("No vertex selected");
@@ -105,6 +128,11 @@ public class VertexDisplay {
         }
     }
 
+    /**
+     * Assign given vertex as top left, top right etc...
+     * @param vertexPoint Assignment
+     * @param vertex vertex to assign
+     */
     public void assignVertex( VertexPoint vertexPoint, RealPoint vertex ) {
         // enforce unique vertex point assignments i.e. remove any already assigned to that vertex
         removeAssignedVertex( vertex );
@@ -119,7 +147,11 @@ public class VertexDisplay {
         bdv.getBdvHandle().getViewerPanel().requestRepaint();
     }
 
-    // enforce lies on certain plane
+    /**
+     * Add vertex at current mouse position in BigDataViewer window - only if it lies on the given plane!
+     * If there's already a vertex there, then remove it instead.
+     * @param plane Plane vertex must lie on
+     */
     public void addOrRemoveCurrentPositionFromVertices( Plane plane ) {
         // Check if on the current block plane
         RealPoint point = getCurrentMousePosition( bdv.getBdvHandle() );
@@ -130,12 +162,18 @@ public class VertexDisplay {
         }
     }
 
-    // don't enforce lies on certain plane
+    /**
+     * Add vertex at current mouse position in BigDataViewer window (no requirement to be on specific plane)
+     * If there's already a vertex there, then remove it instead.
+     */
     public void addOrRemoveCurrentPositionFromVertices() {
         RealPoint point = getCurrentMousePosition( bdv.getBdvHandle() );
         addOrRemoveVertex( point );
     }
 
+    /**
+     * If there's a vertex at the current mouse position (in BigDataViewer window), then toggle its selection status.
+     */
     public void toggleSelectedVertexCurrentPosition () {
 
         RealPoint point = getCurrentMousePosition( bdv.getBdvHandle() );

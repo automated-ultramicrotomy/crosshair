@@ -6,10 +6,21 @@ import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import ij3d.Content;
 import org.scijava.vecmath.Vector3d;
 
+/**
+ * Class to represent the block face (block plane)
+ */
 public class BlockPlane extends Plane {
 
     private final VertexDisplay vertexDisplay;
 
+    /**
+     * Create a block plane
+     * @param settings block plane settings
+     * @param centroid Centroid of block plane mesh
+     * @param mesh 3D custom triangle mesh of block plane
+     * @param pointsToFitPlaneDisplay points to fit plane display
+     * @param vertexDisplay vertex display
+     */
     public BlockPlane(BlockPlaneSettings settings, Vector3d centroid, Content mesh,
                       PointsToFitPlaneDisplay pointsToFitPlaneDisplay, VertexDisplay vertexDisplay ) {
 

@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for old format Crosshair settings
+ */
 public class OldFormatSettings {
 
     public final Map<String, Vector3d> planeNormals = new HashMap<>();
