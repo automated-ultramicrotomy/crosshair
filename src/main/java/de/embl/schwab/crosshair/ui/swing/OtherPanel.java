@@ -11,8 +11,9 @@ import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
-// similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
-
+/**
+ * Class for UI Panel containing controls for visibility of various items
+ */
 public class OtherPanel extends CrosshairPanel {
 
     private ArrayList<Content> imageContents;
@@ -24,6 +25,15 @@ public class OtherPanel extends CrosshairPanel {
 
     public OtherPanel() {}
 
+    /**
+     * Initialise panel
+     * @param imageContents image contents displayed in 3D viewer
+     * @param universe universe of the 3D viewer
+     * @param planeManager plane manager
+     * @param bdvHandle bdvHandle of the BigDataViewer window
+     * @param includeMicrotomeButtons whether to include buttons to control visibility of microtome pieces in
+     *                                the 3D viewer
+     */
     public void initialisePanel( ArrayList<Content> imageContents, Image3DUniverse universe,
                                 PlaneManager planeManager,  BdvHandle bdvHandle,
                                 boolean includeMicrotomeButtons ) {
@@ -51,6 +61,10 @@ public class OtherPanel extends CrosshairPanel {
         }
     }
 
+    /**
+     * Initialise panel from settings in main Crosshair UI
+     * @param crosshairFrame main crosshair UI
+     */
     public void initialisePanel( CrosshairFrame crosshairFrame ) {
         ArrayList<Content> imageContents = new ArrayList<>();
         imageContents.add( crosshairFrame.getImageContent() );

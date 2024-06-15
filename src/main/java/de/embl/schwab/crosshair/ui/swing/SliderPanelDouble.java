@@ -29,8 +29,6 @@ package de.embl.schwab.crosshair.ui.swing;
  * #L%
  */
 
-// from bdv.tools.brightness with added method to commit spinner edits explicitly
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
@@ -52,7 +50,8 @@ import bdv.util.BoundedValueDouble;
 
 /**
  * A {@link JSlider} with a {@link JSpinner} next to it, both modifying the same
- * {@link BoundedValue value}.
+ * {@link BoundedValue value}. This is copied from bdv.tools.brightness with an added method to commit spinner edits
+ * explicitly.
  */
 public class SliderPanelDouble extends JPanel implements BoundedValueDouble.UpdateListener
 {

@@ -15,9 +15,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
-
-// similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
-
+/**
+ * Class for UI Panels controlling the microtome display
+ */
 public class MicrotomePanel extends CrosshairPanel {
 
     private final String cuttingDepthString = "Cutting Depth";
@@ -70,6 +70,10 @@ public class MicrotomePanel extends CrosshairPanel {
 
     public MicrotomePanel() {}
 
+    /**
+     * Initialise panel from settings in main Crosshair UI
+     * @param crosshairFrame main crosshair UI
+     */
     public void initialisePanel( CrosshairFrame crosshairFrame ) {
         this.crosshairFrame = crosshairFrame;
         microtomeManager = crosshairFrame.getMicrotomeManager();

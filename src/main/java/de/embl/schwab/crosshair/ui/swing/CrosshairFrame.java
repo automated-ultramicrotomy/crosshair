@@ -9,6 +9,9 @@ import ij3d.Image3DUniverse;
 import javax.swing.*;
 import java.util.ArrayList;
 
+/**
+ * Class for main Crosshair UI, to hold all the various panels
+ */
 public class CrosshairFrame extends JFrame {
 
     private Image3DUniverse universe;
@@ -27,6 +30,15 @@ public class CrosshairFrame extends JFrame {
 
     private String unit;
 
+    /**
+     * Create the main Crosshair UI
+     * @param universe universe of the 3D viewer
+     * @param imageContent image content displayed in 3D viewer
+     * @param planeManager plane manager
+     * @param microtomeManager microtome manager
+     * @param bdvHandle bdvHandle of the BigDataViewer window
+     * @param unit pixel size unit e.g. mm
+     */
     public CrosshairFrame(Image3DUniverse universe, Content imageContent, PlaneManager planeManager, MicrotomeManager microtomeManager,
                           BdvHandle bdvHandle, String unit) {
 

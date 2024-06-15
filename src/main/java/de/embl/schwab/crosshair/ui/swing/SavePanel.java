@@ -18,6 +18,9 @@ import java.awt.event.ActionListener;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseOpenFilePath;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseSaveFilePath;
 
+/**
+ * Class for UI Panel controlling saving/loading of settings and solutions
+ */
 public class SavePanel extends CrosshairPanel {
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
@@ -33,6 +36,10 @@ public class SavePanel extends CrosshairPanel {
 
     public SavePanel() {}
 
+    /**
+     * Initialise panel from settings in main Crosshair UI
+     * @param crosshairFrame main crosshair UI
+     */
     public void initialisePanel( CrosshairFrame crosshairFrame ) {
         this.crosshairFrame = crosshairFrame;
         this.planeManager = crosshairFrame.getPlaneManager();
