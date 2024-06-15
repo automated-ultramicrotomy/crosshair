@@ -14,8 +14,8 @@ Go to Help > Update... in the imagej menu, and select 'Manage update sites'.
 In the new window that pops up, select 'Add Unlisted Site'. This will create a new row in the table.
 Fill this row out so it looks like below:  
 
-| Active | Name          | URL           | Host   | Directory | Description |
-| -------| ------------- | ------------- | ------ | ------    | ------      |
+| Active | Name          | URL           | Host   | Directory on Host | Description |
+| -------| ------------- | ------------- | ------ | ------            | ------      |
 | &check;| `Crosshair`   | `https://sites.imagej.net/Crosshair/` | | |
 
 Then click 'Apply and Close', followed by 'Apply Changes'. 
