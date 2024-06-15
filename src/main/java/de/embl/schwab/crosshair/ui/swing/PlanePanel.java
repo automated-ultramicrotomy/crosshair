@@ -28,6 +28,7 @@ public class PlanePanel extends CrosshairPanel {
     private Map<String, ArrayList<JButton>> planeNameToButtonsAffectedByTracking;
     private List<String> planeNames;
     private List<String> blockPlaneNames;
+    private Color defaultButtonColour;
 
     public PlanePanel() {}
 
@@ -123,6 +124,7 @@ public class PlanePanel extends CrosshairPanel {
         trackButton.addActionListener(e -> {
             toggleTracking( trackButton, planeName );
         });
+        defaultButtonColour = trackButton.getBackground();
 
         trackingButtons.put(planeName, trackButton);
         panel.add(trackButton);
@@ -187,7 +189,7 @@ public class PlanePanel extends CrosshairPanel {
 
     private void disablePlaneTracking( JButton trackButton, String planeName ) {
         planeManager.setTrackingPlane( false );
-        trackButton.setBackground(null);
+        trackButton.setBackground(defaultButtonColour);
         enableButtonsAffectedByTracking( planeName );
         enableAllTrackingButtons();
         enableAllGoToButtons();
