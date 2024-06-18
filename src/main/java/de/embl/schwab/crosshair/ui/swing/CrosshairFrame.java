@@ -1,22 +1,17 @@
 package de.embl.schwab.crosshair.ui.swing;
 
-import bdv.util.BdvHandle;
-import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import ij3d.Content;
-import ij3d.Image3DUniverse;
 
 import javax.swing.*;
 import java.util.ArrayList;
 
+/**
+ * Class for main Crosshair UI, to hold all the various panels
+ */
 public class CrosshairFrame extends JFrame {
 
-    private Image3DUniverse universe;
-    private Content imageContent;
-    private PlaneManager planeManager;
-    private MicrotomeManager microtomeManager;
-    private BdvHandle bdvHandle;
-
+    private Crosshair crosshair;
     private ImagesPanel imagesPanel;
     private PlanePanel planePanel;
     private OtherPanel otherPanel;
@@ -25,18 +20,13 @@ public class CrosshairFrame extends JFrame {
     private SavePanel savePanel;
     private ArrayList<CrosshairPanel> allPanels;
 
-    private String unit;
+    /**
+     * Create the main Crosshair UI
+     * @param crosshair crosshair
+     */
+    public CrosshairFrame(Crosshair crosshair) {
 
-    public CrosshairFrame(Image3DUniverse universe, Content imageContent, PlaneManager planeManager, MicrotomeManager microtomeManager,
-                          BdvHandle bdvHandle, String unit) {
-
-        this.universe = universe;
-        this.imageContent = imageContent;
-        this.planeManager = planeManager;
-        this.microtomeManager = microtomeManager;
-        this.bdvHandle = bdvHandle;
-        this.unit = unit;
-
+        this.crosshair = crosshair;
         allPanels = new ArrayList<>();
 
         this.setTitle("Crosshair");
@@ -67,6 +57,7 @@ public class CrosshairFrame extends JFrame {
             panel.initialisePanel( this );
         }
 
+        MicrotomeManager microtomeManager = crosshair.getMicrotomeManager();
         microtomeManager.setMicrotomePanel(microtomePanel);
         microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
 
@@ -106,25 +97,7 @@ public class CrosshairFrame extends JFrame {
         return vertexAssignmentPanel;
     }
 
-    public Content getImageContent() {
-        return imageContent;
+    public Crosshair getCrosshair() {
+        return crosshair;
     }
-
-    public PlaneManager getPlaneManager() {
-        return planeManager;
-    }
-
-    public Image3DUniverse getUniverse() {
-        return universe;
-    }
-
-    public BdvHandle getBdvHandle() {
-        return bdvHandle;
-    }
-
-    public MicrotomeManager getMicrotomeManager() {
-        return microtomeManager;
-    }
-
-    public String getUnit() { return unit; }
 }

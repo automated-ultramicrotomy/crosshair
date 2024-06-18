@@ -4,6 +4,7 @@ import bdv.util.*;
 import bdv.viewer.Source;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
 import ij3d.Content;
@@ -43,6 +44,13 @@ public class Crosshair {
 	private final int min = 0;
 	private final int max = 255;
 	private final float transparency = 0.7f;
+
+	private BdvHandle bdvHandle; // bdvHandle of the BigDataViewer window
+	private Image3DUniverse universe; // universe of the 3D viewer
+	private Content imageContent; // image content displayed in 3D viewer
+	private PlaneManager planeManager;
+	private MicrotomeManager microtomeManager;
+	private String unit; // pixel size unit e.g. mm
 
 	/**
 	 * Open Crosshair from a Source (normally from a bdv style file e.g. hdf5 / n5)
@@ -93,7 +101,11 @@ public class Crosshair {
 
 		bdvStackSource.setDisplayRange(min, max);
 
-		BdvHandle bdvHandle = bdvStackSource.getBdvHandle();
+		this.bdvHandle = bdvStackSource.getBdvHandle();
+		this.imageContent = imageContent;
+		this.universe = universe;
+		this.unit = unit;
+
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
 		universe.getPointListDialog().setVisible(false);
@@ -103,14 +115,37 @@ public class Crosshair {
 		// Still places so (0,0) of image == (0,0) in global coordinate system, just bounding box is wrapped tight to
 		// only regions of the image > 0
 
-		PlaneManager planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+		planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
 
-		MicrotomeManager microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
+		microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
-		CrosshairFrame crosshairFrame = new CrosshairFrame(universe, imageContent, planeManager, microtomeManager, bdvHandle, unit);
+		CrosshairFrame crosshairFrame = new CrosshairFrame(this);
 
 		spaceOutWindows( bdvHandle, crosshairFrame, universe );
 	}
-	
+
+	public BdvHandle getBdvHandle() {
+		return bdvHandle;
+	}
+
+	public Content getImageContent() {
+		return imageContent;
+	}
+
+	public Image3DUniverse getUniverse() {
+		return universe;
+	}
+
+	public MicrotomeManager getMicrotomeManager() {
+		return microtomeManager;
+	}
+
+	public PlaneManager getPlaneManager() {
+		return planeManager;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
 }
