@@ -65,32 +65,26 @@ class Cutting {
         double maxDist = min.distance(max);
         ArrayList<Point3f> planeVertices = new ArrayList<>();
 
-        // Add points in order top left, top right, bottom left, bottom right
+        // Generate vertex coordinates for cutting plane corners: in order of top left, top right, bottom left,
+        // bottom right
         double knife = microtome.getKnife();
         Vector3d currentKnifeCentre = microtome.getCurrentKnifeCentre();
-        if (knife == 0) {
-            planeVertices.add(new Point3f((float) -maxDist, (float) currentKnifeCentre.getY(), (float) maxDist));
-            planeVertices.add(new Point3f((float) maxDist, (float) currentKnifeCentre.getY(), (float) maxDist));
-            planeVertices.add(new Point3f((float) -maxDist, (float) currentKnifeCentre.getY(), (float) -maxDist));
-            planeVertices.add(new Point3f((float) maxDist, (float) currentKnifeCentre.getY(), (float) -maxDist));
-        } else {
 
-            double yDist = abs(sin( GeometryUtils.convertToRadians(knife)) * maxDist);
-            double xDist = abs(cos( GeometryUtils.convertToRadians(knife)) * maxDist);
-
-            if (knife > 0) {
-                planeVertices.add(new Point3f((float) -xDist, (float) (currentKnifeCentre.getY()-yDist), (float) maxDist));
-                planeVertices.add(new Point3f((float) xDist, (float) (currentKnifeCentre.getY()+yDist), (float) maxDist));
-                planeVertices.add(new Point3f((float) -xDist, (float) (currentKnifeCentre.getY()-yDist), (float) -maxDist));
-                planeVertices.add(new Point3f((float) xDist, (float) (currentKnifeCentre.getY()+yDist), (float) -maxDist));
-            } else {
-                planeVertices.add(new Point3f((float) -xDist, (float) (currentKnifeCentre.getY()+yDist), (float) maxDist));
-                planeVertices.add(new Point3f((float) xDist, (float) (currentKnifeCentre.getY()-yDist), (float) maxDist));
-                planeVertices.add(new Point3f((float) -xDist, (float) (currentKnifeCentre.getY()+yDist), (float) -maxDist));
-                planeVertices.add(new Point3f((float) xDist, (float) (currentKnifeCentre.getY()-yDist), (float) -maxDist));
-            }
+        // x coordinate is east-west axis, y coordinate is north-south, z coordinate is up-down.
+        // When the knife is rotated, the vertical cutting plane will also be rotated. In order for it still to be
+        // 2* max dist wide, we must compensate for this rotation in the x and y coordinate.
+        double yDist = abs(sin( GeometryUtils.convertToRadians(knife)) * maxDist);
+        double xDist = abs(cos( GeometryUtils.convertToRadians(knife)) * maxDist);
+        if (knife < 0) {
+            yDist = -yDist;
         }
 
+        planeVertices.add(new Point3f((float) -xDist, (float) (currentKnifeCentre.getY()-yDist), (float) maxDist));
+        planeVertices.add(new Point3f((float) xDist, (float) (currentKnifeCentre.getY()+yDist), (float) maxDist));
+        planeVertices.add(new Point3f((float) -xDist, (float) (currentKnifeCentre.getY()-yDist), (float) -maxDist));
+        planeVertices.add(new Point3f((float) xDist, (float) (currentKnifeCentre.getY()+yDist), (float) -maxDist));
+
+        // Make two triangles: (top left, top right, bottom left) and (top right, bottom left, bottom right)
         ArrayList<Point3f> triangles = new ArrayList<>();
         triangles.add(planeVertices.get(0));
         triangles.add(planeVertices.get(1));
