@@ -47,7 +47,7 @@ jobs:
 
 #      - name: Install blosc
 #        run: sudo apt install libblosc-dev
-#      - name: Install xvfb 
-#        run: sudo apt-get install xvfb
+      - name: Install xvfb
+        run: sudo apt-get install xvfb
       - name: Build with maven
-        run: mvn -B package --file pom.xml # for testing with graphics prepend: xvfb-run --auto-servernum
+        run: xvfb-run --auto-servernum mvn -B package --file pom.xml
