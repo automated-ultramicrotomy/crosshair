@@ -28,7 +28,7 @@ public class VertexAssignmentPanel extends CrosshairPanel {
      */
     public void initialisePanel ( CrosshairFrame crosshairFrame ) {
         this.crosshairFrame = crosshairFrame;
-        this.planeManager = crosshairFrame.getPlaneManager();
+        this.planeManager = crosshairFrame.getCrosshair().getPlaneManager();
         buttons = new HashMap<>();
 
         setBorder(BorderFactory.createCompoundBorder(

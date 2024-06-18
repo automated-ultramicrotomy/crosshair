@@ -76,13 +76,13 @@ public class MicrotomePanel extends CrosshairPanel {
      */
     public void initialisePanel( CrosshairFrame crosshairFrame ) {
         this.crosshairFrame = crosshairFrame;
-        microtomeManager = crosshairFrame.getMicrotomeManager();
+        microtomeManager = crosshairFrame.getCrosshair().getMicrotomeManager();
         otherPanel = crosshairFrame.getPointsPanel();
         vertexAssignmentPanel = crosshairFrame.getVertexAssignmentPanel();
-        planeManager = crosshairFrame.getPlaneManager();
+        planeManager = crosshairFrame.getCrosshair().getPlaneManager();
         planePanel = crosshairFrame.getPlanePanel();
         savePanel = crosshairFrame.getSavePanel();
-        unit = crosshairFrame.getUnit();
+        unit = crosshairFrame.getCrosshair().getUnit();
 
         displayDecimalPlaces = 4;
 

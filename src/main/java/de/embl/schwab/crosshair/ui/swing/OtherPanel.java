@@ -67,11 +67,11 @@ public class OtherPanel extends CrosshairPanel {
      */
     public void initialisePanel( CrosshairFrame crosshairFrame ) {
         ArrayList<Content> imageContents = new ArrayList<>();
-        imageContents.add( crosshairFrame.getImageContent() );
+        imageContents.add( crosshairFrame.getCrosshair().getImageContent() );
 
-        initialisePanel( imageContents, crosshairFrame.getUniverse(),
-                crosshairFrame.getPlaneManager(),
-                crosshairFrame.getBdvHandle(), true );
+        initialisePanel( imageContents, crosshairFrame.getCrosshair().getUniverse(),
+                crosshairFrame.getCrosshair().getPlaneManager(),
+                crosshairFrame.getCrosshair().getBdvHandle(), true );
     }
 
     public boolean check3DPointsVisible() {

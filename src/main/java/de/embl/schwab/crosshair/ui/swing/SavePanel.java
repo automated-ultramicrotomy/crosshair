@@ -8,7 +8,6 @@ import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.settings.SettingsWriter;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionWriter;
-import ij3d.Content;
 
 import javax.swing.*;
 import java.awt.GridLayout;
@@ -24,7 +23,6 @@ import static de.embl.schwab.crosshair.io.IoHelper.chooseSaveFilePath;
 public class SavePanel extends CrosshairPanel {
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
-    private Content imageContent;
     private MicrotomePanel microtomePanel;
     private OtherPanel otherPanel;
     private ImagesPanel imagesPanel;
@@ -42,9 +40,8 @@ public class SavePanel extends CrosshairPanel {
      */
     public void initialisePanel( CrosshairFrame crosshairFrame ) {
         this.crosshairFrame = crosshairFrame;
-        this.planeManager = crosshairFrame.getPlaneManager();
-        this.microtomeManager = crosshairFrame.getMicrotomeManager();
-        this.imageContent = crosshairFrame.getImageContent();
+        this.planeManager = crosshairFrame.getCrosshair().getPlaneManager();
+        this.microtomeManager = crosshairFrame.getCrosshair().getMicrotomeManager();
         this.microtomePanel = crosshairFrame.getMicrotomePanel();
         this.otherPanel = crosshairFrame.getPointsPanel();
         this.imagesPanel = crosshairFrame.getImagesPanel();

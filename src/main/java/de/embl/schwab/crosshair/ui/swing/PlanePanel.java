@@ -68,7 +68,7 @@ public class PlanePanel extends CrosshairPanel {
         planeNames.add( Crosshair.target );
         ArrayList<String> blockPlaneNames = new ArrayList<>();
         blockPlaneNames.add( Crosshair.block );
-        initialisePanel( crosshairFrame.getPlaneManager(), planeNames, blockPlaneNames );
+        initialisePanel( crosshairFrame.getCrosshair().getPlaneManager(), planeNames, blockPlaneNames );
     }
 
     private void addColorButton(JPanel panel, int[] buttonDimensions, String planeName) {

@@ -52,9 +52,10 @@ public class ImagesPanel extends CrosshairPanel {
      */
     public void initialisePanel ( CrosshairFrame crosshairFrame ) {
         Map<String, Content> imageNameToContent = new HashMap<>();
-        imageNameToContent.put( Crosshair.image, crosshairFrame.getImageContent() );
+        imageNameToContent.put( Crosshair.image, crosshairFrame.getCrosshair().getImageContent() );
 
-        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse() );
+        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(),
+                crosshairFrame.getCrosshair().getUniverse() );
     }
 
     public Map<String, Content> getImageNameToContent() {
