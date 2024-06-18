@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - dev
 
     # Only run if src, pom or github actions files change
     # Other changes like docs / readme / license don't require tests to be re-run
