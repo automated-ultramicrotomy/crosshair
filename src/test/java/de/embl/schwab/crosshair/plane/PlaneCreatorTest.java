@@ -95,13 +95,14 @@ class PlaneCreatorTest {
         assertEquals(planeMesh.getTransparency(), planeSettings.transparency);
         assertEquals(planeMesh.getColor(), planeSettings.color);
 
-        // Check all points in the mesh lie on the given plane (within 1E-5 to account for precision errors - the mesh
-        // stores points as floats rather than doubles), and are within the content bounds
+        // Check all points in the mesh lie on the given plane (within 1E-4 to account for precision errors - the mesh
+        // stores points as floats rather than doubles, so we have to give more leeway). Also check all points
+        // are within the content bounds.
         CustomMeshNode meshNode = (CustomMeshNode) planeMesh.getContent();
         List<Point3f> meshPoints = meshNode.getMesh().getMesh();
         for (Point3f meshPoint: meshPoints) {
             assertTrue(GeometryUtils.distanceFromPointToPlane(
-                    new Vector3d(meshPoint), planeSettings.normal, planeSettings.point) < 1E-5);
+                    new Vector3d(meshPoint), planeSettings.normal, planeSettings.point) < 1E-4);
             assertTrue(meshPoint.x >= min.x && meshPoint.x <= max.x);
             assertTrue(meshPoint.y >= min.y && meshPoint.y <= max.y);
             assertTrue(meshPoint.z >= min.z && meshPoint.z <= max.z);
@@ -123,7 +124,12 @@ class PlaneCreatorTest {
                 arguments(
                         new Vector3d(-188.47561306126704, 15.353222856645068, 621.5211240735744),
                         new Vector3d(0.20791169081775954, 0.08525118065879457, 0.9744254538021788),
-                        new Vector3d(607.3829956054688, 607.3829956054688, 399.9140783532721))
+                        new Vector3d(607.3829956054688, 607.3829956054688, 399.9140783532721)),
+                // Values from a randomly aligned plane created by tracking in the viewer
+                arguments(
+                        new Vector3d(0.6618597935512298, 37.48411448950936, 984.2992808834338),
+                        new Vector3d(0.6156614753256584, 0.05496885144405574, 0.7860911990162179),
+                        new Vector3d(882.8868171968555, 588.991395095908, 254.78133011679319))
         );
     }
 
@@ -166,7 +172,26 @@ class PlaneCreatorTest {
         assertionsFor3DMesh(blockPlaneSettings, blockPlane);
     }
 
-//    @Test
-//    void updatePlaneOrientation() {
-//    }
+    @Test
+    void updatePlaneOrientation() {
+
+        // Create a plane for the initial orientation
+        PlaneSettings planeSettings = new PlaneSettings();
+        planeSettings.name = "testPlane";
+        planeSettings.point = new Vector3d(1248.2709228163537, 78.08437737298017, 116.87559032668315);
+        planeSettings.normal = new Vector3d(-0.39675171761579714, -0.014019244058793784, -0.9178189011809109);
+        Plane plane = planeCreator.createPlane(planeSettings);
+
+        // Update plane orientation + check done correctly
+        Vector3d newNormal = new Vector3d(0.6156614753256584, 0.05496885144405574, 0.7860911990162179);
+        Vector3d newPoint = new Vector3d(0.6618597935512298, 37.48411448950936, 984.2992808834338);
+        Vector3d expectedCentroid = new Vector3d(882.8868171968555, 588.991395095908, 254.78133011679319);
+        planeCreator.updatePlaneOrientation( plane, newNormal, newPoint );
+
+        assertEquals(plane.getNormal(), newNormal);
+        assertEquals(plane.getPoint(), newPoint);
+        assertEquals(plane.getCentroid(), expectedCentroid);
+
+        assertionsFor3DMesh(plane.getSettings(), plane);
+    }
 }
