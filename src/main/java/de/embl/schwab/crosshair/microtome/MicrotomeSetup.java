@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.scijava.java3d.PolygonAttributes;
 
 import static java.lang.Math.abs;
 
@@ -56,8 +57,17 @@ class MicrotomeSetup {
         String[] stlFiles = {"/arc.stl", "/holder_back.stl", "/holder_front.stl", "/knife.stl"};
         for (String file: stlFiles) {
             Map<String, CustomMesh> currentStl = STLResourceLoader.loadSTL(file);
+
             // in case there are multiple objects in single stl file
             for (String key : currentStl.keySet()) {
+                CustomMesh mesh = currentStl.get(key);
+
+                // In later versions of the 3D viewer, meshes were rendering strangely with certain faces appearing
+                // transparent from certain angles. Setting the back face normal flip and cull face
+                // (as in this issue - https://github.com/fiji/3D_Viewer/issues/23) improves this greatly.
+                mesh.getAppearance().getPolygonAttributes().setBackFaceNormalFlip(false);
+                mesh.getAppearance().getPolygonAttributes().setCullFace(PolygonAttributes.CULL_BACK);
+                mesh.setTransparency(0);
                 microtomeSTLs.put(key, currentStl.get(key));
             }
         }

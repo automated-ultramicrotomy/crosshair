@@ -10,6 +10,9 @@ import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
 
+/**
+ * Class to represent a plane
+ */
 public class Plane {
 
     private String name;
@@ -29,6 +32,13 @@ public class Plane {
 
     private double distanceBetweenPlanesThreshold = 1E-10; // distance used to be 'on' plane
 
+    /**
+     * Create a plane
+     * @param planeSettings plane settings
+     * @param centroid centroid of plane mesh
+     * @param mesh 3D custom triangle mesh of plane
+     * @param pointsToFitPlaneDisplay points to fit plane display
+     */
     public Plane(PlaneSettings planeSettings, Vector3d centroid, Content mesh, PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
         this.name = planeSettings.name;
         this.normal = planeSettings.normal;
@@ -43,6 +53,13 @@ public class Plane {
         this.pointsToFitPlaneDisplay = pointsToFitPlaneDisplay;
     }
 
+    /**
+     * Update plane orientation
+     * @param normal plane normal
+     * @param point plane point
+     * @param centroid centroid of plane 3D mesh
+     * @param mesh 3D custom triangle mesh of plane
+     */
     public void updatePlaneOrientation(Vector3d normal, Vector3d point, Vector3d centroid, Content mesh ) {
         this.normal = normal;
         this.point = point;
@@ -106,14 +123,27 @@ public class Plane {
         return pointsToFitPlaneDisplay;
     }
 
+    /**
+     * @return distance to be considered 'on' the plane i.e. if a point is less than this distance away, then it is
+     * on the plane.
+     */
     public double getDistanceBetweenPlanesThreshold() {
         return distanceBetweenPlanesThreshold;
     }
 
+    /**
+     * @param distanceBetweenPlanesThreshold distance to be considered 'on' the plane i.e. if a point is
+     *                                       less than this distance away, then it is on the plane.
+     */
     public void setDistanceBetweenPlanesThreshold( double distanceBetweenPlanesThreshold ) {
         this.distanceBetweenPlanesThreshold = distanceBetweenPlanesThreshold;
     }
 
+    /**
+     * Check if the given point is on the plane
+     * @param point a 3D point
+     * @return whether the point is on the plane
+     */
     public boolean isPointOnPlane( RealPoint point ) {
 
         double[] position = new double[3];
@@ -130,6 +160,9 @@ public class Plane {
         }
     }
 
+    /**
+     * @return whether the orientation of the plane has been initialised
+     */
     public boolean isOrientationSet() {
         return normal != null && point != null;
     }

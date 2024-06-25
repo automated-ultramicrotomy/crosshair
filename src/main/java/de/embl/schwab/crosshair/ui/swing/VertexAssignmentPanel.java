@@ -11,6 +11,9 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for UI Panel allowing assignment of vertices as top left / top right etc...
+ */
 public class VertexAssignmentPanel extends CrosshairPanel {
 
     private PlaneManager planeManager;
@@ -19,9 +22,13 @@ public class VertexAssignmentPanel extends CrosshairPanel {
 
     public VertexAssignmentPanel() {}
 
+    /**
+     * Initialise panel from settings in main Crosshair UI
+     * @param crosshairFrame main crosshair UI
+     */
     public void initialisePanel ( CrosshairFrame crosshairFrame ) {
         this.crosshairFrame = crosshairFrame;
-        this.planeManager = crosshairFrame.getPlaneManager();
+        this.planeManager = crosshairFrame.getCrosshair().getPlaneManager();
         buttons = new HashMap<>();
 
         setBorder(BorderFactory.createCompoundBorder(

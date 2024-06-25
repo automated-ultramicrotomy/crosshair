@@ -18,6 +18,9 @@ import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.findClosestPointOnPlane;
 import static java.lang.Math.*;
 
+/**
+ * Class to handle Crosshair's cutting mode
+ */
 class Cutting {
 
     private Microtome microtome;
@@ -30,6 +33,10 @@ class Cutting {
     private Vector3d firstTouchPointCutting;
     private Vector3d NSZero;
 
+    /**
+     * Create a new Cutting object, to handle Crosshair's cutting mode
+     * @param microtome microtome
+     */
     Cutting (Microtome microtome) {
         this.microtome = microtome;
         this.imageContent = microtome.getImageContent();
@@ -45,9 +52,11 @@ class Cutting {
         return cuttingDepthMax;
     }
 
+    /**
+     * Make a plane to represent the cutting location in the 3D viewer. This is centred on the current knife centre
+     * with width and height of 2*max distance in image (corner to corner)
+     */
     void initialiseCuttingPlane () {
-        //  Make a plane centred on current knife centre with width and height of 2*max distance in image (corner to corner)
-
         // Get maximum distance in image
         Point3d min = new Point3d();
         Point3d max = new Point3d();
@@ -142,10 +151,17 @@ class Cutting {
         cuttingDepthMax = microtome.getCurrentHolderFront().getY() - NSZero.getY();
     }
 
+    /**
+     * Remove the cutting plane from the 3D viewer
+     */
     public void removeCuttingPlane() {
         universe.removeContent("CuttingPlane");
     }
 
+    /**
+     * Update the position of the cutting plane in the 3D viewer and BigDataViewer window.
+     * @param currentDepth the current cutting depth
+     */
     void updateCut(double currentDepth) {
 
         // Update position of cutting plane

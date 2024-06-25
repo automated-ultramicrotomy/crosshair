@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>crosshair</artifactId>
 	<url>https://github.com/K-Meech/crosshair</url>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<name>Crosshair</name>
 	<description>Assisted 3D targeting via an ultramicrotome</description>
 	<inceptionYear>2020</inceptionYear>
@@ -80,7 +80,7 @@
 
 <!--		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>-->
 <!--		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>-->
-		<imagej-utils.version>0.6.4-SNAPSHOT</imagej-utils.version>
+		<imagej-utils.version>0.6.4</imagej-utils.version>
 	</properties>
 
 	<repositories>
@@ -112,6 +112,16 @@
 			<artifactId>3D_Viewer</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt</artifactId>
+			<classifier>${scijava.natives.classifier.gluegen}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all</artifactId>
+			<classifier>${scijava.natives.classifier.jogl}</classifier>
+		</dependency>
+		<dependency>
 			<groupId>de.embl.cba</groupId>
 			<artifactId>imagej-utils</artifactId>
 			<version>${imagej-utils.version}</version>
@@ -119,7 +129,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
+			<version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 		<dependency>

@@ -14,8 +14,9 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-// similar to mobie source panel - https://github.com/mobie/mobie-viewer-fiji/blob/master/src/main/java/de/embl/cba/mobie/ui/viewer/SourcesPanel.java
-
+/**
+ * Class for UI Panel containing controls for 3D image display
+ */
 public class ImagesPanel extends CrosshairPanel {
 
     private Map<String, Content> imageNameToContent;
@@ -24,6 +25,12 @@ public class ImagesPanel extends CrosshairPanel {
 
     public ImagesPanel() {}
 
+    /**
+     * Initialise panel
+     * @param imageNameToContent Map of image names to their image content displayed in 3D viewer
+     * @param otherPanel UI panel controlling visibility of various items in the viewers
+     * @param universe universe of the 3D viewer
+     */
     public void initialisePanel( Map<String, Content> imageNameToContent, OtherPanel otherPanel, Image3DUniverse universe ) {
         this.imageNameToContent = imageNameToContent;
         this.otherPanel = otherPanel;
@@ -39,11 +46,16 @@ public class ImagesPanel extends CrosshairPanel {
         }
     }
 
+    /**
+     * Initialise panel from settings in main Crosshair UI
+     * @param crosshairFrame main crosshair UI
+     */
     public void initialisePanel ( CrosshairFrame crosshairFrame ) {
         Map<String, Content> imageNameToContent = new HashMap<>();
-        imageNameToContent.put( Crosshair.image, crosshairFrame.getImageContent() );
+        imageNameToContent.put( Crosshair.image, crosshairFrame.getCrosshair().getImageContent() );
 
-        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(), crosshairFrame.getUniverse() );
+        initialisePanel( imageNameToContent, crosshairFrame.getPointsPanel(),
+                crosshairFrame.getCrosshair().getUniverse() );
     }
 
     public Map<String, Content> getImageNameToContent() {
@@ -119,7 +131,7 @@ public class ImagesPanel extends CrosshairPanel {
         this.repaint();
     }
 
-    public void addTransparencyButton(JPanel panel, int[] buttonDimensions,
+    private void addTransparencyButton(JPanel panel, int[] buttonDimensions,
                                       String imageName ) {
         JButton button = new JButton("T");
         button.setPreferredSize(new Dimension(
@@ -168,7 +180,7 @@ public class ImagesPanel extends CrosshairPanel {
         panel.add(button);
     }
 
-    public class TransparencyUpdateListener implements BoundedValueDouble.UpdateListener {
+    private class TransparencyUpdateListener implements BoundedValueDouble.UpdateListener {
         final private BoundedValueDouble transparencyValue;
         private final SliderPanelDouble transparencySlider;
         private final String imageName;

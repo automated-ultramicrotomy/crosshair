@@ -8,9 +8,20 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Json Deserializer for map of plane names to plane settings
+ */
 public class PlaneSettingsMapDeserializer implements JsonDeserializer<Map<String, PlaneSettings>>
 {
 
+    /**
+     * Deserializes json element to a map of plane names to plane settings
+     * @param json json element
+     * @param typeOfT type of the object to deserialize to
+     * @param context json deserialization context
+     * @return Map of plane names to plane settings
+     * @throws JsonParseException
+     */
     @Override
     public Map<String, PlaneSettings> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context ) throws JsonParseException
     {
