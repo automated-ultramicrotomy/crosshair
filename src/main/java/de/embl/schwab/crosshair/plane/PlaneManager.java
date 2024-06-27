@@ -353,7 +353,6 @@ public class PlaneManager {
 
     private ArrayList<Vector3d> getPlaneDefinitionFromViewTransform(AffineTransform3D affineTransform3D) {
         final ArrayList< double[] > viewerPoints = new ArrayList<>();
-
         viewerPoints.add( new double[]{ 0, 0, 0 });
         viewerPoints.add( new double[]{ 0, 100, 0 });
         viewerPoints.add( new double[]{ 100, 0, 0 });
@@ -369,13 +368,14 @@ public class PlaneManager {
             affineTransform3D.inverse().apply( viewerPoints.get( i ), globalPoints.get( i ) );
         }
 
-        ArrayList<Vector3d> planeDefinition = new ArrayList<>();
-
+        // Calculate normal of plane from the 3 global points assumed to be on it
         Vector3d planeNormal = GeometryUtils.calculateNormalFromPoints(globalPoints);
+        // Just use first point as the plane point (any could be used, as they all lie on the plane)
         Vector3d planePoint = new Vector3d(globalPoints.get(0)[0], globalPoints.get(0)[1], globalPoints.get(0)[2]);
+
+        ArrayList<Vector3d> planeDefinition = new ArrayList<>();
         planeDefinition.add(planeNormal);
         planeDefinition.add(planePoint);
-
         return planeDefinition;
     }
 

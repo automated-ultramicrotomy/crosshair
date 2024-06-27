@@ -9,6 +9,7 @@ import de.embl.schwab.crosshair.settings.PlaneSettings;
 import dotty.tools.dotc.transform.PatternMatcher;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,59 +72,25 @@ class PlaneManagerTest {
     }
 
     @Test
-    void getPlane() {
-    }
-
-    @Test
-    void getBlockPlane() {
-    }
-
-    @Test
-    void getPlaneNames() {
-    }
-
-    @Test
-    void getPlanes() {
-    }
-
-    @Test
-    void isTrackingPlane() {
-    }
-
-    @Test
-    void setTrackingPlane() {
-    }
-
-    @Test
-    void setTrackedPlaneName() {
-    }
-
-    @Test
-    void getTrackedPlaneName() {
-    }
-
-    @Test
-    void isInPointMode() {
-    }
-
-    @Test
-    void setPointMode() {
-    }
-
-    @Test
-    void isInVertexMode() {
-    }
-
-    @Test
-    void setVertexMode() {
-    }
-
-    @Test
     void checkNamedPlaneExists() {
+        String name = "testPlane";
+
+        assertFalse(planeManager.checkNamedPlaneExists(name));
+        planeManager.addPlane(name, normal, point);
+        assertTrue(planeManager.checkNamedPlaneExists(name));
     }
 
     @Test
     void checkNamedPlaneExistsAndOrientationIsSet() {
+        // Plane without orientation set
+        String planeWithoutOrientation = "testPlane";
+        planeManager.addPlane(planeWithoutOrientation);
+        assertFalse(planeManager.checkNamedPlaneExistsAndOrientationIsSet(planeWithoutOrientation));
+
+        // PLane with orientation set
+        String planeWithOrientation = "testPlane2";
+        planeManager.addPlane(planeWithOrientation, normal, point);
+        assertTrue(planeManager.checkNamedPlaneExistsAndOrientationIsSet(planeWithOrientation));
     }
 
     @Test
@@ -237,23 +204,42 @@ class PlaneManagerTest {
     }
 
     @Test
-    void getPointsToFitPlaneDisplay() {
-    }
-
-    @Test
-    void getVertexDisplay() {
-    }
-
-    @Test
     void updatePlane() {
+        // Add plane with certain orientation
+        String name = "testPlane";
+        planeManager.addPlane(name, normal, point);
+
+        // Update orientation of plane
+        Vector3d newNormal = new Vector3d(0, 0, 1);
+        Vector3d newPoint = new Vector3d(0, 0, 0);
+        planeManager.updatePlane(newNormal, newPoint, name);
+        Plane plane = planeManager.getPlane(name);
+
+        assertEquals(plane.getNormal(), newNormal);
+        assertEquals(plane.getPoint(), newPoint);
     }
 
     @Test
     void setPlaneColourToAligned() {
+        String name = "testPlane";
+        planeManager.addPlane(name, normal, point);
+        planeManager.setPlaneColourToAligned(name);
+
+        Color3f alignedColor = new Color3f(1, 0, 0);
+        assertEquals(universe.getContent(name).getColor(), alignedColor);
     }
 
     @Test
     void setPlaneColourToUnaligned() {
+        String name = "testPlane";
+        planeManager.addPlane(name, normal, point);
+        Plane plane = planeManager.getPlane(name);
+
+        planeManager.setPlaneColourToAligned(name);
+        assertNotEquals(universe.getContent(name).getColor(), plane.getColor());
+
+        planeManager.setPlaneColourToUnaligned(name);
+        assertEquals(universe.getContent(name).getColor(), plane.getColor());
     }
 
     @Test
