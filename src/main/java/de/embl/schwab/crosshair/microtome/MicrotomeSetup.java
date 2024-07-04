@@ -311,7 +311,12 @@ class MicrotomeSetup {
         //final transform
         Matrix4d finalSetupTransform = new Matrix4d();
         // rotate about the initial position of bottom edge centre, then translate bottom edge centre to (0,0,0)
-        GeometryUtils.compose(scijavaFormMatrix, new Vector3d(bottomEdgeCentre.getX(), bottomEdgeCentre.getY(), bottomEdgeCentre.getZ()), new Vector3d(endBottomEdgeCentre.getX(), endBottomEdgeCentre.getY(), endBottomEdgeCentre.getZ()), finalSetupTransform);
+        GeometryUtils.compose(
+                scijavaFormMatrix,
+                new Vector3d(bottomEdgeCentre.getX(), bottomEdgeCentre.getY(), bottomEdgeCentre.getZ()),
+                new Vector3d(endBottomEdgeCentre.getX(), endBottomEdgeCentre.getY(), endBottomEdgeCentre.getZ()),
+                finalSetupTransform
+        );
 
         Transform3D finalTransform = new Transform3D(finalSetupTransform);
         imageContent.setTransform(finalTransform);

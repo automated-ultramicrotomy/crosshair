@@ -224,6 +224,16 @@ public final class GeometryUtils {
         return angle;
     }
 
+    /**
+     * Find the index of the point that has the maximum or minimum distance from a given plane. Distances are signed
+     * based on a given vector determining the positive direction.
+     * @param planePoint plane point
+     * @param planeNormal plane normal
+     * @param points list of points
+     * @param positiveDirection vector pointing in the 'positive' direction
+     * @param MinMax "max" or "min" - whether to return index of point with max or min distance from plane
+     * @return the index of the point (in the given points list) with the min/max distance to the plane
+     */
     public static int indexSignedMinMaxPointsToPlane(Vector3d planePoint, Vector3d planeNormal,
                                                       ArrayList<Vector3d> points, Vector3d positiveDirection,
                                                       String MinMax) {
@@ -237,6 +247,15 @@ public final class GeometryUtils {
 
     }
 
+    /**
+     * Find the index of the point that has the maximum or minimum distance from a given plane. Distances are
+     * absolute (no +ve / -ve signs).
+     * @param planePoint plane point
+     * @param planeNormal plane normal
+     * @param points list of points
+     * @param MinMax "max" or "min" - whether to return index of point with max or min distance from plane
+     * @return the index of the point (in the given points list) with the min/max distance to the plane
+     */
     public static int indexMinMaxPointsToPlane(Vector3d planePoint, Vector3d planeNormal, ArrayList<Vector3d> points,
                                                String MinMax) {
         ArrayList<Double> allDists = new ArrayList<>();
@@ -637,9 +656,14 @@ public final class GeometryUtils {
         changeBdvViewerTransform( bdv, viewerTransforms, 300 );
     }
 
-    //        The two methods below are adapted from the imagej 3d viewer
-    //        Interactive transform setter in 3d viewer: https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java
-    //        setting of transform: https://github.com/fiji/3D_Viewer/blob/ed05e4b2275ad6ad7c94b0e22f4789ebd3472f4d/src/main/java/ij3d/Executer.java
+    /**
+     * Make matrix for a rotation and a translation
+     * @param angleDegrees angle of rotation
+     * @param axis axis of rotation
+     * @param rotationCentre centre of rotation
+     * @param translation translation vector
+     * @return matrix representing a rotation and translation
+     */
     public static Matrix4d makeMatrix(double angleDegrees, Vector3d axis, Vector3d rotationCentre, Vector3d translation) {
         double angleRad = angleDegrees * Math.PI / 180;
         Matrix4d m = new Matrix4d();
@@ -647,6 +671,16 @@ public final class GeometryUtils {
         return m;
     }
 
+    /**
+     * Make matrix combining rotation and translation
+     * Based on compose from InteractiveTransformDialog/Executer in 3D viewer:
+     * https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java#L222
+     * https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/Executer.java
+     * @param rot axis angle rotation
+     * @param origin centre of rotation
+     * @param translation translation vector
+     * @param ret matrix to write result into
+     */
     public static void compose(final AxisAngle4d rot, final Vector3d origin,
                         final Vector3d translation, final Matrix4d ret)
     {
@@ -660,6 +694,16 @@ public final class GeometryUtils {
         ret.setTranslation(trans);
     }
 
+    /**
+     * Make matrix combining rotation and translation
+     * Based on compose from InteractiveTransformDialog/Executer in 3D viewer:
+     * https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/gui/InteractiveTransformDialog.java#L222
+     * https://github.com/fiji/3D_Viewer/blob/master/src/main/java/ij3d/Executer.java
+     * @param rot rotation matrix
+     * @param origin centre of rotation
+     * @param translation translation vector
+     * @param ret matrix to write result into
+     */
     public static void compose(final Matrix4d rot, final Vector3d origin,
                         final Vector3d translation, final Matrix4d ret)
     {
