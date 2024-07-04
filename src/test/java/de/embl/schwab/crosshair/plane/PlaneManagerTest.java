@@ -4,26 +4,34 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvStackSource;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
+import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
+import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
-import dotty.tools.dotc.transform.PatternMatcher;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3d;
 import org.scijava.vecmath.Vector3d;
-import scala.concurrent.impl.FutureConvertersImpl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class PlaneManagerTest {
 
@@ -244,22 +252,113 @@ class PlaneManagerTest {
 
     @Test
     void updatePlaneOnTransformChange() {
+        // Add plane with certain orientation
+        String name = "testPlane";
+        planeManager.addPlane(name, normal, point);
+
+        // Random affine transform containing translation and rotation
+        AffineTransform3D transform = new AffineTransform3D();
+        transform.translate(20, 30, 40);
+        transform.rotate(1, 20);
+
+        planeManager.updatePlaneOnTransformChange(transform, name);
+        Plane plane = planeManager.getPlane(name);
+
+        // Check normal and point were updated correctly. Expected normal / point comes from
+        // getPlaneDefinitionFromViewTransform with the transform above
+        assertEquals(plane.getNormal(), new Vector3d(-0.9129452507276278, 0.0, 0.40808206181339196));
+        assertEquals(plane.getPoint(), new Vector3d(-20.0, -30.0, -40.0));
     }
 
     @Test
     void updatePlaneCurrentView() {
+        // Add plane with certain orientation
+        String name = "testPlane";
+        planeManager.addPlane(name, normal, point);
+
+        // Update plane to match orientation of current bdv view
+        planeManager.updatePlaneCurrentView(name);
+        Plane plane = planeManager.getPlane(name);
+
+        // Check normal and point match expected
+        assertEquals(plane.getNormal(), new Vector3d(0, 0, 1));
+        assertEquals(plane.getPoint(), new Vector3d(
+                -237.91633435828103, -1.9942294517880588, 398.32276000000013));
     }
 
-    @Test
-    void redrawCurrentPlanes() {
+    /**
+     * Different points to fit plane to test...
+     * @return stream of points list (used to fit a plane), followed by expected normal and point for plane
+     */
+    static Stream<Arguments> fitToPointsProvider() {
+        return Stream.of(
+                // Points all on plane perpendicular to z axis
+                arguments(
+                        Arrays.asList(
+                                new RealPoint(0, 0, 0),
+                                new RealPoint(1, 1, 0),
+                                new RealPoint(-1, 1, 0)
+                        ),
+                        new Vector3d(0, 0, 1),
+                        new Vector3d(0.0, 0.6666666666666666, 0.0)
+                ),
+                // Points all on plane perpendicular to x axis
+                arguments(
+                        Arrays.asList(
+                                new RealPoint(1, -1, 0),
+                                new RealPoint(1, 1, 0),
+                                new RealPoint(1, 0, 1)
+                        ),
+                        new Vector3d(-1.0, -4.039029528107861E-17, -1.3608770355161334E-16),
+                        new Vector3d(1.0, 0.0, 0.3333333333333333)
+                ),
+                // Randomly oriented plane
+                arguments(
+                        Arrays.asList(
+                                new RealPoint(1, -1, 1),
+                                new RealPoint(1, 1, 1),
+                                new RealPoint(-1, 0, -1)
+                        ),
+                        new Vector3d(-0.7071067811865475, 1.1102230246251565E-16, 0.7071067811865476),
+                        new Vector3d(0.3333333333333333, 0.0, 0.3333333333333333)
+                )
+        );
     }
 
-    @Test
-    void fitToPoints() {
+    @ParameterizedTest
+    @MethodSource("fitToPointsProvider")
+    void fitToPoints(List<RealPoint> points, Vector3d expectedNormal, Vector3d expectedPoint) {
+        // Add test plane with no orientation
+        String name = "testPlane";
+        planeManager.addPlane(name);
+        Plane plane = planeManager.getPlane(name);
+        PointsToFitPlaneDisplay display = plane.getPointsToFitPlaneDisplay();
+
+        // add points to display and fit to them
+        for (RealPoint point: points) {
+            display.addPointToFitPlane(point);
+        }
+        planeManager.fitToPoints(name);
+
+        // Check normal and point of plane are as expected
+        assertEquals(plane.getNormal(), expectedNormal);
+        assertEquals(plane.getPoint(), expectedPoint);
     }
 
     @Test
     void getAll2dPointOverlays() {
+        // Add plane with certain orientation
+        String planeName = "testPlane";
+        planeManager.addPlane(planeName, normal, point);
+
+        // Add block plane with certain orientation
+        String blockPlaneName = "testBlockPlane";
+        planeManager.addBlockPlane(blockPlaneName, normal, point);
+
+        // Should have three overlays, one from the points to fit plane display of each plane + one
+        // from the block plane's vertex display
+        List<PointOverlay2d> overlays = planeManager.getAll2dPointOverlays();
+        assertEquals(overlays.size(), 3);
     }
 
     @Test
@@ -276,5 +375,14 @@ class PlaneManagerTest {
 
     @Test
     void removeNamedPlane() {
+        // Add a test plane
+        String name = "testPlane";
+        planeManager.addPlane(name);
+        assertTrue(planeManager.getPlaneNames().contains(name));
+
+        // Remove plane
+        planeManager.removeNamedPlane(name);
+        assertFalse(planeManager.getPlaneNames().contains(name));
+        assertNull(planeManager.getPlane(name));
     }
 }
