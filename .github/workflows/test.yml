@@ -61,5 +61,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install xvfb
 
-      - name: Build with maven
+      - name: Build with maven and xvfb
+        if: matrix.os == 'ubuntu-latest'
         run: xvfb-run --auto-servernum mvn -B package --file pom.xml
+
+      - name: Build with maven
+        if: matrix.os != 'ubuntu-latest'
+        run: mvn -B package --file pom.xml
