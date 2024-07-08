@@ -122,7 +122,7 @@ public class Crosshair {
 
 		CrosshairFrame crosshairFrame = new CrosshairFrame(this);
 
-		spaceOutWindows( bdvHandle, crosshairFrame, universe );
+		spaceOutWindows( crosshairFrame, bdvHandle, universe );
 	}
 
 	public BdvHandle getBdvHandle() {

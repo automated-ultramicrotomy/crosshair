@@ -105,7 +105,7 @@ public class TargetingAccuracy {
             reader.loadSettings( settings, planeManager,
                     accuracyFrame.getImagesPanel().getImageNameToContent(), accuracyFrame.getOtherPanel() );
 
-            spaceOutWindows(beforeStackSource.getBdvHandle(), accuracyFrame, universe);
+            spaceOutWindows(accuracyFrame, beforeStackSource.getBdvHandle(), universe);
 
         }
     }
