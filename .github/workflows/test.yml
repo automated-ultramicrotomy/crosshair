@@ -58,6 +58,8 @@ jobs:
 #      - name: Install blosc
 #        run: sudo apt install libblosc-dev
       - name: Install xvfb
+        if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install xvfb
+
       - name: Build with maven
         run: xvfb-run --auto-servernum mvn -B package --file pom.xml
