@@ -30,10 +30,20 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     # Cancel jobs after 30 minutes
     timeout-minutes: 30
+
+    strategy:
+      matrix:
+        # Run tests on ubuntu, mac (intel + M1) and windows
+        os: [
+          ubuntu-latest,
+          windows-latest,
+          macos-latest,
+          macos-13
+        ]
 
     steps:
       - uses: actions/checkout@v4
