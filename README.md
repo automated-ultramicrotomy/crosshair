@@ -27,3 +27,8 @@ A full user guide is provided in [the Crosshair wiki](https://github.com/automat
 ## Cite
 
 If you use Crosshair in your work, please cite our [paper on eLife](https://elifesciences.org/articles/80899)
+
+## Reporting issues
+
+If you find a problem with Crosshair, please let us know!  
+Go to the [issue tracker](https://github.com/automated-ultramicrotomy/crosshair/issues) and click the green `New issue` button at the top right. Write a short title and description for your issue, along with information about what type of computer you were using (Windows / mac etc.). Then click the `Submit new issue` button. 
