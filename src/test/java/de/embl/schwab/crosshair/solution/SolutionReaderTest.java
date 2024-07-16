@@ -4,6 +4,9 @@ import de.embl.schwab.crosshair.points.VertexPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -36,6 +39,10 @@ class SolutionReaderTest {
 
     @Test
     void readInvalidSolution( @TempDir Path tempDir ) {
+        // Disable logging to keep the test logs clean (we're expecting an error here)
+        Logger logger = (Logger) LoggerFactory.getLogger(SolutionReader.class);
+        logger.setLevel(Level.OFF);
+
         File invalidJsonPath = tempDir.resolve( "invalid.json" ).toFile();
         Solution solution = solutionReader.readSolution( invalidJsonPath.getAbsolutePath() );
 

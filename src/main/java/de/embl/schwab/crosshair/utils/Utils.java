@@ -4,6 +4,8 @@ import bdv.util.BdvHandle;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import org.scijava.vecmath.Point3d;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Utils {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static void printImageMinMax (Content imageContent) {
         Point3d min = new Point3d();
@@ -78,7 +82,7 @@ public class Utils {
         try {
             UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName() );
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error setting look and feel", e);
         }
     }
 }

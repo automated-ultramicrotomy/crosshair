@@ -6,6 +6,8 @@ import mpicbg.spim.data.SpimDataException;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -13,6 +15,8 @@ import static de.embl.schwab.crosshair.utils.Utils.resetCrossPlatformSwingLookAn
 
 @Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Analysis>Measure Targeting Accuracy" )
 public class MeasureTargetingAccuracyCommand implements Command {
+
+    private static final Logger logger = LoggerFactory.getLogger(MeasureTargetingAccuracyCommand.class);
 
     @Parameter(label="Before targeting image xml")
     public File beforeTargetingXml;
@@ -41,7 +45,7 @@ public class MeasureTargetingAccuracyCommand implements Command {
                 new TargetingAccuracy( beforeTargetingXml, registeredAfterTargetingXml,
                         crosshairSettingsJson, crosshairSolutionJson );
             } catch (SpimDataException e) {
-                e.printStackTrace();
+                logger.error("Error opening targeting accuracy", e);
             }
         }
     }

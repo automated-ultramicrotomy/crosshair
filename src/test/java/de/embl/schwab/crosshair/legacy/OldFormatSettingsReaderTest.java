@@ -1,8 +1,11 @@
 package de.embl.schwab.crosshair.legacy;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -32,6 +35,10 @@ class OldFormatSettingsReaderTest {
 
     @Test
     void readInvalidSettings( @TempDir Path tempDir ) {
+        // Disable logging to keep the test logs clean (we're expecting an error here)
+        Logger logger = (Logger) LoggerFactory.getLogger(OldFormatSettingsReader.class);
+        logger.setLevel(Level.OFF);
+
         File invalidJsonPath = tempDir.resolve( "invalid.json" ).toFile();
         OldFormatSettings settings = oldFormatSettingsReader.readSettings( invalidJsonPath.getAbsolutePath() );
 

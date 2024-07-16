@@ -5,11 +5,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.io.serialise.VertexPointAdapter;
 import de.embl.schwab.crosshair.points.VertexPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
 
 public class SolutionReader {
+
+    private static final Logger logger = LoggerFactory.getLogger(SolutionReader.class);
+
     public SolutionReader() {}
 
     public Solution readSolution( String filePath ) {
@@ -19,7 +24,7 @@ public class SolutionReader {
         try ( FileReader fileReader = new FileReader(filePath) ) {
             return gson.fromJson(fileReader, Solution.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading solutions file", e);
         }
 
         return  null;
