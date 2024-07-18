@@ -3,6 +3,8 @@ package de.embl.schwab.crosshair;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,9 +19,39 @@ class CrosshairTest {
         final LazySpimSource imageSource = new LazySpimSource("raw", xray.getAbsolutePath());
         Crosshair crosshair = new Crosshair(imageSource);
 
-        // Check successfully created a bdv window + 3D viewer
+        // Check successfully created crosshair controls, bdv window + 3D viewer
+        assertNotNull(crosshair.getCrosshairFrame());
         assertNotNull(crosshair.getBdvHandle());
         assertNotNull(crosshair.getUniverse());
+
+        // Check all windows on screen + not overlapping
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Window[] windows = new Window[]{
+                crosshair.getCrosshairFrame(),
+                SwingUtilities.getWindowAncestor(crosshair.getBdvHandle().getViewerPanel()),
+                crosshair.getUniverse().getWindow()
+        };
+        int[] xMins = new int[windows.length];
+        int[] xMaxes = new int[windows.length];
+
+        for (int i = 0; i < windows.length; i++) {
+            Window window = windows[i];
+
+            // Check height within screen limits
+            assertTrue(window.getLocationOnScreen().y >= 0);
+            assertTrue(window.getLocationOnScreen().y + window.getHeight() <= screenSize.height);
+
+            xMins[i] = window.getLocationOnScreen().x;
+            xMaxes[i] = window.getLocationOnScreen().x + window.getWidth();
+
+            // check width within screen limits
+            assertTrue(xMins[i] >= 0);
+            assertTrue(xMaxes[i] <= screenSize.width);
+        }
+
+        // Check windows don't overlap
+        assertTrue(xMaxes[0] <= xMins[1]);
+        assertTrue(xMaxes[1] <= xMins[2]);
     }
 
 }

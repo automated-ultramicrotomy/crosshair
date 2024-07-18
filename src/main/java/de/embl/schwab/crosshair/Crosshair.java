@@ -47,6 +47,7 @@ public class Crosshair {
 
 	private BdvHandle bdvHandle; // bdvHandle of the BigDataViewer window
 	private Image3DUniverse universe; // universe of the 3D viewer
+	private CrosshairFrame crosshairFrame; // crosshair control panel
 	private Content imageContent; // image content displayed in 3D viewer
 	private PlaneManager planeManager;
 	private MicrotomeManager microtomeManager;
@@ -120,7 +121,7 @@ public class Crosshair {
 		microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);
 
-		CrosshairFrame crosshairFrame = new CrosshairFrame(this);
+		crosshairFrame = new CrosshairFrame(this);
 
 		spaceOutWindows( crosshairFrame, bdvHandle, universe );
 	}
@@ -148,4 +149,6 @@ public class Crosshair {
 	public String getUnit() {
 		return unit;
 	}
+
+	public CrosshairFrame getCrosshairFrame() { return crosshairFrame; }
 }
