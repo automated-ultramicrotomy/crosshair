@@ -21,8 +21,8 @@ public class Utils {
         Point3d max = new Point3d();
         imageContent.getMax(max);
         imageContent.getMin(min);
-        System.out.println(min.toString());
-        System.out.println(max.toString());
+        logger.info(min.toString());
+        logger.info(max.toString());
     }
 
     public static int findIndexOfMaxMin (ArrayList<Double> values, String MinMax) {
