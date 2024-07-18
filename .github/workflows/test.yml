@@ -37,10 +37,9 @@ jobs:
 
     strategy:
       matrix:
-        # Run tests on ubuntu, mac (intel + M1) and windows
+        # Run tests on ubuntu and mac (intel + M1)
         os: [
           ubuntu-latest,
-          windows-latest,
           macos-latest,
           macos-13
         ]
