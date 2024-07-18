@@ -25,9 +25,12 @@ class STLResourceLoaderTest {
     void loadInvalidSTL() {
         // Disable logging to keep the test logs clean (we're expecting an error here)
         Logger logger = (Logger) LoggerFactory.getLogger(STLResourceLoader.class);
+        Level loggerLevel = logger.getLevel();
         logger.setLevel(Level.OFF);
 
         Map<String, CustomMesh> currentStl = STLResourceLoader.loadSTL("invalid.stl");
         assertNull(currentStl);
+
+        logger.setLevel(loggerLevel);
     }
 }

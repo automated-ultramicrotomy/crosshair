@@ -41,11 +41,13 @@ class SolutionReaderTest {
     void readInvalidSolution( @TempDir Path tempDir ) {
         // Disable logging to keep the test logs clean (we're expecting an error here)
         Logger logger = (Logger) LoggerFactory.getLogger(SolutionReader.class);
+        Level loggerLevel = logger.getLevel();
         logger.setLevel(Level.OFF);
 
         File invalidJsonPath = tempDir.resolve( "invalid.json" ).toFile();
         Solution solution = solutionReader.readSolution( invalidJsonPath.getAbsolutePath() );
-
         assertNull( solution );
+
+        logger.setLevel(loggerLevel);
     }
 }

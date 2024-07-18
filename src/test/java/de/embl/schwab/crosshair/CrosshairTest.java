@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair;
 
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -11,13 +12,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CrosshairTest {
 
+    private Crosshair crosshair;
+
+    @AfterEach
+    void tearDown() {
+        crosshair.getUniverse().close();
+        crosshair.getBdvHandle().close();
+    }
+
     @Test
     void openCrosshairFromBdv() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         File xray = new File(classLoader.getResource("exampleBlock.xml").getFile());
 
         final LazySpimSource imageSource = new LazySpimSource("raw", xray.getAbsolutePath());
-        Crosshair crosshair = new Crosshair(imageSource);
+        crosshair = new Crosshair(imageSource);
 
         // Check successfully created crosshair controls, bdv window + 3D viewer
         assertNotNull(crosshair.getCrosshairFrame());

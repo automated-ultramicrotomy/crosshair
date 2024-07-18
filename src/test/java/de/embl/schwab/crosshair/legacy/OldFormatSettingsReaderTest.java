@@ -37,11 +37,13 @@ class OldFormatSettingsReaderTest {
     void readInvalidSettings( @TempDir Path tempDir ) {
         // Disable logging to keep the test logs clean (we're expecting an error here)
         Logger logger = (Logger) LoggerFactory.getLogger(OldFormatSettingsReader.class);
+        Level loggerLevel = logger.getLevel();
         logger.setLevel(Level.OFF);
 
         File invalidJsonPath = tempDir.resolve( "invalid.json" ).toFile();
         OldFormatSettings settings = oldFormatSettingsReader.readSettings( invalidJsonPath.getAbsolutePath() );
-
         assertNull( settings );
+
+        logger.setLevel(loggerLevel);
     }
 }
