@@ -60,10 +60,13 @@ public class Utils {
 
         System.out.println(screenSize);
         System.out.println(frame.getLocationOnScreen().x + frame.getWidth());
+        System.out.println(frame.getLocationOnScreen().y);
         System.out.println(viewFrame.getLocationOnScreen().x);
         System.out.println(viewFrame.getLocationOnScreen().x + viewFrame.getWidth());
+        System.out.println(viewFrame.getLocationOnScreen().y);
         System.out.println(universe.getWindow().getLocationOnScreen().x);
         System.out.println(universe.getWindow().getLocationOnScreen().x + universe.getWindow().getWidth());
+        System.out.println(universe.getWindow().getLocationOnScreen().y);
 
         // Make sure bigdataviewer + 3D viewer aren't taller than the screen
         int viewHeight = viewFrame.getHeight();
@@ -84,10 +87,13 @@ public class Utils {
 
         System.out.println(screenSize);
         System.out.println(frame.getLocationOnScreen().x + frame.getWidth());
+        System.out.println(frame.getLocationOnScreen().y);
         System.out.println(viewFrame.getLocationOnScreen().x);
         System.out.println(viewFrame.getLocationOnScreen().x + viewFrame.getWidth());
+        System.out.println(viewFrame.getLocationOnScreen().y);
         System.out.println(universe.getWindow().getLocationOnScreen().x);
         System.out.println(universe.getWindow().getLocationOnScreen().x + universe.getWindow().getWidth());
+        System.out.println(universe.getWindow().getLocationOnScreen().y);
 
         // Fill any remaining width between the controls and 3D viewer with the bdv window
         viewFrame.setLocation(
@@ -102,10 +108,13 @@ public class Utils {
 
         System.out.println(screenSize);
         System.out.println(frame.getLocationOnScreen().x + frame.getWidth());
+        System.out.println(frame.getLocationOnScreen().y);
         System.out.println(viewFrame.getLocationOnScreen().x);
         System.out.println(viewFrame.getLocationOnScreen().x + viewFrame.getWidth());
+        System.out.println(viewFrame.getLocationOnScreen().y);
         System.out.println(universe.getWindow().getLocationOnScreen().x);
         System.out.println(universe.getWindow().getLocationOnScreen().x + universe.getWindow().getWidth());
+        System.out.println(universe.getWindow().getLocationOnScreen().y);
     }
 
     public static void resetCrossPlatformSwingLookAndFeel() {
