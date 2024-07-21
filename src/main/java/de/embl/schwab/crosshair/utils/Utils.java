@@ -75,6 +75,10 @@ public class Utils {
         // (after the controls width is taken into account)
         int width3DViewer = (int) Math.floor((screenSize.getWidth() - frame.getWidth())/3.0);
         universe.setSize(width3DViewer, viewHeight);
+
+        System.out.println((int) Math.floor(screenSize.getWidth() - width3DViewer));
+        System.out.println(frame.getLocationOnScreen().y);
+
         universe.getWindow().setLocation((int) Math.floor(screenSize.getWidth() - width3DViewer),
                 frame.getLocationOnScreen().y);
 
@@ -89,6 +93,10 @@ public class Utils {
         viewFrame.setLocation(
                 frame.getLocationOnScreen().x + frame.getWidth(),
                 frame.getLocationOnScreen().y );
+
+        System.out.println(frame.getLocationOnScreen().x + frame.getWidth());
+        System.out.println(frame.getLocationOnScreen().y);
+
         int newViewWidth = (int) Math.floor(screenSize.width - width3DViewer - frame.getWidth());
         viewFrame.setSize(newViewWidth, viewHeight);
 
