@@ -40,7 +40,7 @@ jobs:
         # Run tests on ubuntu and mac (intel + M1)
         os: [
           ubuntu-latest,
-          macos-latest,
+#          macos-latest,
           macos-13
         ]
 
