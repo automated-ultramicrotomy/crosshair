@@ -12,6 +12,8 @@ import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
 import de.embl.schwab.crosshair.ui.swing.OtherPanel;
 import ij.IJ;
 import ij3d.Content;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class SettingsReader {
+
+    private static final Logger logger = LoggerFactory.getLogger(SettingsReader.class);
 
     public SettingsReader() {}
 
@@ -30,7 +34,7 @@ public class SettingsReader {
         try ( FileReader fileReader = new FileReader(filePath) ) {
             return gson.fromJson(fileReader, Settings.class);
         } catch (IOException e1) {
-            e1.printStackTrace();
+            logger.error("Error reading settings file", e1);
         }
 
         return null;

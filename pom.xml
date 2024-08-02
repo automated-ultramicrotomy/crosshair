@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>crosshair</artifactId>
 	<url>https://github.com/K-Meech/crosshair</url>
-	<version>1.0.3</version>
+	<version>1.0.5</version>
 	<name>Crosshair</name>
 	<description>Assisted 3D targeting via an ultramicrotome</description>
 	<inceptionYear>2020</inceptionYear>
@@ -125,6 +125,15 @@
 			<groupId>de.embl.cba</groupId>
 			<artifactId>imagej-utils</artifactId>
 			<version>${imagej-utils.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

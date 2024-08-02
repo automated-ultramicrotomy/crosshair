@@ -101,8 +101,10 @@ public class SavePanel extends CrosshairPanel {
                 if ( filePath != null ) {
                     SettingsReader reader = new SettingsReader();
                     Settings settings = reader.readSettings( filePath );
-                    reader.loadSettings( settings, microtomeManager, microtomePanel, planeManager,
-                            imagesPanel.getImageNameToContent(), otherPanel );
+                    if (settings != null) {
+                        reader.loadSettings(settings, microtomeManager, microtomePanel, planeManager,
+                                imagesPanel.getImageNameToContent(), otherPanel);
+                    }
                 }
 
             } else if (e.getActionCommand().equals("save_solution")) {
