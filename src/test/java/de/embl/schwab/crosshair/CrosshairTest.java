@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +20,10 @@ class CrosshairTest {
         crosshair.getBdvHandle().close();
     }
 
+    /**
+     * Test that Crosshair can be opened from a bdv file + that windows are laid out correctly (no overlap, fully on
+     * screen)
+     */
     @Test
     void openCrosshairFromBdv() {
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -62,9 +65,6 @@ class CrosshairTest {
         }
 
         // Check windows don't overlap
-        System.out.println(screenSize);
-        System.out.println(Arrays.toString(xMins));
-        System.out.println(Arrays.toString(xMaxes));
         assertTrue(xMaxes[0] <= xMins[1], "window 0's right edge overlaps with window 1's left");
         assertTrue(xMaxes[1] <= xMins[2], "window 1's right edge overlaps with window 2's left");
     }

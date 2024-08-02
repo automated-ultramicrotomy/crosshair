@@ -30,19 +30,10 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     # Cancel jobs after 30 minutes
     timeout-minutes: 30
-
-    strategy:
-      matrix:
-        # Run tests on ubuntu and mac (intel + M1)
-        os: [
-          ubuntu-latest,
-#          macos-latest,
-          macos-13
-        ]
 
     steps:
       - uses: actions/checkout@v4
@@ -57,13 +48,7 @@ jobs:
 #      - name: Install blosc
 #        run: sudo apt install libblosc-dev
       - name: Install xvfb
-        if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install xvfb
 
-      - name: Build with maven and xvfb
-        if: matrix.os == 'ubuntu-latest'
-        run: xvfb-run --auto-servernum mvn -B package --file pom.xml
-
       - name: Build with maven
-        if: matrix.os != 'ubuntu-latest'
-        run: mvn -B package --file pom.xml
+        run: xvfb-run --auto-servernum mvn -B package --file pom.xml
