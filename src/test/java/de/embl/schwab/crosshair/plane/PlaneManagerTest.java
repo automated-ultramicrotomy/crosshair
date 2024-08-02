@@ -27,9 +27,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
+import static de.embl.schwab.crosshair.utils.GeometryUtils.checkVectorsParallel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -362,15 +364,34 @@ class PlaneManagerTest {
     }
 
     @Test
-    void getPlaneDefinitionOfCurrentView() {
-    }
-
-    @Test
     void getGlobalViewCentre() {
     }
 
     @Test
-    void moveViewToNamedPlane() {
+    void moveViewToNamedPlane() throws InterruptedException {
+        // Add plane with certain orientation
+        String name = "testPlane";
+        planeManager.addPlane(name, normal, point);
+
+        // Check current view doesn't match the plane's orientation
+        List<Vector3d> viewPlaneDefinition = planeManager.getPlaneDefinitionOfCurrentView();
+        Vector3d viewVectorPoint = viewPlaneDefinition.get(1);
+        RealPoint viewRealPoint = new RealPoint(viewVectorPoint.getX(), viewVectorPoint.getY(), viewVectorPoint.getZ());
+
+        assertFalse(checkVectorsParallel(viewPlaneDefinition.get(0), normal));
+        assertFalse(planeManager.getPlane(name).isPointOnPlane(viewRealPoint));
+
+        // Move view to named plane - have to wait for 1 second to allow the animated movement to finish
+        planeManager.moveViewToNamedPlane(name);
+        TimeUnit.SECONDS.sleep(1);
+
+        // Check new view matches the plane's orientation - i.e. normals are parallel and view point lies on plane
+        viewPlaneDefinition = planeManager.getPlaneDefinitionOfCurrentView();
+        viewVectorPoint = viewPlaneDefinition.get(1);
+        viewRealPoint = new RealPoint(viewVectorPoint.getX(), viewVectorPoint.getY(), viewVectorPoint.getZ());
+
+        assertTrue(checkVectorsParallel(viewPlaneDefinition.get(0), normal));
+        assertTrue(planeManager.getPlane(name).isPointOnPlane(viewRealPoint));
     }
 
     @Test
