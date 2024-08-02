@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij3d.Content;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SettingsWriter {
+
+    private static final Logger logger = LoggerFactory.getLogger(SettingsWriter.class);
 
     public SettingsWriter() { }
 
@@ -58,7 +62,7 @@ public class SettingsWriter {
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException e1) {
-            e1.printStackTrace();
+            logger.error("Error writing settings", e1);
         }
     }
 }

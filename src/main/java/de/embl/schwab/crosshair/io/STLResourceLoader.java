@@ -2,8 +2,9 @@ package de.embl.schwab.crosshair.io;
 
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;
-import ij.IJ;
 import org.scijava.vecmath.Point3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,6 +18,9 @@ import java.io.IOException;
  * input stream, and load from resource name
  */
 public class STLResourceLoader {
+
+    private static final Logger logger = LoggerFactory.getLogger(STLResourceLoader.class);
+
     private HashMap<String, CustomMesh> meshes;
     private ArrayList<Point3f> vertices = new ArrayList();
     private String name = null;
@@ -35,7 +39,7 @@ public class STLResourceLoader {
         try {
             return STLResourceLoader.load(name);
         } catch (Exception var2) {
-            var2.printStackTrace();
+            logger.error("Error loading STL file", var2);
             return null;
         }
     }
@@ -52,7 +56,7 @@ public class STLResourceLoader {
         try {
             sl.parse(name);
         } catch (RuntimeException var3) {
-            IJ.log("error reading " + sl.name);
+            logger.error("error reading " + sl.name);
             throw var3;
         }
 
@@ -101,8 +105,7 @@ public class STLResourceLoader {
 
             inputStream.close();
         } catch (IOException var10) {
-            var10.printStackTrace();
-
+            logger.error("Error parsing binary", var10);
         }
 
         CustomMesh cm = this.createCustomMesh();

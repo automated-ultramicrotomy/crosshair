@@ -47,6 +47,8 @@ import javax.swing.event.ChangeListener;
 
 import bdv.util.BoundedValue;
 import bdv.util.BoundedValueDouble;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link JSlider} with a {@link JSpinner} next to it, both modifying the same
@@ -55,6 +57,8 @@ import bdv.util.BoundedValueDouble;
  */
 public class SliderPanelDouble extends JPanel implements BoundedValueDouble.UpdateListener
 {
+    private static final Logger logger = LoggerFactory.getLogger(SliderPanelDouble.class);
+
     private static final long serialVersionUID = 6444334522127424416L;
 
     private static final int sliderLength = 10000;
@@ -168,7 +172,7 @@ public class SliderPanelDouble extends JPanel implements BoundedValueDouble.Upda
         try {
             spinner.commitEdit();
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error("Error committing spinner edits", e);
         }
     }
 

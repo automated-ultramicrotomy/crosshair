@@ -5,12 +5,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.embl.schwab.crosshair.io.serialise.VertexPointAdapter;
 import de.embl.schwab.crosshair.points.VertexPoint;
-import de.embl.schwab.crosshair.solution.Solution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class SolutionWriter {
+
+    private static final Logger logger = LoggerFactory.getLogger(SolutionWriter.class);
 
     private Solution solution;
     private String filePath;
@@ -29,7 +32,7 @@ public class SolutionWriter {
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException e1) {
-            e1.printStackTrace();
+            logger.error("Error writing solution", e1);
         }
     }
 

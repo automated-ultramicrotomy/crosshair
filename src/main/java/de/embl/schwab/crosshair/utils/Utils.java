@@ -4,21 +4,26 @@ import bdv.util.BdvHandle;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import org.scijava.vecmath.Point3d;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Utils {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static void printImageMinMax (Content imageContent) {
         Point3d min = new Point3d();
         Point3d max = new Point3d();
         imageContent.getMax(max);
         imageContent.getMin(min);
-        System.out.println(min.toString());
-        System.out.println(max.toString());
+        logger.info(min.toString());
+        logger.info(max.toString());
     }
 
     public static int findIndexOfMaxMin (ArrayList<Double> values, String MinMax) {
@@ -63,6 +68,7 @@ public class Utils {
         // (after the controls width is taken into account)
         int width3DViewer = (int) Math.floor((screenSize.getWidth() - frame.getWidth())/3.0);
         universe.setSize(width3DViewer, viewHeight);
+
         universe.getWindow().setLocation((int) Math.floor(screenSize.getWidth() - width3DViewer),
                 frame.getLocationOnScreen().y);
 
@@ -70,6 +76,7 @@ public class Utils {
         viewFrame.setLocation(
                 frame.getLocationOnScreen().x + frame.getWidth(),
                 frame.getLocationOnScreen().y );
+
         int newViewWidth = (int) Math.floor(screenSize.width - width3DViewer - frame.getWidth());
         viewFrame.setSize(newViewWidth, viewHeight);
     }
@@ -78,7 +85,7 @@ public class Utils {
         try {
             UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName() );
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error setting look and feel", e);
         }
     }
 }
