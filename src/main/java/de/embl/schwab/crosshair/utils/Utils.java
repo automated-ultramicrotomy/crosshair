@@ -17,7 +17,7 @@ public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    public static void printImageMinMax (Content imageContent) {
+    public static void printImageMinMax(Content imageContent) {
         Point3d min = new Point3d();
         Point3d max = new Point3d();
         imageContent.getMax(max);
@@ -26,7 +26,7 @@ public class Utils {
         logger.info(max.toString());
     }
 
-    public static int findIndexOfMaxMin (ArrayList<Double> values, String MinMax) {
+    public static int findIndexOfMaxMin(ArrayList<Double> values, String MinMax) {
         double chosenValue = 0;
         if (MinMax.equals("max")) {
             chosenValue = Collections.max(values);

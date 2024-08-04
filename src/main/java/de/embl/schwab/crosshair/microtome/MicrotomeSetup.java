@@ -22,6 +22,9 @@ import org.scijava.java3d.PolygonAttributes;
 
 import static java.lang.Math.abs;
 
+/**
+ * Class to handle initial setup of the ultramicrotome in the 3D viewer
+ */
 class MicrotomeSetup {
 
     private Microtome microtome;
@@ -38,7 +41,11 @@ class MicrotomeSetup {
 
     private Map<String, CustomMesh> microtomeSTLs;
 
-    public MicrotomeSetup (Microtome microtome) {
+    /**
+     * Create a class to handle the microtome setup + load microtome 3D meshes
+     * @param microtome microtome
+     */
+    public MicrotomeSetup(Microtome microtome) {
         this.microtome = microtome;
         this.universe = microtome.getUniverse();
         this.planeManager = microtome.getPlaneManager();
@@ -51,6 +58,9 @@ class MicrotomeSetup {
         loadMicrotomeMeshes();
     }
 
+    /**
+     * Load microtome meshes, but don't display them in the 3D viewer yet
+     */
     private void loadMicrotomeMeshes() {
         // NOTE: Orientation of axes matches those in original blender file, object positions also match
         microtomeSTLs = new HashMap<>();
@@ -74,9 +84,14 @@ class MicrotomeSetup {
         microtome.setMicrotomeObjectNames(stlFiles);
     }
 
-    public void initialiseMicrotome () {
-        int microtomePiecesAdded = 0;
+    /**
+     * Initialise the microtome in the 3D viewer - adding meshes in correct positions, with correct size. This also
+     * moves the image volume (in the 3D viewer) to the correct orientation for the initial microtome settings.
+     */
+    public void initialiseMicrotome() {
 
+        // Load + display all microtome meshes
+        int microtomePiecesAdded = 0;
         for (String key : microtomeSTLs.keySet()) {
             if (!universe.contains(key)) {
                 universe.addCustomMesh(microtomeSTLs.get(key), key);
@@ -93,7 +108,7 @@ class MicrotomeSetup {
         }
 
         if (!universe.contains("rotationAxis")) {
-        //  width of knife is about 2 intially from blender file
+            // width of knife is about 2 initially from blender file
             ArrayList<Point3f> tubeEnds = new ArrayList<>();
             Vector3d currentKnifeCentre = microtome.getCurrentKnifeCentre();
             tubeEnds.add(new Point3f((float) currentKnifeCentre.getX(),
@@ -107,6 +122,7 @@ class MicrotomeSetup {
             universe.getContent("rotationAxis").setVisible(false);
         }
 
+        // Move block (the 3D image volume) to the correct orientation for the initial microtome settings
         Matrix4d initialBlockTransform = setupBlockOrientation(microtome.getInitialKnifeAngle());
         microtome.setInitialBlockTransform(initialBlockTransform);
 
@@ -142,8 +158,10 @@ class MicrotomeSetup {
         microtome.setInitialTargetTilt( targetOffsetAndTilt.targetTilt );
     }
 
-    private void resizeMicrotomeParts () {
-
+    /**
+     * Resize and move microtome parts, so they are easily visible relative to the size of the main image content
+     */
+    private void resizeMicrotomeParts() {
         // scale meshes / position them
         Point3d minArc = new Point3d();
         Point3d maxArc = new Point3d();
@@ -161,6 +179,7 @@ class MicrotomeSetup {
         dims.add(abs(maxImage.getZ() - minImage.getZ()));
         double endHeight = Collections.max(dims);
 
+        // Scale so arc is the same height as the maximum dimension of the image content
         double scaleFactor = endHeight / heightArc;
         microtomeComponentsScaleFactor = scaleFactor;
 
@@ -168,7 +187,6 @@ class MicrotomeSetup {
                 0, scaleFactor, 0, 0,
                 0, 0, scaleFactor, 0,
                 0, 0, 0, 1);
-
         Transform3D trans = new Transform3D(scaleMatrix);
 
         Vector3d maxImageVector = new Vector3d();
@@ -176,7 +194,7 @@ class MicrotomeSetup {
                 new Vector3d(minImage.getX(), minImage.getY(), minImage.getZ()));
         double maxImageDistance = maxImageVector.length();
 
-        // translate so front of holder one max image distance away from 0,0,0
+        // translate so front of holder is one max image distance away from 0,0,0
         // location of min holder front is approximate from original blender file
         Point3d minHolderFront = new Point3d(0, 3, 0);
 
@@ -239,15 +257,20 @@ class MicrotomeSetup {
         microtome.setCurrentKnifeCentre( new Vector3d(knifeC.getX(), knifeC.getY(), knifeC.getZ()) );
     }
 
+    /**
+     * Orient the main image content (the block in the 3D viewer) to match the initial microtome settings
+     * @param initialKnifeAngle initial knife angle in degrees
+     * @return the new transform of the image content (the block)
+     */
     private Matrix4d setupBlockOrientation(double initialKnifeAngle) {
         String[] planeNames = { Crosshair.target, Crosshair.block };
-        //reset translation / rotation in case it has been modified
+        // reset translation / rotation in case it has been modified
         imageContent.setTransform(new Transform3D());
         for (String name : planeNames) {
             universe.getContent(name).setTransform(new Transform3D());
         }
 
-        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices();
+        Map<VertexPoint, RealPoint> assignedVertices = planeManager.getVertexDisplay(Crosshair.block ).getAssignedVertices();
 
         // check normal in right orientation, coming out of block surface
         double[] topLeft = new double[3];
@@ -265,7 +288,7 @@ class MicrotomeSetup {
         Vector3d upLeftSideVector = new Vector3d();
         upLeftSideVector.sub(new Vector3d(topLeft), new Vector3d(bottomLeft));
 
-        // bottom edge cross up left side, gives a normal that points out of teh block surface
+        // bottom edge cross up left side, gives a normal that points out of the block surface
         Vector3d blockNormal = new Vector3d();
         blockNormal.cross(bottomEdgeVector, upLeftSideVector);
         blockNormal.normalize();
@@ -308,7 +331,7 @@ class MicrotomeSetup {
         Vector3d endBottomEdgeCentre = new Vector3d(0, 0, 0);
         endBottomEdgeCentre.sub(bottomEdgeCentre);
 
-        //final transform
+        // final transform
         Matrix4d finalSetupTransform = new Matrix4d();
         // rotate about the initial position of bottom edge centre, then translate bottom edge centre to (0,0,0)
         GeometryUtils.compose(

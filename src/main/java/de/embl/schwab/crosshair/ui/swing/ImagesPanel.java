@@ -50,7 +50,7 @@ public class ImagesPanel extends CrosshairPanel {
      * Initialise panel from settings in main Crosshair UI
      * @param crosshairFrame main crosshair UI
      */
-    public void initialisePanel ( CrosshairFrame crosshairFrame ) {
+    public void initialisePanel( CrosshairFrame crosshairFrame ) {
         Map<String, Content> imageNameToContent = new HashMap<>();
         imageNameToContent.put( Crosshair.image, crosshairFrame.getCrosshair().getImageContent() );
 
@@ -80,7 +80,7 @@ public class ImagesPanel extends CrosshairPanel {
         panel.add(colorButton);
     }
 
-    private void addVisibilityButton ( JPanel panel, int[] buttonDimensions, String imageName ) {
+    private void addVisibilityButton( JPanel panel, int[] buttonDimensions, String imageName ) {
         JButton visbilityButton;
         visbilityButton = new JButton("V");
 

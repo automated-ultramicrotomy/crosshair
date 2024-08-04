@@ -92,7 +92,7 @@ public class OtherPanel extends CrosshairPanel {
         panel.add(visbilityButton);
     }
 
-    public void toggleVisiblity3DPoints () {
+    public void toggleVisiblity3DPoints() {
         if (threeDPointsVisible) {
             for ( Content imageContent: imageContents ) {
                 imageContent.showPointList(false);
@@ -185,13 +185,13 @@ public class OtherPanel extends CrosshairPanel {
         refreshGui();
     }
 
-    public void deactivateMicrotomeButtons () {
+    public void deactivateMicrotomeButtons() {
         for (JButton button : microtomeVisibilityButtons) {
             button.setEnabled(false);
         }
     }
 
-    public void activateMicrotomeButtons () {
+    public void activateMicrotomeButtons() {
         for (JButton button : microtomeVisibilityButtons) {
             button.setEnabled(true);
         }

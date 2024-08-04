@@ -7,13 +7,23 @@ import org.scijava.vecmath.Vector3d;
 
 import java.util.Map;
 
+/**
+ * Class to calculate the target offset / tilt for the block.
+ */
 public class TargetOffsetAndTilt {
-    public double targetOffset;
-    public double targetTilt;
+    public double targetOffset; // in degrees
+    public double targetTilt; // in degrees
 
     public TargetOffsetAndTilt() { }
 
-    public TargetOffsetAndTilt(Map<VertexPoint, RealPoint> assignedVertices, Vector3d blockNormal, Vector3d targetNormal ) {
+    /**
+     * Calculate target offset / tilt for given settings (stored in targetOffset and targetTilt)
+     * @param assignedVertices the block face's assigned vertices
+     * @param blockNormal block face normal
+     * @param targetNormal target plane normal
+     */
+    public TargetOffsetAndTilt(
+            Map<VertexPoint, RealPoint> assignedVertices, Vector3d blockNormal, Vector3d targetNormal ) {
 
         double[] topLeft = new double[3];
         double[] bottomLeft = new double[3];
@@ -26,8 +36,8 @@ public class TargetOffsetAndTilt {
         Vector3d bottomEdgeVector = new Vector3d();
         bottomEdgeVector.sub(new Vector3d(bottomRight), new Vector3d(bottomLeft));
 
-        // Vector pointing 'up' along left edge of block. Bear in mind may not be exactly perpendicular to the edge_vector
-        // due to not perfectly rectangular block shape. I correct for this later
+        // Vector pointing 'up' along left edge of block. Bear in mind may not be exactly perpendicular to the
+        // edge_vector due to not perfectly rectangular block shape. I correct for this later
         Vector3d upLeftSideVector = new Vector3d();
         upLeftSideVector.sub(new Vector3d(topLeft), new Vector3d(bottomLeft));
 
@@ -57,6 +67,5 @@ public class TargetOffsetAndTilt {
         Vector3d intersectionNormal = new Vector3d();
         intersectionNormal.cross(axisRotation, vertical);
         this.targetTilt = GeometryUtils.rotationPlaneToPlane(axisRotation, targetNormal, intersectionNormal);
-
     }
 }

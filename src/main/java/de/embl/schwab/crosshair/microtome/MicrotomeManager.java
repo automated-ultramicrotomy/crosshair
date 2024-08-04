@@ -10,6 +10,9 @@ import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 
+/**
+ * Main class to manage interaction with the ultramicrotome
+ */
 public class MicrotomeManager {
 
     private final PlaneManager planeManager;
@@ -26,7 +29,16 @@ public class MicrotomeManager {
 
     private String unit;
 
-    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource, String unit) {
+    /**
+     * Create a microtome manager
+     * @param planeManager plane manager
+     * @param universe universe of the 3D viewer
+     * @param imageContent image content displayed in 3D viewer
+     * @param bdvStackSource BigDataViewer stack source
+     * @param unit unit of distance e.g. micrometre
+     */
+    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe,
+                            Content imageContent, BdvStackSource bdvStackSource, String unit) {
 
         this.planeManager = planeManager;
         microtomeModeActive = false;
@@ -48,7 +60,7 @@ public class MicrotomeManager {
         this.microtomePanel = microtomePanel;
     }
 
-    public void setVertexAssignmentPanel (VertexAssignmentPanel vertexAssignmentPanel) {
+    public void setVertexAssignmentPanel(VertexAssignmentPanel vertexAssignmentPanel) {
         this.vertexAssignmentPanel = vertexAssignmentPanel;
     }
 
@@ -58,11 +70,16 @@ public class MicrotomeManager {
 
     public boolean isMicrotomeModeActive() { return microtomeModeActive; }
 
-    public boolean isValidSolution () {
+    public boolean isValidSolution() {
         return solutions.isValidSolution();
     }
 
-    public void enterMicrotomeMode (double initialKnifeAngle, double initialTiltAngle) {
+    /**
+     * Enter microtome mode with the given initial angles.
+     * @param initialKnifeAngle initial knife angle (degrees)
+     * @param initialTiltAngle initial tilt angle (degrees)
+     */
+    public void enterMicrotomeMode(double initialKnifeAngle, double initialTiltAngle) {
         if (!microtomeModeActive) {
             microtomeModeActive = true;
             microtome.setInitialKnifeAngle(initialKnifeAngle);
@@ -74,7 +91,7 @@ public class MicrotomeManager {
         }
     }
 
-    public void exitMicrotomeMode (){
+    public void exitMicrotomeMode(){
         if (microtomeModeActive) {
             microtomeModeActive = false;
             microtome.resetMicrotome();
@@ -83,7 +100,7 @@ public class MicrotomeManager {
         }
     }
 
-    public void setKnife (double angleDegrees) {
+    public void setKnife(double angleDegrees) {
         if (microtomeModeActive) {
             microtome.setKnife(angleDegrees);
             microtomePanel.setKnifeLabel( angleDegrees );
@@ -93,7 +110,7 @@ public class MicrotomeManager {
         }
     }
 
-    public void setTilt (double angleDegrees) {
+    public void setTilt(double angleDegrees) {
         if (microtomeModeActive) {
             microtome.setTilt(angleDegrees);
             microtomePanel.setTiltLabel( angleDegrees );
@@ -104,7 +121,7 @@ public class MicrotomeManager {
         }
     }
 
-    public void setRotation (double angleDegrees) {
+    public void setRotation(double angleDegrees) {
         if (microtomeModeActive) {
             microtome.setRotation(angleDegrees);
             microtomePanel.setRotationLabel(angleDegrees);
@@ -115,14 +132,13 @@ public class MicrotomeManager {
         }
     }
 
-
-
-    public void setSolution (double rotationDegrees) {
+    public void setSolution(double rotationDegrees) {
         if (microtomeModeActive) {
             microtomePanel.getRotationAngle().setCurrentValue(rotationDegrees);
             solutions.setSolutionFromRotation(rotationDegrees);
 
-            // Still set to value, even if not valid solution, so microtome moves / maxes out limit - makes for a smoother transition
+            // Still set to value, even if not valid solution, so microtome moves / maxes out limit -
+            // makes for a smoother transition
             microtomePanel.getTiltAngle().setCurrentValue( solutions.getSolutionTilt() );
             microtomePanel.getKnifeAngle().setCurrentValue( solutions.getSolutionKnife() );
 
@@ -165,6 +181,4 @@ public class MicrotomeManager {
             IJ.log("Cutting mode inactive");
         }
     }
-
-
 }

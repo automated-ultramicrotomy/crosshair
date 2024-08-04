@@ -113,35 +113,35 @@ public class MicrotomePanel extends CrosshairPanel {
         return rotationSolution;
     }
 
-    public void setFirstTouchLabel (String firstTouchVertex) {
+    public void setFirstTouchLabel(String firstTouchVertex) {
         firstTouchLabel.setText("First Touch:    " + firstTouchVertex);
     }
 
-    public void setDistanceToCutLabel (double distance) {
+    public void setDistanceToCutLabel(double distance) {
         distanceToCutLabel.setText("Distance to  cut:    " + Precision.round(distance, displayDecimalPlaces) +" " + unit + " ");
     }
 
-    public void setRotationLabel (double rotation) {
+    public void setRotationLabel(double rotation) {
         currentRotationLabel.setText("Rotation:    " + Precision.round(rotation, displayDecimalPlaces) +"\u00B0 ");
     }
 
-    public void setTiltLabel (double tilt) {
+    public void setTiltLabel(double tilt) {
         currentTiltLabel.setText("Tilt:    " + Precision.round(tilt, displayDecimalPlaces) +"\u00B0  ");
     }
 
-    public void setKnifeLabel (double knife) {
+    public void setKnifeLabel(double knife) {
         currentKnifeLabel.setText("Knife:    " + Precision.round(knife, displayDecimalPlaces) +"\u00B0  ");
     }
 
-    public void setKnifeTargetAngleLabel (double angle) {
+    public void setKnifeTargetAngleLabel(double angle) {
         currentAngleKnifeTargetLabel.setText("Knife-Target Angle:    " + Precision.round(angle, displayDecimalPlaces) +"\u00B0  ");
     }
 
-    public void setCuttingRange (double min, double max) {
+    public void setCuttingRange(double min, double max) {
         cuttingDepth.setRange(min, max);
     }
 
-    private void addMicrotomeSetupPanel (JPanel panel) {
+    private void addMicrotomeSetupPanel(JPanel panel) {
         JPanel initialMicrotomeSetup = new JPanel();
         initialMicrotomeSetup.setLayout(new BoxLayout(initialMicrotomeSetup, BoxLayout.PAGE_AXIS));
 
@@ -160,7 +160,7 @@ public class MicrotomePanel extends CrosshairPanel {
         panel.add(initialMicrotomeSetup);
     }
 
-    private void addMicrotomeControlsPanel (JPanel panel) {
+    private void addMicrotomeControlsPanel(JPanel panel) {
         JPanel microtomeControls = new JPanel();
         microtomeControls.setLayout(new BoxLayout(microtomeControls, BoxLayout.PAGE_AXIS));
 
@@ -210,7 +210,7 @@ public class MicrotomePanel extends CrosshairPanel {
         panel.add(microtomeControls);
     }
 
-    private void addCuttingControlsPanel (JPanel panel) {
+    private void addCuttingControlsPanel(JPanel panel) {
         cuttingControlsPanel = new JPanel();
         cuttingControlsPanel.setLayout(new BoxLayout(cuttingControlsPanel, BoxLayout.PAGE_AXIS));
         cuttingControlsPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -254,7 +254,7 @@ public class MicrotomePanel extends CrosshairPanel {
         panel.add(cuttingControlsPanel);
     }
 
-    private void addCurrentSettingsPanel (JPanel panel) {
+    private void addCurrentSettingsPanel(JPanel panel) {
         currentSettingsPanel = new JPanel();
         currentSettingsPanel.setLayout(new GridLayout(1, 2));
         currentSettingsPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -312,7 +312,7 @@ public class MicrotomePanel extends CrosshairPanel {
         return sliderValue;
     }
 
-    private SliderPanelDouble createSlider (JPanel panel, String sliderName, BoundedValueDouble sliderValue) {
+    private SliderPanelDouble createSlider(JPanel panel, String sliderName, BoundedValueDouble sliderValue) {
         double spinnerStepSize = 1;
         JPanel sliderPanel = new JPanel();
         sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.LINE_AXIS));
@@ -341,7 +341,7 @@ public class MicrotomePanel extends CrosshairPanel {
         this.repaint();
     }
 
-    private void enableSliders () {
+    private void enableSliders() {
         // using setEnabled doesn't work with these bdv.tools style sliders, so we just change the visibility
         for (String sliderName : sliderPanels.keySet()) {
             if (!sliderName.equals( cuttingDepthString )) {
@@ -350,14 +350,14 @@ public class MicrotomePanel extends CrosshairPanel {
         }
     }
 
-    private void disableSliders () {
+    private void disableSliders() {
         for (String sliderName : sliderPanels.keySet()) {
             sliderPanels.get(sliderName).setVisible(false);
         }
     }
 
     // disable sliders except for given name
-    private void disableSliders (String name) {
+    private void disableSliders(String name) {
         for (String sliderName : sliderPanels.keySet()) {
             if (!sliderName.equals(name)) {
                 sliderPanels.get(sliderName).setVisible(false);
@@ -395,7 +395,7 @@ public class MicrotomePanel extends CrosshairPanel {
         sliderPanelsDouble.get( solutionRotationString ).commitSpinnerEdits();
     }
 
-    private void enterMicrotomeMode () {
+    private void enterMicrotomeMode() {
         if ( checkAllCrosshairPlanesPointsDefined() ) {
             enterMicrotomeModeButton.setEnabled(false);
             exitMicrotomeModeButton.setEnabled(true);
@@ -450,7 +450,7 @@ public class MicrotomePanel extends CrosshairPanel {
         crosshairFrame.pack();
     }
 
-    private void enterCuttingMode () {
+    private void enterCuttingMode() {
         sliderPanels.get( cuttingDepthString ).setVisible(true);
         cuttingUnitsPanel.setVisible(true);
         // Disable all other microtome sliders
@@ -463,7 +463,7 @@ public class MicrotomePanel extends CrosshairPanel {
 
     }
 
-    private void exitCuttingMode () {
+    private void exitCuttingMode() {
         sliderPanels.get( cuttingDepthString ).setVisible(false);
         cuttingUnitsPanel.setVisible(false);
         enableSliders();
