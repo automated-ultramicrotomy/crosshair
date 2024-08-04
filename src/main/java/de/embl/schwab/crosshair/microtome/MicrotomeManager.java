@@ -5,7 +5,6 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
-import de.embl.schwab.crosshair.ui.swing.VertexAssignmentPanel;
 import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
@@ -15,9 +14,7 @@ import ij3d.Image3DUniverse;
  */
 public class MicrotomeManager {
 
-    private final PlaneManager planeManager;
     private MicrotomePanel microtomePanel;
-    private VertexAssignmentPanel vertexAssignmentPanel;
 
     private boolean microtomeModeActive;
     private boolean cuttingModeActive;
@@ -39,8 +36,6 @@ public class MicrotomeManager {
      */
     public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe,
                             Content imageContent, BdvStackSource bdvStackSource, String unit) {
-
-        this.planeManager = planeManager;
         microtomeModeActive = false;
         cuttingModeActive = false;
 
@@ -56,12 +51,10 @@ public class MicrotomeManager {
         return solutions.getSolution( unit );
     }
 
+    public Microtome getMicrotome() { return microtome; }
+
     public void setMicrotomePanel(MicrotomePanel microtomePanel) {
         this.microtomePanel = microtomePanel;
-    }
-
-    public void setVertexAssignmentPanel(VertexAssignmentPanel vertexAssignmentPanel) {
-        this.vertexAssignmentPanel = vertexAssignmentPanel;
     }
 
     public boolean isCuttingModeActive() {

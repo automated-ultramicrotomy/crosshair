@@ -338,6 +338,12 @@ public class Microtome {
     }
 
     /**
+     * Get names of the microtome components in the 3D viewer (e.g. "/arc.stl", "/holder_back.stl"...)
+     * @return Array of object names
+     */
+    String[] getMicrotomeObjectNames() { return microtomeObjectNames; }
+
+    /**
      * Set sample rotation angle and update orientation in 3D viewer
      * @param rotation sample rotation angle in degrees
      */

@@ -27,7 +27,6 @@ class CrosshairTest {
     void openCrosshairFromBdv() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         File xray = new File(classLoader.getResource("exampleBlock.xml").getFile());
-
         final LazySpimSource imageSource = new LazySpimSource("raw", xray.getAbsolutePath());
         crosshair = new Crosshair(imageSource);
 

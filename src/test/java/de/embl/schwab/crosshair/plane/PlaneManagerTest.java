@@ -1,9 +1,7 @@
 package de.embl.schwab.crosshair.plane;
 
-import bdv.util.Bdv;
-import bdv.util.BdvFunctions;
 import bdv.util.BdvStackSource;
-import de.embl.cba.bdv.utils.sources.LazySpimSource;
+import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
@@ -12,7 +10,6 @@ import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.ARGBType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,16 +18,13 @@ import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3d;
 import org.scijava.vecmath.Vector3d;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static de.embl.schwab.crosshair.TestHelpers.reset3DViewer;
-import static de.embl.schwab.crosshair.TestHelpers.resetBdv;
-import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
+import static de.embl.schwab.crosshair.TestHelpers.*;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.checkVectorsParallel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -40,7 +34,6 @@ class PlaneManagerTest {
 
     private PlaneManager planeManager;
     private Image3DUniverse universe;
-    private Bdv bdvHandle;
     private BdvStackSource bdvStackSource;
     private AffineTransform3D initialViewerTransform;
     private Content imageContent;
@@ -53,22 +46,14 @@ class PlaneManagerTest {
     void overallSetUp() {
         // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
         // more stable
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        File imageFile = new File(classLoader.getResource("exampleBlock.xml").getFile());
-        final LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
-
-        bdvStackSource = BdvFunctions.show(imageSource, 1);
-        bdvHandle = bdvStackSource.getBdvHandle();
-        initialViewerTransform = bdvHandle.getBdvHandle().getViewerPanel().state().getViewerTransform();
-
-        universe = new Image3DUniverse();
-        imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
-                Content.VOLUME, 0, 255 );
-        universe.show();
+        TestHelpers.BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
+        universe = bdvAnd3DViewer.universe;
+        bdvStackSource = bdvAnd3DViewer.bdvStackSource;
+        imageContent = bdvAnd3DViewer.imageContent;
+        initialViewerTransform = bdvAnd3DViewer.initialViewerTransform;
 
         min = new Point3d();
         imageContent.getMin(min);
-
         max = new Point3d();
         imageContent.getMax(max);
     }
@@ -84,7 +69,7 @@ class PlaneManagerTest {
 
     @AfterEach
     void tearDown() {
-        resetBdv(bdvHandle, initialViewerTransform);
+        resetBdv(bdvStackSource.getBdvHandle(), initialViewerTransform);
         reset3DViewer(universe, imageContent);
     }
 
@@ -92,7 +77,7 @@ class PlaneManagerTest {
     void overallTearDown() {
         universe.close();
         universe.cleanup();
-        bdvHandle.close();
+        bdvStackSource.getBdvHandle().close();
     }
 
     @Test

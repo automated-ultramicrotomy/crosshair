@@ -59,7 +59,6 @@ public class CrosshairFrame extends JFrame {
 
         MicrotomeManager microtomeManager = crosshair.getMicrotomeManager();
         microtomeManager.setMicrotomePanel(microtomePanel);
-        microtomeManager.setVertexAssignmentPanel(vertexAssignmentPanel);
 
         mainPane.add(imagesPanel);
         mainPane.add(planePanel);
