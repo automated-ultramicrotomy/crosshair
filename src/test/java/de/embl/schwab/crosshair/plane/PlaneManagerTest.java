@@ -408,12 +408,29 @@ class PlaneManagerTest {
     void removeNamedPlane() {
         // Add a test plane
         String name = "testPlane";
-        planeManager.addPlane(name);
+        planeManager.addPlane(name, normal, point);
         assertTrue(planeManager.getPlaneNames().contains(name));
+        assertTrue(universe.contains(name));
 
         // Remove plane
         planeManager.removeNamedPlane(name);
         assertFalse(planeManager.getPlaneNames().contains(name));
+        assertFalse(universe.contains(name));
+        assertNull(planeManager.getPlane(name));
+    }
+
+    @Test
+    void removeNamedBlockPlane() {
+        // Add a test block plane
+        String name = "testBlockPlane";
+        planeManager.addBlockPlane(name, normal, point);
+        assertTrue(planeManager.getPlaneNames().contains(name));
+        assertTrue(universe.contains(name));
+
+        // Remove plane
+        planeManager.removeNamedPlane(name);
+        assertFalse(planeManager.getPlaneNames().contains(name));
+        assertFalse(universe.contains(name));
         assertNull(planeManager.getPlane(name));
     }
 }
