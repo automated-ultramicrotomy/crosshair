@@ -13,9 +13,7 @@ import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,44 +28,53 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
+import static de.embl.schwab.crosshair.TestHelpers.reset3DViewer;
+import static de.embl.schwab.crosshair.TestHelpers.resetBdv;
+import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.checkVectorsParallel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PlaneManagerTest {
 
     private PlaneManager planeManager;
     private Image3DUniverse universe;
     private Bdv bdvHandle;
+    private BdvStackSource bdvStackSource;
+    private AffineTransform3D initialViewerTransform;
+    private Content imageContent;
     private Point3d min;
     private Point3d max;
     private Vector3d normal;
     private Vector3d point;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void overallSetUp() {
+        // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
+        // more stable
         ClassLoader classLoader = this.getClass().getClassLoader();
         File imageFile = new File(classLoader.getResource("exampleBlock.xml").getFile());
         final LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
 
-        BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
+        bdvStackSource = BdvFunctions.show(imageSource, 1);
         bdvHandle = bdvStackSource.getBdvHandle();
-        universe = new Image3DUniverse();
-        universe.show();
+        initialViewerTransform = bdvHandle.getBdvHandle().getViewerPanel().state().getViewerTransform();
 
-        // Set to arbitrary colour
-        ARGBType colour =  new ARGBType( ARGBType.rgba( 0, 0, 0, 0 ) );
-        Content imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
-                Content.VOLUME, colour, 0, 0, 255 );
-        imageContent.setColor(null);
+        universe = new Image3DUniverse();
+        imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
+                Content.VOLUME, 0, 255 );
+        universe.show();
 
         min = new Point3d();
         imageContent.getMin(min);
 
         max = new Point3d();
         imageContent.getMax(max);
+    }
 
+    @BeforeEach
+    void setUp() {
         // Example point and normal for testing
         point = new Vector3d(-188.47561306126704, 15.353222856645068, 621.5211240735744);
         normal = new Vector3d(0.20791169081775954, 0.08525118065879457, 0.9744254538021788);
@@ -77,7 +84,14 @@ class PlaneManagerTest {
 
     @AfterEach
     void tearDown() {
+        resetBdv(bdvHandle, initialViewerTransform);
+        reset3DViewer(universe, imageContent);
+    }
+
+    @AfterAll
+    void overallTearDown() {
         universe.close();
+        universe.cleanup();
         bdvHandle.close();
     }
 
@@ -361,10 +375,6 @@ class PlaneManagerTest {
         // from the block plane's vertex display
         List<PointOverlay2d> overlays = planeManager.getAll2dPointOverlays();
         assertEquals(overlays.size(), 3);
-    }
-
-    @Test
-    void getGlobalViewCentre() {
     }
 
     @Test

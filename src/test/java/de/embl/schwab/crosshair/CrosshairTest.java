@@ -16,8 +16,7 @@ class CrosshairTest {
 
     @AfterEach
     void tearDown() {
-        crosshair.getUniverse().close();
-        crosshair.getBdvHandle().close();
+        crosshair.close();
     }
 
     /**

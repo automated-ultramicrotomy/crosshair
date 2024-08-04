@@ -10,10 +10,8 @@ import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import net.imglib2.type.numeric.ARGBType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import net.imglib2.realtransform.AffineTransform3D;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -26,47 +24,63 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
+import static de.embl.schwab.crosshair.TestHelpers.reset3DViewer;
+import static de.embl.schwab.crosshair.TestHelpers.resetBdv;
+import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PlaneCreatorTest {
 
     private PlaneCreator planeCreator;
     private Image3DUniverse universe;
     private Bdv bdvHandle;
+    private BdvStackSource bdvStackSource;
+    private AffineTransform3D initialViewerTransform;
+    private Content imageContent;
+
     private Point3d min;
     private Point3d max;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void overallSetup() {
+        // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
+        // more stable
         ClassLoader classLoader = this.getClass().getClassLoader();
         File imageFile = new File(classLoader.getResource("exampleBlock.xml").getFile());
-        final LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
+        LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
 
-        BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
+        bdvStackSource = BdvFunctions.show(imageSource, 1);
         bdvHandle = bdvStackSource.getBdvHandle();
-        universe = new Image3DUniverse();
-        universe.show();
+        initialViewerTransform = bdvHandle.getBdvHandle().getViewerPanel().state().getViewerTransform();
 
-        // Set to arbitrary colour
-        ARGBType colour =  new ARGBType( ARGBType.rgba( 0, 0, 0, 0 ) );
-        Content imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
-                Content.VOLUME, colour, 0, 0, 255 );
-        imageContent.setColor(null);
+        universe = new Image3DUniverse();
+        imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
+                Content.VOLUME, 0, 255 );
+        universe.show();
 
         min = new Point3d();
         imageContent.getMin(min);
-
         max = new Point3d();
         imageContent.getMax(max);
+    }
 
+    @BeforeEach
+    void setUp() {
         planeCreator = new PlaneCreator(universe, imageContent, bdvStackSource);
     }
 
     @AfterEach
     void tearDown() {
+        resetBdv(bdvHandle, initialViewerTransform);
+        reset3DViewer(universe, imageContent);
+    }
+
+    @AfterAll
+    void overallTearDown() {
         universe.close();
+        universe.cleanup();
         bdvHandle.close();
     }
 

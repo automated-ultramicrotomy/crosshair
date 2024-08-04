@@ -12,7 +12,6 @@ import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionReader;
 import ij.IJ;
@@ -21,7 +20,6 @@ import ij3d.Image3DUniverse;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.registration.ViewTransform;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.ARGBType;
 import org.scijava.java3d.Transform3D;
 
 import java.io.File;
@@ -29,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
+import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 
 public class TargetingAccuracy {
@@ -66,11 +64,8 @@ public class TargetingAccuracy {
             Source[] sources = new Source[]{beforeSource, afterSource};
             String[] sourceNames = new String[]{TargetingAccuracy.before, TargetingAccuracy.after};
             for (int i = 0; i < sources.length; i++) {
-                // Set to arbitrary colour
-                ARGBType colour = new ARGBType(ARGBType.rgba(0, 0, 0, 0));
-                Content imageContent = addSourceToUniverse(universe, sources[i], 300 * 300 * 300, Content.VOLUME, colour, 0.7f, 0, 255);
-                // Reset colour to default for 3D viewer
-                imageContent.setColor(null);
+                Content imageContent = addSourceToUniverse(
+                        universe, sources[i], 300 * 300 * 300, Content.VOLUME, 0, 255);
                 imageContent.setLocked(true);
                 imageContent.showPointList(true);
                 universe.getPointListDialog().setVisible(false);

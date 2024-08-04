@@ -4,17 +4,17 @@ import bdv.util.*;
 import bdv.viewer.Source;
 import de.embl.schwab.crosshair.bdv.BdvBehaviours;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
-import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.ui.swing.CrosshairFrame;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.ARGBType;
 import ij.ImagePlus;
 
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
+import java.awt.event.WindowEvent;
+
+import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 
 // TODO - neaten up code structure, possibly clearer labelling of which coordinate system & units are being used
@@ -61,17 +61,11 @@ public class Crosshair {
 
 		BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
 		Image3DUniverse universe = new Image3DUniverse();
+		Content imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
+				Content.VOLUME, min, max );
 		universe.show();
 
 		String unit = imageSource.getVoxelDimensions().unit();
-
-		// Set to arbitrary colour
-		ARGBType colour =  new ARGBType( ARGBType.rgba( 0, 0, 0, 0 ) );
-		Content imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
-				Content.VOLUME, colour, transparency, min, max );
-		// Reset colour to default for 3D viewer
-		imageContent.setColor(null);
-
 		initialiseCrosshair(bdvStackSource, universe, imageContent, unit);
 	}
 
@@ -83,7 +77,6 @@ public class Crosshair {
 
 		Image3DUniverse universe = new Image3DUniverse();
 		Content imageContent = universe.addContent(imagePlus, Content.VOLUME);
-		imageContent.setTransparency(transparency);
 		universe.show();
 
 		final double pw = imagePlus.getCalibration().pixelWidth;
@@ -107,6 +100,7 @@ public class Crosshair {
 		this.universe = universe;
 		this.unit = unit;
 
+		imageContent.setTransparency(transparency);
 		imageContent.setLocked(true);
 		imageContent.showPointList(true);
 		universe.getPointListDialog().setVisible(false);
@@ -151,4 +145,21 @@ public class Crosshair {
 	}
 
 	public CrosshairFrame getCrosshairFrame() { return crosshairFrame; }
+
+	public void close() {
+		bdvHandle.close();
+		universe.close();
+		universe.cleanup();
+		crosshairFrame.dispatchEvent(
+				new WindowEvent(crosshairFrame, WindowEvent.WINDOW_CLOSING)
+		);
+
+		bdvHandle = null;
+		universe = null;
+		crosshairFrame = null;
+		imageContent = null;
+		planeManager = null;
+		microtomeManager = null;
+		unit = null;
+	}
 }
