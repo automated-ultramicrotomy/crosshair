@@ -21,7 +21,7 @@ import static java.lang.Math.*;
 /**
  * Class to handle Crosshair's cutting mode
  */
-class Cutting {
+public class Cutting {
 
     private Microtome microtome;
     private Content imageContent;
@@ -37,18 +37,18 @@ class Cutting {
      * Create a new Cutting object, to handle Crosshair's cutting mode
      * @param microtome microtome
      */
-    Cutting (Microtome microtome) {
+    public Cutting(Microtome microtome) {
         this.microtome = microtome;
         this.imageContent = microtome.getImageContent();
         this.planeManager = microtome.getPlaneManager();
         this.universe = microtome.getUniverse();
     }
 
-    double getCuttingDepthMin() {
+    public double getCuttingDepthMin() {
         return cuttingDepthMin;
     }
 
-    double getCuttingDepthMax() {
+    public double getCuttingDepthMax() {
         return cuttingDepthMax;
     }
 
@@ -56,7 +56,7 @@ class Cutting {
      * Make a plane to represent the cutting location in the 3D viewer. This is centred on the current knife centre
      * with width and height of 2*max distance in image (corner to corner)
      */
-    void initialiseCuttingPlane () {
+    public void initialiseCuttingPlane() {
         // Get maximum distance in image
         Point3d min = new Point3d();
         Point3d max = new Point3d();
@@ -162,7 +162,7 @@ class Cutting {
      * Update the position of the cutting plane in the 3D viewer and BigDataViewer window.
      * @param currentDepth the current cutting depth
      */
-    void updateCut(double currentDepth) {
+    public void updateCut(double currentDepth) {
 
         // Update position of cutting plane
         double depthMicrotomeCoords = currentDepth + NSZero.getY();

@@ -1,7 +1,6 @@
 package de.embl.schwab.crosshair.ui.swing;
 
 import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -56,9 +55,6 @@ public class CrosshairFrame extends JFrame {
         for (CrosshairPanel panel : allPanels) {
             panel.initialisePanel( this );
         }
-
-        MicrotomeManager microtomeManager = crosshair.getMicrotomeManager();
-        microtomeManager.setMicrotomePanel(microtomePanel);
 
         mainPane.add(imagesPanel);
         mainPane.add(planePanel);
