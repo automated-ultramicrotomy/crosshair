@@ -341,6 +341,7 @@ class MicrotomeSetup {
                 finalSetupTransform
         );
 
+        // Transform the image content + all planes
         Transform3D finalTransform = new Transform3D(finalSetupTransform);
         imageContent.setTransform(finalTransform);
         for (String name : planeNames) {
