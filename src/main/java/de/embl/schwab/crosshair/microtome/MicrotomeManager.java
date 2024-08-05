@@ -5,14 +5,17 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
-import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class to manage interaction with the ultramicrotome
  */
 public class MicrotomeManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(MicrotomeManager.class);
 
     private MicrotomePanel microtomePanel;
 
@@ -73,105 +76,114 @@ public class MicrotomeManager {
      * @param initialTiltAngle initial tilt angle (degrees)
      */
     public void enterMicrotomeMode(double initialKnifeAngle, double initialTiltAngle) {
-        if (!microtomeModeActive) {
-            microtomeModeActive = true;
-            microtome.setInitialKnifeAngle(initialKnifeAngle);
-            microtome.setInitialTiltAngle(initialTiltAngle);
-
-            microtomeSetup.initialiseMicrotome();
-        } else {
-            IJ.log("Microtome mode already active");
+        if (microtomeModeActive) {
+            logger.warn("Microtome mode already active");
+            return;
         }
+
+        microtomeModeActive = true;
+        microtome.setInitialKnifeAngle(initialKnifeAngle);
+        microtome.setInitialTiltAngle(initialTiltAngle);
+
+        microtomeSetup.initialiseMicrotome();
     }
 
     public void exitMicrotomeMode(){
-        if (microtomeModeActive) {
-            microtomeModeActive = false;
-            microtome.resetMicrotome();
-        } else {
-            IJ.log("Microtome mode already active");
+        if (!microtomeModeActive) {
+            logger.warn("Microtome mode already inactive");
+            return;
         }
+
+        microtomeModeActive = false;
+        microtome.resetMicrotome();
     }
 
     public void setKnife(double angleDegrees) {
-        if (microtomeModeActive) {
-            microtome.setKnife(angleDegrees);
-            microtomePanel.setKnifeLabel( angleDegrees );
-            microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
-        } else {
-            IJ.log("Microtome mode inactive");
+        if (!microtomeModeActive) {
+            logger.warn("Microtome mode inactive");
+            return;
         }
+
+        microtome.setKnife(angleDegrees);
+        microtomePanel.setKnifeLabel( angleDegrees );
+        microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
     }
 
     public void setTilt(double angleDegrees) {
-        if (microtomeModeActive) {
-            microtome.setTilt(angleDegrees);
-            microtomePanel.setTiltLabel( angleDegrees );
-            microtomePanel.setRotationLabel( microtome.getRotation() );
-            microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
-        } else {
-            IJ.log("Microtome mode inactive");
+        if (!microtomeModeActive) {
+            logger.warn("Microtome mode inactive");
+            return;
         }
+
+        microtome.setTilt(angleDegrees);
+        microtomePanel.setTiltLabel( angleDegrees );
+        microtomePanel.setRotationLabel( microtome.getRotation() );
+        microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
     }
 
     public void setRotation(double angleDegrees) {
-        if (microtomeModeActive) {
-            microtome.setRotation(angleDegrees);
-            microtomePanel.setRotationLabel(angleDegrees);
-            microtomePanel.setTiltLabel( microtome.getTilt() );
-            microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
-        } else {
-            IJ.log("Microtome mode inactive");
+        if (!microtomeModeActive) {
+            logger.warn("Microtome mode inactive");
+            return;
         }
+
+        microtome.setRotation(angleDegrees);
+        microtomePanel.setRotationLabel(angleDegrees);
+        microtomePanel.setTiltLabel( microtome.getTilt() );
+        microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
     }
 
     public void setSolution(double rotationDegrees) {
-        if (microtomeModeActive) {
-            microtomePanel.getRotationAngle().setCurrentValue(rotationDegrees);
-            solutions.setSolutionFromRotation(rotationDegrees);
+        if (!microtomeModeActive) {
+            logger.warn("Microtome mode inactive");
+            return;
+        }
 
-            // Still set to value, even if not valid solution, so microtome moves / maxes out limit -
-            // makes for a smoother transition
-            microtomePanel.getTiltAngle().setCurrentValue( solutions.getSolutionTilt() );
-            microtomePanel.getKnifeAngle().setCurrentValue( solutions.getSolutionKnife() );
+        microtomePanel.getRotationAngle().setCurrentValue(rotationDegrees);
+        solutions.setSolutionFromRotation(rotationDegrees);
 
-            if ( !solutions.isValidSolution() ) {
-                // Display first touch as nothing, and distance as 0
-                microtomePanel.setFirstTouchLabel("");
-                microtomePanel.setDistanceToCutLabel(0);
-            } else {
-                microtomePanel.setFirstTouchLabel( solutions.getSolutionFirstTouchVertexPoint().toString() );
-                microtomePanel.setDistanceToCutLabel( solutions.getDistanceToCut() );
-            }
+        // Still set to value, even if not valid solution, so microtome moves / maxes out limit -
+        // makes for a smoother transition
+        microtomePanel.getTiltAngle().setCurrentValue( solutions.getSolutionTilt() );
+        microtomePanel.getKnifeAngle().setCurrentValue( solutions.getSolutionKnife() );
+
+        if ( !solutions.isValidSolution() ) {
+            // Display first touch as nothing, and distance as 0
+            microtomePanel.setFirstTouchLabel("");
+            microtomePanel.setDistanceToCutLabel(0);
         } else {
-            IJ.log("Microtome mode inactive");
+            microtomePanel.setFirstTouchLabel( solutions.getSolutionFirstTouchVertexPoint().toString() );
+            microtomePanel.setDistanceToCutLabel( solutions.getDistanceToCut() );
         }
     }
 
-    public void enterCuttingMode () {
-        if (microtomeModeActive & !cuttingModeActive) {
-            cutting.initialiseCuttingPlane();
-            cuttingModeActive = true;
-            microtomePanel.setCuttingRange( cutting.getCuttingDepthMin(), cutting.getCuttingDepthMax() );
-        } else {
-            IJ.log("Microtome mode inactive, or cutting mode already active");
+    public void enterCuttingMode() {
+        if (!microtomeModeActive | cuttingModeActive) {
+            logger.warn("Microtome mode inactive, or cutting mode already active");
+            return;
         }
+
+        cutting.initialiseCuttingPlane();
+        cuttingModeActive = true;
+        microtomePanel.setCuttingRange( cutting.getCuttingDepthMin(), cutting.getCuttingDepthMax() );
     }
 
-    public void setCuttingDepth (double cuttingDepth) {
-        if (cuttingModeActive) {
-            cutting.updateCut(cuttingDepth);
-        } else {
-            IJ.log("Cutting mode inactive");
+    public void setCuttingDepth(double cuttingDepth) {
+        if (!cuttingModeActive) {
+            logger.warn("Cutting mode inactive");
+            return;
         }
+
+        cutting.updateCut(cuttingDepth);
     }
 
     public void exitCuttingMode() {
-        if (cuttingModeActive) {
-            cuttingModeActive = false;
-            cutting.removeCuttingPlane();
-        } else {
-            IJ.log("Cutting mode inactive");
+        if (!cuttingModeActive) {
+            logger.warn("Cutting mode inactive");
+            return;
         }
+
+        cuttingModeActive = false;
+        cutting.removeCuttingPlane();
     }
 }

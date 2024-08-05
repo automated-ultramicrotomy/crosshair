@@ -80,7 +80,8 @@ public class Microtome {
      * @param bdvStackSource BigDataViewer stack source
      * @param imageContent image content displayed in 3D viewer
      */
-    public Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
+    public Microtome(Image3DUniverse universe, PlaneManager planeManager,
+                     BdvStackSource bdvStackSource, Content imageContent) {
         this.universe = universe;
         this.planeManager = planeManager;
         this.bdvStackSource = bdvStackSource;
