@@ -1,11 +1,16 @@
 package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.RealPoint;
+
+import java.util.Map;
 
 /**
  * Main class to manage interaction with the ultramicrotome
@@ -19,6 +24,7 @@ public class MicrotomeManager {
     private MicrotomeSetup microtomeSetup;
     private SolutionsCalculator solutions;
     private Cutting cutting;
+    private PlaneManager planeManager;
 
     private String unit;
 
@@ -36,6 +42,7 @@ public class MicrotomeManager {
         cuttingModeActive = false;
 
         this.microtome = new Microtome(universe, planeManager, bdvStackSource, imageContent);
+        this.planeManager = planeManager;
         this.microtomeSetup = new MicrotomeSetup(microtome);
         this.solutions = new SolutionsCalculator(microtome);
         this.cutting = new Cutting(microtome);
@@ -83,11 +90,48 @@ public class MicrotomeManager {
             throw new IncorrectMicrotomeConfiguration("Microtome mode already active");
         }
 
+        if (!allCrosshairPlanesPointsDefined()) {
+            throw new IncorrectMicrotomeConfiguration(
+                    "Some of: target plane, block plane, top left, top right, " +
+                            "bottom left, bottom right aren't defined.");
+        }
+
         microtomeModeActive = true;
         microtome.setInitialKnifeAngle(initialKnifeAngle);
         microtome.setInitialTiltAngle(initialTiltAngle);
 
         microtomeSetup.initialiseMicrotome();
+    }
+
+    /**
+     * Checks that all the required planes (target + block) and points (the 4 assigned block face vertices) are
+     * defined. This means microtome mode could be enabled.
+     * @return whether all the required planes / points exist
+     */
+    public boolean allCrosshairPlanesPointsDefined() {
+        boolean targetExists = planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.target );
+        boolean blockExists = planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.block );
+
+        boolean allVerticesExist = false;
+        if ( blockExists ) {
+            allVerticesExist = true;
+            Map<VertexPoint, RealPoint> assignedVertices =
+                    planeManager.getVertexDisplay(Crosshair.block ).getAssignedVertices();
+
+            for ( VertexPoint vertexPoint: VertexPoint.values() ) {
+                if ( !assignedVertices.containsKey( vertexPoint ) ) {
+                    allVerticesExist = false;
+                    break;
+                }
+            }
+        }
+
+        if (targetExists & blockExists & allVerticesExist) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public void exitMicrotomeMode() throws IncorrectMicrotomeConfiguration {
