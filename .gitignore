@@ -16,3 +16,4 @@ target
 *.orig
 # For Fiji #
 *.jar
+*.log

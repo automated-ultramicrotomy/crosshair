@@ -96,10 +96,10 @@ class MicrotomeManagerTest {
             Content content = universe.getContent(name);
 
             content.getLocalRotate().getTransform(transform);
-            assertEquals(transform, expectedRotation);
+            assertEquals(transform, expectedRotation, "rotation for " + name + " doesn't match");
 
             content.getLocalTranslate().getTransform(transform);
-            assertEquals(transform, expectedTranslation);
+            assertEquals(transform, expectedTranslation, "translation for " + name + " doesn't match");
         }
     }
 
@@ -268,8 +268,42 @@ class MicrotomeManagerTest {
         assertEquals(microtome.getAngleKnifeTarget(), expectedAngleKnifeTarget);
     }
 
-    @Test
-    void setRotation() {
+    @ParameterizedTest
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#rotationAngleProvider")
+    void setRotation(double rotationAngle, double expectedAngleKnifeTarget,
+                     Transform3D holderBackExpectedTranslation, Transform3D holderBackExpectedRotation,
+                     Transform3D holderFrontExpectedTranslation, Transform3D holderFrontExpectedRotation,
+                     Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+
+        double initialKnifeAngle = 10;
+        double initialTiltAngle = 10;
+        Microtome microtome = microtomeManager.getMicrotome();
+        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+
+        microtomeManager.setRotation(rotationAngle);
+        assertEquals(microtome.getRotation(), rotationAngle);
+
+        Transform3D transform = new Transform3D();
+
+        // Check transforms of holder and image 3D models were updated correctly
+        assertionsForContentTransforms(
+                Collections.singletonList("/holder_back.stl"),
+                holderBackExpectedTranslation,
+                holderBackExpectedRotation
+        );
+        assertionsForContentTransforms(
+                Collections.singletonList("/holder_front.stl"),
+                holderFrontExpectedTranslation,
+                holderFrontExpectedRotation
+        );
+        assertionsForContentTransforms(
+                Collections.singletonList(imageContent.getName()),
+                imageExpectedTranslation,
+                imageExpectedRotation
+        );
+
+        // check angle between knife and target was updated correctly
+        assertEquals(microtome.getAngleKnifeTarget(), expectedAngleKnifeTarget);
     }
 
     @Test
