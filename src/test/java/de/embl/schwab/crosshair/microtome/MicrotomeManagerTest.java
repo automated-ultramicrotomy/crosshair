@@ -1,24 +1,37 @@
 package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexDisplay;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.Vector3d;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static de.embl.schwab.crosshair.TestHelpers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MicrotomeManagerTest {
@@ -60,6 +73,7 @@ class MicrotomeManagerTest {
         }
 
         microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, "microns");
+
     }
 
     @AfterEach
@@ -107,7 +121,7 @@ class MicrotomeManagerTest {
     }
 
     @Test
-    void enterExitMicrotomeMode() {
+    void enterExitMicrotomeMode() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
         double initialKnifeAngle = 10;
         double initialTiltAngle = 10;
         Microtome microtome = microtomeManager.getMicrotome();
@@ -146,8 +160,115 @@ class MicrotomeManagerTest {
         assertionsForContentTransforms(true);
     }
 
-    @Test
-    void setKnife() {
+    /**
+     * Check can't enter microtome mode without target or block plane initialised
+     */
+    @ParameterizedTest
+    @ValueSource(strings = { Crosshair.target, Crosshair.block })
+    void enterMicrotomeModeWithInvalidPlanes(String missingPlane) {
+        double initialKnifeAngle = 10;
+        double initialTiltAngle = 10;
+
+        // remove the target plane
+        planeManager.removeNamedPlane(missingPlane);
+        assertFalse(planeManager.getPlaneNames().contains(missingPlane));
+
+        // Check microtome mode can't be entered + throws error
+        MicrotomeManager.IncorrectMicrotomeConfiguration thrown = assertThrows(
+                MicrotomeManager.IncorrectMicrotomeConfiguration.class,
+                () -> microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle)
+        );
+        assertFalse(microtomeManager.isMicrotomeModeActive());
+    }
+
+    /**
+     * Check can't enter microtome mode without all block face vertices initialised
+     */
+    @ParameterizedTest
+    @EnumSource(VertexPoint.class)
+    void enterMicrotomeModeWithInvalidVertices(VertexPoint missingVertex) {
+        double initialKnifeAngle = 10;
+        double initialTiltAngle = 10;
+
+        // remove the specified vertex
+        VertexDisplay vertexDisplay = planeManager.getVertexDisplay(Crosshair.block);
+        vertexDisplay.getAssignedVertices().remove(missingVertex);
+        assertFalse(vertexDisplay.getAssignedVertices().containsKey(missingVertex));
+
+        // Check microtome mode can't be entered + throws error
+        MicrotomeManager.IncorrectMicrotomeConfiguration thrown = assertThrows(
+                MicrotomeManager.IncorrectMicrotomeConfiguration.class,
+                () -> microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle)
+        );
+        assertFalse(microtomeManager.isMicrotomeModeActive());
+    }
+
+    /**
+     * Different knife angles to test...
+     * @return stream of knife angle, expected angle between knife and target, expected knife model translation
+     * and expected knife model rotation. All expected values were read from the debugger after setting the given
+     * knife angle.
+     */
+    static Stream<Arguments> knifeAngleProvider() {
+        return Stream.of(
+                arguments(
+                        -10,
+                        28.902061339214328,
+                        new Transform3D(new double[]{
+                                1.0, 0.0, 0.0, -3.7375830004293675E-6,
+                                0.0, 1.0, 0.0, -1824.0312175965944,
+                                0.0, 0.0, 1.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        }),
+                        new Transform3D(new double[]{
+                                355.02252197265625, 62.60005187988281, 0.0, 125.20010375976562,
+                                -62.60005187988281, 355.02252197265625, 0.0, 708.0450439453125,
+                                0.0, 0.0, 360.49932861328125, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        })
+                ),
+                arguments(
+                        5,
+                        15.796863886874052,
+                        new Transform3D(new double[]{
+                                1.0, 0.0, 0.0, 3.309421288122394E-7,
+                                0.0, 1.0, 0.0, -1824.0312066123636,
+                                0.0, 0.0, 1.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        }),
+                        new Transform3D(new double[]{
+                                359.12750244140625, -31.419586181640625, 0.0, -62.83917236328125,
+                                31.419586181640625, 359.12750244140625, 0.0, 716.2550048828125,
+                                0.0, 0.0, 360.49932861328125, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        })
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("knifeAngleProvider")
+    void setKnife(double knifeAngle, double expectedAngleKnifeTarget, Transform3D expectedTranslation,
+                  Transform3D expectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+        double initialKnifeAngle = 10;
+        double initialTiltAngle = 10;
+        Microtome microtome = microtomeManager.getMicrotome();
+        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+
+        microtomeManager.setKnife(knifeAngle);
+        assertEquals(microtome.getKnife(), knifeAngle);
+
+        // Check transform of 3D model was updated correctly
+        Transform3D transform = new Transform3D();
+        Content knifeModel = universe.getContent("/knife.stl");
+
+        knifeModel.getLocalTranslate(transform);
+        assertEquals(transform, expectedTranslation);
+        knifeModel.getLocalRotate(transform);
+        assertEquals(transform, expectedRotation);
+
+        // check angle between knife and target was updated correctly
+        assertEquals(microtome.getAngleKnifeTarget(), expectedAngleKnifeTarget);
     }
 
     @Test
