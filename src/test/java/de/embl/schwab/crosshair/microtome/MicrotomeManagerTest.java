@@ -10,6 +10,7 @@ import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.points.VertexPoint;
+import de.embl.schwab.crosshair.solution.SolutionsCalculator;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -306,8 +307,27 @@ class MicrotomeManagerTest {
         assertEquals(microtome.getAngleKnifeTarget(), expectedAngleKnifeTarget);
     }
 
-    @Test
-    void setSolution() {
+    @ParameterizedTest
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#solutionAngleProvider")
+    void setSolution(double solutionAngle, double expectedTiltAngle, double expectedKnifeAngle,
+                     double expectedDistanceToCut, VertexPoint expectedFirstTouch, boolean expectedValidSolution
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+
+        double initialKnifeAngle = 10;
+        double initialTiltAngle = 10;
+        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+
+        microtomeManager.setSolution(solutionAngle);
+        SolutionsCalculator solutions = microtomeManager.getSolutions();
+        assertEquals(microtomeManager.getCurrentSolution().getRotation(), solutionAngle);
+        assertEquals(solutions.getSolutionRotation(), solutionAngle);
+
+        // Check other solution values are as expected
+        assertEquals(solutions.getSolutionTilt(), expectedTiltAngle);
+        assertEquals(solutions.getSolutionKnife(), expectedKnifeAngle);
+        assertEquals(solutions.getDistanceToCut(), expectedDistanceToCut);
+        assertEquals(solutions.getSolutionFirstTouchVertexPoint(), expectedFirstTouch);
+        assertEquals(solutions.isValidSolution(), expectedValidSolution);
     }
 
     @Test

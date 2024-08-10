@@ -1,5 +1,6 @@
 package de.embl.schwab.crosshair.microtome;
 
+import de.embl.schwab.crosshair.points.VertexPoint;
 import org.junit.jupiter.params.provider.Arguments;
 import org.scijava.java3d.Transform3D;
 
@@ -287,6 +288,41 @@ public class MicrotomeManagerTestProviders {
                                 0.28259456157684326, 0.9548760652542114, 0.09138929098844528, -586.6896389627566,
                                 0.0, 0.0, 0.0, 1.0
                         })
+                )
+        );
+    }
+
+    /**
+     * Different solution angles to test...
+     * @return stream of solution angle, expected tilt angle, expected knife angle, expected distance to cut,
+     * expected first touch point, expected valid solution
+     * All expected values were read from the debugger after setting the given solution angle.
+     */
+    static Stream<Arguments> solutionAngleProvider() {
+        return Stream.of(
+                arguments(
+                        50,
+                        -13.475239909290694,
+                        10.408956799771714,
+                        207.0893731985671,
+                        VertexPoint.BottomRight,
+                        true
+                ),
+                arguments(
+                        -100,
+                        16.802561557999795,
+                        -2.399800365591036,
+                        203.86014312134841,
+                        VertexPoint.BottomRight,
+                        true
+                ),
+                arguments(
+                        3,
+                        -1.4476575703788224,
+                        16.90812022706116,
+                        212.88381464028384,
+                        VertexPoint.BottomRight,
+                        true
                 )
         );
     }
