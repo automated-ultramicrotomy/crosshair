@@ -12,26 +12,19 @@ import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.Vector3d;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static de.embl.schwab.crosshair.TestHelpers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MicrotomeManagerTest {
@@ -90,52 +83,63 @@ class MicrotomeManagerTest {
     }
 
     /**
-     * Check if image content and planes (in 3D viewer) have identity transform
-     * @param shouldBeIdentity Whether the transform should be identity or not
+     * Check named contents (in 3D viewer) have correct transforms.
+     * @param expectedTranslation expected translation transform
+     * @param expectedRotation expected rotation transform
      */
-    private void assertionsForContentTransforms(boolean shouldBeIdentity) {
-        Transform3D identityTransform = new Transform3D();
-        Transform3D transform = new Transform3D();
+    private void assertionsForContentTransforms(
+            Collection<String> contentNames, Transform3D expectedTranslation, Transform3D expectedRotation) {
 
-        Set<String> contentNames = new HashSet<>(planeManager.getPlaneNames());
-        contentNames.add(imageContent.getName());
+        Transform3D transform = new Transform3D();
 
         for (String name: contentNames) {
             Content content = universe.getContent(name);
 
             content.getLocalRotate().getTransform(transform);
-            if (shouldBeIdentity) {
-                assertEquals(transform, identityTransform);
-            } else {
-                assertNotEquals(transform, identityTransform);
-            }
+            assertEquals(transform, expectedRotation);
 
             content.getLocalTranslate().getTransform(transform);
-            if (shouldBeIdentity) {
-                assertEquals(transform, identityTransform);
-            } else {
-                assertNotEquals(transform, identityTransform);
-            }
-
+            assertEquals(transform, expectedTranslation);
         }
     }
 
-    @Test
-    void enterExitMicrotomeMode() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
+    @ParameterizedTest
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#initialAngleProvider")
+    void enterExitMicrotomeMode(double initialKnifeAngle, double initialTiltAngle,
+                                Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation,
+                                Transform3D targetExpectedTranslation, Transform3D targetExpectedRotation,
+                                Transform3D blockExpectedTranslation, Transform3D blockExpectedRotation
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+
         Microtome microtome = microtomeManager.getMicrotome();
 
         // Check image content (block) + planes start in neutral position
-        assertionsForContentTransforms(true);
+        Transform3D identityTransform = new Transform3D();
+        Set<String> contentNames = new HashSet<>(planeManager.getPlaneNames());
+        contentNames.add(imageContent.getName());
+        assertionsForContentTransforms(contentNames, identityTransform, identityTransform);
 
         // Check microtome mode becomes active
         assertFalse(microtomeManager.isMicrotomeModeActive());
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
         assertTrue(microtomeManager.isMicrotomeModeActive());
 
-        // Check image content (block) + plane transforms have been changed from identity
-        assertionsForContentTransforms(false);
+        // Check image content (block) + plane transforms have been changed correctly.
+        assertionsForContentTransforms(
+                Collections.singletonList(imageContent.getName()),
+                imageExpectedTranslation,
+                imageExpectedRotation
+        );
+        assertionsForContentTransforms(
+                Collections.singletonList(Crosshair.target),
+                targetExpectedTranslation,
+                targetExpectedRotation
+        );
+        assertionsForContentTransforms(
+                Collections.singletonList(Crosshair.block),
+                blockExpectedTranslation,
+                blockExpectedRotation
+        );
 
         // Check initial angles properly set
         assertEquals(microtome.getInitialKnifeAngle(), initialKnifeAngle);
@@ -157,7 +161,7 @@ class MicrotomeManagerTest {
         }
 
         // Check image content (block) + plane transforms are reset
-        assertionsForContentTransforms(true);
+        assertionsForContentTransforms(contentNames, identityTransform, identityTransform);
     }
 
     /**
@@ -169,7 +173,7 @@ class MicrotomeManagerTest {
         double initialKnifeAngle = 10;
         double initialTiltAngle = 10;
 
-        // remove the target plane
+        // remove the named plane
         planeManager.removeNamedPlane(missingPlane);
         assertFalse(planeManager.getPlaneNames().contains(missingPlane));
 
@@ -203,51 +207,9 @@ class MicrotomeManagerTest {
         assertFalse(microtomeManager.isMicrotomeModeActive());
     }
 
-    /**
-     * Different knife angles to test...
-     * @return stream of knife angle, expected angle between knife and target, expected knife model translation
-     * and expected knife model rotation. All expected values were read from the debugger after setting the given
-     * knife angle.
-     */
-    static Stream<Arguments> knifeAngleProvider() {
-        return Stream.of(
-                arguments(
-                        -10,
-                        28.902061339214328,
-                        new Transform3D(new double[]{
-                                1.0, 0.0, 0.0, -3.7375830004293675E-6,
-                                0.0, 1.0, 0.0, -1824.0312175965944,
-                                0.0, 0.0, 1.0, 0.0,
-                                0.0, 0.0, 0.0, 1.0
-                        }),
-                        new Transform3D(new double[]{
-                                355.02252197265625, 62.60005187988281, 0.0, 125.20010375976562,
-                                -62.60005187988281, 355.02252197265625, 0.0, 708.0450439453125,
-                                0.0, 0.0, 360.49932861328125, 0.0,
-                                0.0, 0.0, 0.0, 1.0
-                        })
-                ),
-                arguments(
-                        5,
-                        15.796863886874052,
-                        new Transform3D(new double[]{
-                                1.0, 0.0, 0.0, 3.309421288122394E-7,
-                                0.0, 1.0, 0.0, -1824.0312066123636,
-                                0.0, 0.0, 1.0, 0.0,
-                                0.0, 0.0, 0.0, 1.0
-                        }),
-                        new Transform3D(new double[]{
-                                359.12750244140625, -31.419586181640625, 0.0, -62.83917236328125,
-                                31.419586181640625, 359.12750244140625, 0.0, 716.2550048828125,
-                                0.0, 0.0, 360.49932861328125, 0.0,
-                                0.0, 0.0, 0.0, 1.0
-                        })
-                )
-        );
-    }
 
     @ParameterizedTest
-    @MethodSource("knifeAngleProvider")
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#knifeAngleProvider")
     void setKnife(double knifeAngle, double expectedAngleKnifeTarget, Transform3D expectedTranslation,
                   Transform3D expectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
         double initialKnifeAngle = 10;
@@ -258,21 +220,52 @@ class MicrotomeManagerTest {
         microtomeManager.setKnife(knifeAngle);
         assertEquals(microtome.getKnife(), knifeAngle);
 
-        // Check transform of 3D model was updated correctly
-        Transform3D transform = new Transform3D();
-        Content knifeModel = universe.getContent("/knife.stl");
-
-        knifeModel.getLocalTranslate(transform);
-        assertEquals(transform, expectedTranslation);
-        knifeModel.getLocalRotate(transform);
-        assertEquals(transform, expectedRotation);
+        // Check transform of knife 3D model was updated correctly
+        assertionsForContentTransforms(
+                Collections.singletonList("/knife.stl"),
+                expectedTranslation,
+                expectedRotation
+        );
 
         // check angle between knife and target was updated correctly
         assertEquals(microtome.getAngleKnifeTarget(), expectedAngleKnifeTarget);
     }
 
-    @Test
-    void setTilt() {
+    @ParameterizedTest
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#tiltAngleProvider")
+    void setTilt(double tiltAngle, double expectedAngleKnifeTarget,
+                 Transform3D holderBackExpectedTranslation, Transform3D holderBackExpectedRotation,
+                 Transform3D holderFrontExpectedTranslation, Transform3D holderFrontExpectedRotation,
+                 Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+
+        double initialKnifeAngle = 10;
+        double initialTiltAngle = 10;
+        Microtome microtome = microtomeManager.getMicrotome();
+        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+
+        microtomeManager.setTilt(tiltAngle);
+        assertEquals(microtome.getTilt(), tiltAngle);
+
+        // Check transforms of holder and image 3D models were updated correctly
+        assertionsForContentTransforms(
+                Collections.singletonList("/holder_back.stl"),
+                holderBackExpectedTranslation,
+                holderBackExpectedRotation
+        );
+        assertionsForContentTransforms(
+                Collections.singletonList("/holder_front.stl"),
+                holderFrontExpectedTranslation,
+                holderFrontExpectedRotation
+        );
+        assertionsForContentTransforms(
+                Collections.singletonList(imageContent.getName()),
+                imageExpectedTranslation,
+                imageExpectedRotation
+        );
+
+        // check angle between knife and target was updated correctly
+        assertEquals(microtome.getAngleKnifeTarget(), expectedAngleKnifeTarget);
     }
 
     @Test

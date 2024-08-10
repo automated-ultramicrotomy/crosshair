@@ -411,7 +411,8 @@ public class Microtome {
         universe.getContent("/holder_front.stl").setTransform(new Transform3D(holderFrontTransform));
 
         // transform for block, global initial rotate & translate, then global tilt and global rotate
-        Matrix4d blockTiltTransform = GeometryUtils.makeMatrix(tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
+        Matrix4d blockTiltTransform = GeometryUtils.makeMatrix(
+                tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
         Matrix4d blockTransform = new Matrix4d(rotationTransform);
         blockTransform.mul(blockTiltTransform);
         blockTransform.mul(initBlockTransform);
