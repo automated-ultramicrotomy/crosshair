@@ -2,6 +2,9 @@ package de.embl.schwab.crosshair.settings;
 
 import org.scijava.vecmath.Color3f;
 
+/**
+ * Class to hold all settings related to the image content (displayed in 3D viewer) e.g. display settings, name...
+ */
 public class ImageContentSettings {
     public String name;
     public float imageTransparency;

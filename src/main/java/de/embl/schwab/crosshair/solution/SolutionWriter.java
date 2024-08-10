@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Class to write Crosshair solutions to .json files.
+ */
 public class SolutionWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(SolutionWriter.class);
@@ -18,11 +21,19 @@ public class SolutionWriter {
     private Solution solution;
     private String filePath;
 
+    /**
+     * Create a solution writer
+     * @param solution solution to write
+     * @param filePath filepath of json file
+     */
     public SolutionWriter( Solution solution, String filePath ) {
         this.solution = solution;
         this.filePath = filePath;
     }
 
+    /**
+     * Write solution to .json file
+     */
     public void writeSolution() {
         try {
             FileWriter fileWriter = new FileWriter(filePath);

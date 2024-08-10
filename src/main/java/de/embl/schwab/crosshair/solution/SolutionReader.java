@@ -11,12 +11,20 @@ import org.slf4j.LoggerFactory;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Class to read a Crosshair solution from a json file.
+ */
 public class SolutionReader {
 
     private static final Logger logger = LoggerFactory.getLogger(SolutionReader.class);
 
     public SolutionReader() {}
 
+    /**
+     * Read a Crosshair solution from a json file
+     * @param filePath path to json file
+     * @return solution
+     */
     public Solution readSolution( String filePath ) {
         Gson gson = new GsonBuilder().
                 registerTypeAdapter( new TypeToken<VertexPoint>(){}.getType(), new VertexPointAdapter() ).create();

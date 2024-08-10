@@ -7,6 +7,9 @@ import org.scijava.vecmath.Vector3d;
 
 import java.util.ArrayList;
 
+/**
+ * Class to hold all settings related to planes (e.g. display settings, normal, point...)
+ */
 public class PlaneSettings {
     public String name;
 

@@ -20,12 +20,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Class to read plane / image settings from .json files
+ */
 public class SettingsReader {
 
     private static final Logger logger = LoggerFactory.getLogger(SettingsReader.class);
 
     public SettingsReader() {}
 
+    /**
+     * Read settings from .json file
+     * @param filePath Path of .json file
+     * @return settings
+     */
     public Settings readSettings(String filePath ) {
         Gson gson = new GsonBuilder().
                 registerTypeAdapter( new TypeToken<Map<String, PlaneSettings>>(){}.getType(), new PlaneSettingsMapDeserializer()).
@@ -53,6 +61,15 @@ public class SettingsReader {
         }
     }
 
+    /**
+     * Set state of microtome manager, plane manager, displayed objects in 3D viewer etc from settings
+     * @param settings settings to load
+     * @param microtomeManager microtome manager
+     * @param microtomePanel microtome panel
+     * @param planeManager plane manaager
+     * @param imageNameToContent map of image name to its displayed content in the 3D viewer
+     * @param otherPanel other panel
+     */
     public void loadSettings( Settings settings, MicrotomeManager microtomeManager, MicrotomePanel microtomePanel,
                               PlaneManager planeManager, Map<String, Content> imageNameToContent, OtherPanel otherPanel ) {
         if ( microtomeManager.isMicrotomeModeActive() ) {
@@ -62,38 +79,43 @@ public class SettingsReader {
         loadSettings( settings, planeManager, imageNameToContent, otherPanel );
     }
 
+    /**
+     * Set state of microtome manager, plane manager, displayed objects in 3D viewer etc. from settings
+     * @param settings settings to load
+     * @param planeManager plane manager
+     * @param imageNameToContent map of image name to its displayed content in the 3D viewer
+     * @param otherPanel other panel
+     */
     public void loadSettings( Settings settings, PlaneManager planeManager,
                               Map<String, Content> imageNameToContent, OtherPanel otherPanel ) {
-
-        if ( !planeManager.isTrackingPlane() ) {
-
-            // setup plane settings
-            // make a copy, so not modifying as we loop
-            ArrayList<String> planeNames = new ArrayList<>( planeManager.getPlaneNames() );
-            for ( String planeName : planeNames ) {
-                planeManager.removeNamedPlane(planeName);
-            }
-
-            for ( PlaneSettings planeSettings: settings.planeNameToSettings.values() ) {
-                if ( planeSettings instanceof BlockPlaneSettings) {
-                    planeManager.addBlockPlane( (BlockPlaneSettings) planeSettings );
-                } else {
-                    planeManager.addPlane( planeSettings );
-                }
-            }
-
-            // setup image settings
-            for ( ImageContentSettings imageSettings: settings.imageNameToSettings.values() ) {
-                loadImageSettings( imageNameToContent.get( imageSettings.name ), imageSettings );
-            }
-
-            if ( !otherPanel.check3DPointsVisible() ) {
-                otherPanel.toggleVisiblity3DPoints();
-            }
-        } else {
+        if (planeManager.isTrackingPlane()) {
             IJ.log("Cant load settings when tracking a plane");
+            return;
         }
 
+        // setup plane settings
+        // make a copy, so not modifying as we loop
+        ArrayList<String> planeNames = new ArrayList<>( planeManager.getPlaneNames() );
+        for ( String planeName : planeNames ) {
+            planeManager.removeNamedPlane(planeName);
+        }
+
+        for ( PlaneSettings planeSettings: settings.planeNameToSettings.values() ) {
+            if ( planeSettings instanceof BlockPlaneSettings) {
+                planeManager.addBlockPlane( (BlockPlaneSettings) planeSettings );
+            } else {
+                planeManager.addPlane( planeSettings );
+            }
+        }
+
+        // setup image settings
+        for ( ImageContentSettings imageSettings: settings.imageNameToSettings.values() ) {
+            loadImageSettings( imageNameToContent.get( imageSettings.name ), imageSettings );
+        }
+
+        if ( !otherPanel.check3DPointsVisible() ) {
+            otherPanel.toggleVisiblity3DPoints();
+        }
     }
 
 }
