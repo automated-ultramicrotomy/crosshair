@@ -194,14 +194,17 @@ public class Cutting {
         double[] knifeNormalDouble = {knifeNormal.getX(), knifeNormal.getY(), knifeNormal.getZ()};
         double[] edgeVectorDouble = {edgeVector.getX(), edgeVector.getY(), edgeVector.getZ()};
 
+        // Get orientation of current Bdv view
         ArrayList<Vector3d> planeDefinition = planeManager.getPlaneDefinitionOfCurrentView();
         Vector3d currentPlaneNormal = planeDefinition.get(0);
         Vector3d currentPlanePoint = planeDefinition.get(1);
 
-        // Check if already at that plane
+        // Check if Bdv is already at the cutting plane
         boolean normalsParallel = GeometryUtils.checkVectorsParallel(knifeNormal, currentPlaneNormal);
-        boolean orientationCorrect = GeometryUtils.checkVectorHorizontalInCurrentView(microtome.getBdvStackSource(), edgeVectorDouble);
-        double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
+        boolean orientationCorrect = GeometryUtils.checkVectorHorizontalInCurrentView(
+                microtome.getBdvStackSource(), edgeVectorDouble);
+        double distanceToPlane = GeometryUtils.distanceFromPointToPlane(
+                currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
 
         if (distanceToPlane > 1E-10) {
             // Use point that is shortest parallel distance to current point, lets position be user defined and will
@@ -216,7 +219,9 @@ public class Cutting {
         }
 
         if (!normalsParallel | !orientationCorrect) {
-            GeometryUtils.levelCurrentViewNormalandHorizontal(microtome.getBdvStackSource(), knifeNormalDouble, edgeVectorDouble);
+            GeometryUtils.levelCurrentViewNormalandHorizontal(
+                    microtome.getBdvStackSource(), knifeNormalDouble, edgeVectorDouble
+            );
         }
 
     }

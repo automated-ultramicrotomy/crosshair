@@ -354,5 +354,61 @@ public class MicrotomeManagerTestProviders {
         );
     }
 
+    /**
+     * Different cutting depths to test cutting mode with...
+     * @return stream of cutting depth, expected cutting plane translation, expected cutting plane rotation,
+     * expected bdv viewer transform
+     *
+     * All expected values were read from the debugger after setting the cutting depth.
+     */
+    static Stream<Arguments> cuttingDepthProvider() {
+        return Stream.of(
+                arguments(
+                        100,
+                        // Plane is translated as part of update cut
+                        new Transform3D(new double[]{
+                                1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 1926.0312247214051,
+                                0.0, 0.0, 1.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        }),
+                        // Plane is not rotated as part of update cut (still identity transform)
+                        new Transform3D(new double[]{
+                                1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 0.0,
+                                0.0, 0.0, 1.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        }),
+                        new double[]{
+                                0.47261361983944955, 0.0, 0.0, 116.06497420285308,
+                                0.0, 0.47261361983944955, 0.0, -4.09554300763665,
+                                0.0, 0.0, 0.47261361983944955, -216.52746976593548
+                        }
+                ),
+                arguments(
+                        -400,
+                        // Plane is translated as part of update cut
+                        new Transform3D(new double[]{
+                                1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 1426.0312247214051,
+                                0.0, 0.0, 1.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        }),
+                        // Plane is not rotated as part of update cut (still identity transform)
+                        new Transform3D(new double[]{
+                                1.0, 0.0, 0.0, 0.0,
+                                0.0, 1.0, 0.0, 0.0,
+                                0.0, 0.0, 1.0, 0.0,
+                                0.0, 0.0, 0.0, 1.0
+                        }),
+                        new double[]{
+                                0.46889388694350453, 0.008309389170377327, 0.05859275122722182, 86.31113859559343,
+                                -0.0020812521104147785, -0.46532667205089073, 0.08264617550403355, 539.9702886238906,
+                                0.059142411469374344, -0.08225372932217626, -0.4616276993811455, 459.6030671891897
+                        }
+                )
+        );
+    }
+
 
 }

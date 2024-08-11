@@ -346,6 +346,7 @@ class MicrotomeManagerTest {
         assertTrue(cuttingPlane.isVisible());
 
         // Check cutting plane mesh min/max position are as expected
+        // I check the min/max rather than the transform, as the transform is identity in this initial position.
         Point3d point = new Point3d();
         cuttingPlane.getMin(point);
         assertEquals(point, expectedCuttingPlaneMin);
@@ -363,20 +364,42 @@ class MicrotomeManagerTest {
         assertFalse(universe.contains(Cutting.cuttingPlane));
     }
 
-//    @Test
-//    void setCuttingDepth() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
-//        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
-//
-//        // Initialise ultramicrotome with correct angles
-//        // TODO - this is currently done in the UI - so replicate this here. Eventually this should be part of
-//        // enterMicrotomeMode() directly
-//        microtomeManager.setKnife(initialKnifeAngle);
-//        microtomeManager.setTilt(initialTiltAngle);
-//        microtomeManager.setRotation(0);
-//
-//        microtomeManager.enterCuttingMode();
-//
-//        microtomeManager.setCuttingDepth();
-//    }
+    @ParameterizedTest
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#cuttingDepthProvider")
+    void setCuttingDepth(double cuttingDepth, Transform3D expectedCuttingPlaneTranslation,
+                         Transform3D expectedCuttingPlaneRotation, double[] expectedBdvTransform
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+
+        // Initialise ultramicrotome with correct angles
+        // TODO - this is currently done in the UI - so replicate this here. Eventually this should be part of
+        // enterMicrotomeMode() directly
+        microtomeManager.setKnife(initialKnifeAngle);
+        microtomeManager.setTilt(initialTiltAngle);
+        microtomeManager.setRotation(0);
+
+        // Check viewer is initially not in expected orientation
+        assertFalse(Arrays.equals(
+                bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform().getRowPackedCopy(),
+                expectedBdvTransform
+        ));
+
+        // Set cutting depth
+        microtomeManager.enterCuttingMode();
+        microtomeManager.setCuttingDepth(cuttingDepth);
+
+        // Check transform of cutting plane is as expected
+        assertionsForContentTransforms(
+                Collections.singletonList(Cutting.cuttingPlane),
+                expectedCuttingPlaneTranslation,
+                expectedCuttingPlaneRotation
+        );
+
+        // Check viewer is now in expected orientation
+        assertTrue(Arrays.equals(
+                bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform().getRowPackedCopy(),
+                expectedBdvTransform
+        ));
+    }
 
 }
