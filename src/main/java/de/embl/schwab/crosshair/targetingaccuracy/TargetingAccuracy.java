@@ -8,6 +8,7 @@ import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
@@ -21,6 +22,8 @@ import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.registration.ViewTransform;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.java3d.Transform3D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
@@ -31,6 +34,8 @@ import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 
 public class TargetingAccuracy {
+
+    private static final Logger logger = LoggerFactory.getLogger(TargetingAccuracy.class);
 
     public static final String before = "before";
     public static final String after = "after";
@@ -97,8 +102,15 @@ public class TargetingAccuracy {
             settings.planeNameToSettings.put( Crosshair.target,
                     new BlockPlaneSettings( settings.planeNameToSettings.get( Crosshair.target )) );
 
-            reader.loadSettings( settings, planeManager,
-                    accuracyFrame.getImagesPanel().getImageNameToContent(), accuracyFrame.getOtherPanel() );
+            try {
+                reader.loadSettings( settings, planeManager,
+                        accuracyFrame.getImagesPanel().getImageNameToContent() );
+                if ( !accuracyFrame.getOtherPanel().check3DPointsVisible() ) {
+                    accuracyFrame.getOtherPanel().toggleVisiblity3DPoints();
+                }
+            } catch (MicrotomeManager.IncorrectMicrotomeConfiguration e) {
+                logger.error(e.getMessage(), e);
+            }
 
             spaceOutWindows(accuracyFrame, beforeStackSource.getBdvHandle(), universe);
 

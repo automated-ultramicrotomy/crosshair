@@ -8,6 +8,8 @@ import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.settings.SettingsWriter;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.GridLayout;
@@ -21,6 +23,9 @@ import static de.embl.schwab.crosshair.io.IoHelper.chooseSaveFilePath;
  * Class for UI Panel controlling saving/loading of settings and solutions
  */
 public class SavePanel extends CrosshairPanel {
+
+    private static final Logger logger = LoggerFactory.getLogger(SavePanel.class);
+
     private PlaneManager planeManager;
     private MicrotomeManager microtomeManager;
     private MicrotomePanel microtomePanel;
@@ -98,13 +103,26 @@ public class SavePanel extends CrosshairPanel {
             } else if (e.getActionCommand().equals("load_settings")) {
 
                 String filePath = chooseOpenFilePath();
-                if ( filePath != null ) {
-                    SettingsReader reader = new SettingsReader();
-                    Settings settings = reader.readSettings( filePath );
-                    if (settings != null) {
-                        reader.loadSettings(settings, microtomeManager, microtomePanel, planeManager,
-                                imagesPanel.getImageNameToContent(), otherPanel);
+                if (filePath == null) {
+                    return;
+                }
+
+                SettingsReader reader = new SettingsReader();
+                Settings settings = reader.readSettings( filePath );
+                if (settings == null) {
+                    return;
+                }
+
+                try {
+                    if ( microtomeManager.isMicrotomeModeActive() ) {
+                        microtomePanel.exitMicrotomeMode();
                     }
+                    reader.loadSettings(settings, planeManager, imagesPanel.getImageNameToContent());
+                    if ( !otherPanel.check3DPointsVisible() ) {
+                        otherPanel.toggleVisiblity3DPoints();
+                    }
+                } catch (MicrotomeManager.IncorrectMicrotomeConfiguration ex) {
+                    logger.error(ex.getMessage(), ex);
                 }
 
             } else if (e.getActionCommand().equals("save_solution")) {
