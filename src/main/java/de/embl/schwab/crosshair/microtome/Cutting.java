@@ -23,6 +23,8 @@ import static java.lang.Math.*;
  */
 public class Cutting {
 
+    public static final String cuttingPlane = "CuttingPlane";
+
     private Microtome microtome;
     private Content imageContent;
     private PlaneManager planeManager;
@@ -101,7 +103,7 @@ public class Cutting {
 
         CustomTriangleMesh newMesh = new CustomTriangleMesh(triangles, new Color3f(1, 0.6f, 1), 0);
 
-        Content meshContent = universe.addCustomMesh(newMesh, "CuttingPlane");
+        Content meshContent = universe.addCustomMesh(newMesh, cuttingPlane);
         meshContent.setLocked(true);
         meshContent.setVisible(true);
 
@@ -109,7 +111,7 @@ public class Cutting {
     }
 
     private void setCuttingBounds() {
-        // All image vertices in microtome coordinates
+        // Get all block face vertices in microtome coordinates
         Map<VertexPoint, RealPoint> vertices = planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices();
         ArrayList<Point3d> verticesMicrotomeCoords = new ArrayList<>();
         ArrayList<Vector3d> verticesMicrotomeCoordsV = new ArrayList<>();
@@ -126,7 +128,7 @@ public class Cutting {
             verticesMicrotomeCoordsV.add(new Vector3d(point.getX(), point.getY(), point.getZ()));
         }
 
-        // Find one with minimum distance to Knife plane - this is the first point hit by this cutting orientation
+        // Find vertex with minimum distance to Knife plane - this is the first point hit by this cutting orientation
         int indexMinDist = GeometryUtils.indexMinMaxPointsToPlane(microtome.getCurrentKnifeCentre(),
                 microtome.getCurrentKnifeNormal(), verticesMicrotomeCoordsV,"min");
         firstTouchPointCutting = verticesMicrotomeCoordsV.get(indexMinDist);
@@ -147,6 +149,7 @@ public class Cutting {
         NSZero = new Vector3d(0, NSZeroY,0);
 
         // Set cutting range so first touch point == 0
+        // + the minimum is the centre of the knife + the maximum is the location of the front part of the sample holder
         cuttingDepthMin = microtome.getCurrentKnifeCentre().getY() - NSZero.getY();
         cuttingDepthMax = microtome.getCurrentHolderFront().getY() - NSZero.getY();
     }
@@ -155,7 +158,7 @@ public class Cutting {
      * Remove the cutting plane from the 3D viewer
      */
     public void removeCuttingPlane() {
-        universe.removeContent("CuttingPlane");
+        universe.removeContent(cuttingPlane);
     }
 
     /**
@@ -173,7 +176,7 @@ public class Cutting {
                 0, 0, 1, 0,
                 0, 0, 0, 1);
 
-        universe.getContent("CuttingPlane").setTransform(new Transform3D(translateCuttingPlane));
+        universe.getContent(cuttingPlane).setTransform(new Transform3D(translateCuttingPlane));
 
         // Convert to microtome space coordinates - not adjusted for intial point == 0
         Point3d knifePoint = new Point3d(0, depthMicrotomeCoords, 0);
@@ -201,7 +204,8 @@ public class Cutting {
         double distanceToPlane = GeometryUtils.distanceFromPointToPlane(currentPlanePoint, knifeNormal, new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ()));
 
         if (distanceToPlane > 1E-10) {
-            // Use point that is shortest parallel distance to current point, lets position be user defined and will just show progression of cut from there
+            // Use point that is shortest parallel distance to current point, lets position be user defined and will
+            // just show progression of cut from there
             Vector3d currentViewCentreGlobal = new Vector3d(planeManager.getGlobalViewCentre());
             Vector3d knifePointV = new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ());
 

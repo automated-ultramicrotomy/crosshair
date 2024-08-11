@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.microtome;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import org.junit.jupiter.params.provider.Arguments;
 import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.Point3d;
 
 import java.util.stream.Stream;
 
@@ -323,6 +324,32 @@ public class MicrotomeManagerTestProviders {
                         212.88381464028384,
                         VertexPoint.BottomRight,
                         true
+                )
+        );
+    }
+
+    /**
+     * Different knife angles to test initialising cutting mode with...
+     * @return stream of knife angle, expected cutting plane mesh min, expected cutting plane mesh max,
+     * expected cutting depth min, expected cutting depth max
+     *
+     * All expected values were read from the debugger after setting the knife angle.
+     */
+    static Stream<Arguments> cuttingProvider() {
+        return Stream.of(
+                arguments(
+                        10,
+                        new Point3d(-1798.2896728515625, -2143.1181640625, -1826.03125),
+                        new Point3d(1798.2896728515625, -1508.9442138671875, 1826.03125),
+                        -1826.0312247214051,
+                        1826.0312247214051
+                ),
+                arguments(
+                        -15,
+                        new Point3d(-1763.8106689453125, -2298.642822265625, -1826.03125),
+                        new Point3d(1763.8106689453125, -1353.4195556640625, 1826.03125),
+                        -1716.5558314867285,
+                        1935.5066179560818
                 )
         );
     }

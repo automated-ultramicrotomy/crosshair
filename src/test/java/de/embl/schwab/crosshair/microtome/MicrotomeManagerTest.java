@@ -20,6 +20,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.Point3d;
 
 import java.io.File;
 import java.util.*;
@@ -36,6 +37,8 @@ class MicrotomeManagerTest {
     private AffineTransform3D initialViewerTransform;
     private MicrotomeManager microtomeManager;
     private PlaneManager planeManager;
+    private double initialKnifeAngle;
+    private double initialTiltAngle;
 
     @BeforeAll
     void overallSetup() {
@@ -67,7 +70,8 @@ class MicrotomeManagerTest {
         }
 
         microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, "microns");
-
+        initialKnifeAngle = 10;
+        initialTiltAngle = 10;
     }
 
     @AfterEach
@@ -171,9 +175,6 @@ class MicrotomeManagerTest {
     @ParameterizedTest
     @ValueSource(strings = { Crosshair.target, Crosshair.block })
     void enterMicrotomeModeWithInvalidPlanes(String missingPlane) {
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
-
         // remove the named plane
         planeManager.removeNamedPlane(missingPlane);
         assertFalse(planeManager.getPlaneNames().contains(missingPlane));
@@ -192,9 +193,6 @@ class MicrotomeManagerTest {
     @ParameterizedTest
     @EnumSource(VertexPoint.class)
     void enterMicrotomeModeWithInvalidVertices(VertexPoint missingVertex) {
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
-
         // remove the specified vertex
         VertexDisplay vertexDisplay = planeManager.getVertexDisplay(Crosshair.block);
         vertexDisplay.getAssignedVertices().remove(missingVertex);
@@ -213,8 +211,6 @@ class MicrotomeManagerTest {
     @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#knifeAngleProvider")
     void setKnife(double knifeAngle, double expectedAngleKnifeTarget, Transform3D expectedTranslation,
                   Transform3D expectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
         Microtome microtome = microtomeManager.getMicrotome();
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -240,8 +236,6 @@ class MicrotomeManagerTest {
                  Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
         Microtome microtome = microtomeManager.getMicrotome();
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -276,15 +270,11 @@ class MicrotomeManagerTest {
                      Transform3D holderFrontExpectedTranslation, Transform3D holderFrontExpectedRotation,
                      Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
         Microtome microtome = microtomeManager.getMicrotome();
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
         microtomeManager.setRotation(rotationAngle);
         assertEquals(microtome.getRotation(), rotationAngle);
-
-        Transform3D transform = new Transform3D();
 
         // Check transforms of holder and image 3D models were updated correctly
         assertionsForContentTransforms(
@@ -313,8 +303,6 @@ class MicrotomeManagerTest {
                      double expectedDistanceToCut, VertexPoint expectedFirstTouch, boolean expectedValidSolution
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
-        double initialKnifeAngle = 10;
-        double initialTiltAngle = 10;
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
         microtomeManager.setSolution(solutionAngle);
@@ -330,15 +318,65 @@ class MicrotomeManagerTest {
         assertEquals(solutions.isValidSolution(), expectedValidSolution);
     }
 
-    @Test
-    void enterCuttingMode() {
+    @ParameterizedTest
+    @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#cuttingProvider")
+    void enterExitCuttingMode(double knifeAngle, Point3d expectedCuttingPlaneMin, Point3d expectedCuttingPlaneMax,
+                              double expectedCuttingDepthMin, double expectedCuttingDepthMax
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+
+        // Initialise ultramicrotome with correct angles
+        // TODO - this is currently done in the UI - so replicate this here. Eventually this should be part of
+        // enterMicrotomeMode() directly
+        microtomeManager.setKnife(initialKnifeAngle);
+        microtomeManager.setTilt(initialTiltAngle);
+        microtomeManager.setRotation(0);
+
+        // Set to given knife angle
+        microtomeManager.setKnife(knifeAngle);
+
+        // Check cutting mode becomes active
+        assertFalse(microtomeManager.isCuttingModeActive());
+        microtomeManager.enterCuttingMode();
+        assertTrue(microtomeManager.isCuttingModeActive());
+
+        // Check cutting plane is added + visible
+        assertTrue(universe.contains(Cutting.cuttingPlane));
+        Content cuttingPlane = universe.getContent(Cutting.cuttingPlane);
+        assertTrue(cuttingPlane.isVisible());
+
+        // Check cutting plane mesh min/max position are as expected
+        Point3d point = new Point3d();
+        cuttingPlane.getMin(point);
+        assertEquals(point, expectedCuttingPlaneMin);
+
+        cuttingPlane.getMax(point);
+        assertEquals(point, expectedCuttingPlaneMax);
+
+        // Check cutting depth min/max are as expected
+        assertEquals(microtomeManager.getCutting().getCuttingDepthMin(), expectedCuttingDepthMin);
+        assertEquals(microtomeManager.getCutting().getCuttingDepthMax(), expectedCuttingDepthMax);
+
+        // Check cutting mode can be disabled + cutting plane is removed
+        microtomeManager.exitCuttingMode();
+        assertFalse(microtomeManager.isCuttingModeActive());
+        assertFalse(universe.contains(Cutting.cuttingPlane));
     }
 
-    @Test
-    void setCuttingDepth() {
-    }
+//    @Test
+//    void setCuttingDepth() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+//        microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
+//
+//        // Initialise ultramicrotome with correct angles
+//        // TODO - this is currently done in the UI - so replicate this here. Eventually this should be part of
+//        // enterMicrotomeMode() directly
+//        microtomeManager.setKnife(initialKnifeAngle);
+//        microtomeManager.setTilt(initialTiltAngle);
+//        microtomeManager.setRotation(0);
+//
+//        microtomeManager.enterCuttingMode();
+//
+//        microtomeManager.setCuttingDepth();
+//    }
 
-    @Test
-    void exitCuttingMode() {
-    }
 }
