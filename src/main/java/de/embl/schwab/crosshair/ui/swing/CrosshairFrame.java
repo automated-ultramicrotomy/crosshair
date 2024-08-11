@@ -65,7 +65,6 @@ public class CrosshairFrame extends JFrame {
 
         this.pack();
         this.setVisible( true );
-
     }
 
     public ImagesPanel getImagesPanel() {
