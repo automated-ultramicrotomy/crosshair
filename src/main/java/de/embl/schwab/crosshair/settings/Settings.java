@@ -9,4 +9,23 @@ import java.util.Map;
 public class Settings {
     public Map<String, PlaneSettings> planeNameToSettings;
     public Map< String, ImageContentSettings> imageNameToSettings;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Settings other = (Settings) obj;
+        if (!planeNameToSettings.equals(other.planeNameToSettings)) {
+            return false;
+        }
+        if (!imageNameToSettings.equals(other.imageNameToSettings)) {
+            return false;
+        }
+        return true;
+    }
 }
