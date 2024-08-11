@@ -43,4 +43,26 @@ public class BlockPlaneSettings extends PlaneSettings {
         this.pointsToFitPlane = planeSettings.pointsToFitPlane;
         this.distanceBetweenPlanesThreshold = planeSettings.distanceBetweenPlanesThreshold;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = super.equals(obj);
+        if (!isEqual) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final BlockPlaneSettings other = (BlockPlaneSettings) obj;
+        if (!this.vertices.equals(other.vertices)) {
+            return false;
+        }
+        if (!this.assignedVertices.equals(other.assignedVertices)) {
+            return false;
+        }
+
+        return true;
+    }
 }

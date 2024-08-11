@@ -2,6 +2,12 @@ package de.embl.schwab.crosshair.settings;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.TestHelpers;
+import de.embl.schwab.crosshair.microtome.MicrotomeManager;
+import de.embl.schwab.crosshair.plane.PlaneManager;
+import ij3d.Content;
+import ij3d.Image3DUniverse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -9,8 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
+import static de.embl.schwab.crosshair.TestHelpers.createBdvAnd3DViewer;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SettingsReaderTest {
@@ -52,5 +60,70 @@ class SettingsReaderTest {
         assertNull( settings );
 
         logger.setLevel(loggerLevel);
+    }
+
+    @Test
+    void loadSettings() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+        // read settings
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        File json = new File(classLoader.getResource("exampleBlock.json").getFile());
+        Settings settings = settingsReader.readSettings( json.getAbsolutePath() );
+
+        // initialise planemanager (with no planes) + image content
+        TestHelpers.BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
+        Image3DUniverse universe = bdvAnd3DViewer.universe;
+        Content imageContent = bdvAnd3DViewer.imageContent;
+
+        PlaneManager planeManager = new PlaneManager(bdvAnd3DViewer.bdvStackSource, universe, imageContent);
+        assertTrue(planeManager.getPlaneNames().isEmpty());
+
+        Map<String, Content> imageNameToContent = new HashMap<>();
+        imageNameToContent.put(Crosshair.image, imageContent);
+
+        // Load settings
+        settingsReader.loadSettings(settings, planeManager, imageNameToContent);
+
+        // Check all planes loaded from settings
+        for ( PlaneSettings planeSettings: settings.planeNameToSettings.values() ) {
+            assertTrue(planeManager.checkNamedPlaneExists(planeSettings.name));
+            assertTrue(universe.contains(planeSettings.name));
+
+            if ( planeSettings instanceof BlockPlaneSettings) {
+                assertEquals(planeManager.getBlockPlane(
+                        planeSettings.name).getSettings(),
+                        planeSettings
+                );
+            } else {
+                assertEquals(planeManager.getPlane(planeSettings.name).getSettings(), planeSettings);
+            }
+        }
+
+        // Check all image settings are also loaded
+        for ( ImageContentSettings imageSettings: settings.imageNameToSettings.values() ) {
+            Content content = imageNameToContent.get(imageSettings.name);
+
+            assertNull(content.getColor());
+            assertNull(imageSettings.imageColour);
+
+            assertEquals(content.getTransparency(), imageSettings.imageTransparency);
+
+            int[] lut = new int[256];
+            content.getRedLUT(lut);
+            assertArrayEquals(lut, imageSettings.redLut);
+
+            content.getGreenLUT(lut);
+            assertArrayEquals(lut, imageSettings.greenLut);
+
+            content.getBlueLUT(lut);
+            assertArrayEquals(lut, imageSettings.blueLut);
+
+            content.getAlphaLUT(lut);
+            assertArrayEquals(lut, imageSettings.alphaLut);
+        }
+
+        // cleanup bdv and 3D viewer
+        universe.close();
+        universe.cleanup();
+        bdvAnd3DViewer.bdvStackSource.getBdvHandle().close();
     }
 }

@@ -6,6 +6,7 @@ import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Vector3d;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Class to hold all settings related to planes (e.g. display settings, normal, point...)
@@ -40,5 +41,43 @@ public class PlaneSettings {
         this.isVisible = plane.isVisible();
         this.pointsToFitPlane = plane.getPointsToFitPlaneDisplay().getPointsToFitPlane();
         this.distanceBetweenPlanesThreshold = plane.getDistanceBetweenPlanesThreshold();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final PlaneSettings other = (PlaneSettings) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!this.normal.equals(other.normal)) {
+            return false;
+        }
+        if (!this.point.equals(other.point)) {
+            return false;
+        }
+        if (!this.color.equals(other.color)) {
+            return false;
+        }
+        if (this.transparency != other.transparency) {
+            return false;
+        }
+        if (this.isVisible != other.isVisible) {
+            return false;
+        }
+        if (!this.pointsToFitPlane.equals(other.pointsToFitPlane)) {
+            return false;
+        }
+        if (this.distanceBetweenPlanesThreshold != other.distanceBetweenPlanesThreshold) {
+            return false;
+        }
+
+        return true;
     }
 }
