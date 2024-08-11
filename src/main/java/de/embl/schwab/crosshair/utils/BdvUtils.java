@@ -31,6 +31,10 @@ public class BdvUtils {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BdvUtils.class);
 
+    /**
+     * Flip the orientation of the current view in BigDataViewer (bdv)
+     * @param bdv bdv window
+     */
     public static void flipCurrentView( Bdv bdv ) {
         double[] currentNormalVector = getCurrentViewNormalVector( bdv );
         for ( int i=0; i<currentNormalVector.length; i++) {
@@ -39,11 +43,17 @@ public class BdvUtils {
         levelCurrentView( bdv, currentNormalVector );
     }
 
-    // from https://github.com/tischi/imagej-utils/blob/f9b84aae6b3bd922ed723fd6b24ac510f86af8eb/src/main/java/de/embl/cba/bdv/utils/BdvUtils.java#L422
-    // TODO - I change the duration of the move - ask T for an option to do this, then can remove and use one from imagej-utils
+    /**
+     * Level the current BigDataViewer view to match the given target normal.
+     * from https://github.com/tischi/imagej-utils/blob/f9b84aae6b3bd922ed723fd6b24ac510f86af8eb/src/main/java/de/embl/cba/bdv/utils/BdvUtils.java#L422
+     *
+     * @param bdv BigDataViewer window
+     * @param targetNormalVector target normal vector
+     */
     public static void levelCurrentView( Bdv bdv, double[] targetNormalVector )
     {
-
+        // TODO - I changed the duration of the move - ask T for an option to do this, then can remove and use one from
+        //  imagej-utils
         double epsilon = 0.000000001; // epsilon for double comparisons
         double[] currentNormalVector = getCurrentViewNormalVector( bdv );
 

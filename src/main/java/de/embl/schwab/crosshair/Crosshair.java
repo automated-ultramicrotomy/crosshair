@@ -17,23 +17,9 @@ import java.awt.event.WindowEvent;
 import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 
-// TODO - neaten up code structure, possibly clearer labelling of which coordinate system & units are being used
-// TODO - check degree symbols work on mac
-
-// Possible improvements to add
-// TODO - add cutting-plane to target distance in cutting mode (would be nice check for me for distances, and could be useful for folks to plan their runs)
-// TODO - make plane update as efficient as possible
-// TODO - Add some buttons for e.g. reset view, centre view for microtome, centre view for sample etc
-// TODO - Add a check that target plane is behind block face (or intersects it)
-// TODO - make GOTOs match normals properly? Issue is imglib2 uses a coordinate system from top left so normal vector t calculates is into page
-// not out of it, like our target normals are set?
-// TODO - make generic for any bit depth - currently only accepts 8 bit
-// TODO - make it so transparency panel doesn't appear if plane not initialised
-// TODO - do checks for legitimacy of values when load from settings? e.g. that vertices lie on the block plane
-// TODO - make so doesn't show windows until all loaded?
-// TODO - check against original blender solution. Make mock file for case of intersection with block face - check how two solutions compare
-
-
+/**
+ * Main entry point for interaction with Crosshair
+ */
 public class Crosshair {
 
 	public static final String target = "target";

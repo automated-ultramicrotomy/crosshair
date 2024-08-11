@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseOpenFilePath;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseSaveFilePath;
 
+/**
+ * Class for UI Panel controlling saving/loading of settings and accuracy measures
+ */
 public class AccuracySavePanel extends CrosshairPanel {
 
     private static final Logger logger = LoggerFactory.getLogger(AccuracySavePanel.class);
@@ -35,6 +38,10 @@ public class AccuracySavePanel extends CrosshairPanel {
 
     public AccuracySavePanel() {}
 
+    /**
+     * Initialise panel from settings in main accuracy frame
+     * @param accuracyFrame main accuracy UI
+     */
     public void initialisePanel( TargetingAccuracyFrame accuracyFrame ) {
         this.accuracyFrame = accuracyFrame;
         this.planeManager = accuracyFrame.getPlaneManager();

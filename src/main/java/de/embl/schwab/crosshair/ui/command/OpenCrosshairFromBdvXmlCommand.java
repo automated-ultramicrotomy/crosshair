@@ -7,6 +7,9 @@ import org.scijava.plugin.Plugin;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * ImageJ command to open Crosshair from Bdv xml file
+ */
 @Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Open>Target Bdv File" )
 public class OpenCrosshairFromBdvXmlCommand implements Command {
 
@@ -17,14 +20,12 @@ public class OpenCrosshairFromBdvXmlCommand implements Command {
 
     @Override
     public void run() {
-
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("xml", "xml"));
         int returnVal = chooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             bdvXmlFilePath = chooser.getSelectedFile().getAbsolutePath();
             openPathInCrosshair();
-
         }
     }
 

@@ -33,6 +33,9 @@ import java.util.Map;
 import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 
+/**
+ * Main entry point for interaction with targeting accuracy workflow
+ */
 public class TargetingAccuracy {
 
     private static final Logger logger = LoggerFactory.getLogger(TargetingAccuracy.class);
@@ -43,7 +46,14 @@ public class TargetingAccuracy {
     public static final String afterBlock = "after block";
     public static final String beforeTarget = "before target";
 
-    public TargetingAccuracy ( File beforeTargetingXml, File registeredAfterTargetingXml,
+    /**
+     * Open targeting accuracy workflow
+     * @param beforeTargetingXml bdv xml file for before targeting image
+     * @param registeredAfterTargetingXml bdv xml file for after targeting image (registered to before image)
+     * @param crosshairSettingsJson Crosshair settings json file used for this targeting run
+     * @param crosshairSolutionJson Crosshair solution json file used for this targeting run
+     */
+    public TargetingAccuracy( File beforeTargetingXml, File registeredAfterTargetingXml,
                                File crosshairSettingsJson, File crosshairSolutionJson ) throws SpimDataException {
 
         final LazySpimSource beforeSource = new LazySpimSource("before", beforeTargetingXml.getAbsolutePath());

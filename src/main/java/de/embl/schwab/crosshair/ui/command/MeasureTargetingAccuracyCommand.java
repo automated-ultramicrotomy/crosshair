@@ -13,6 +13,9 @@ import java.io.File;
 
 import static de.embl.schwab.crosshair.utils.Utils.resetCrossPlatformSwingLookAndFeel;
 
+/**
+ * ImageJ command to open targeting accuracy workflow
+ */
 @Plugin(type = Command.class, menuPath = "Plugins>Crosshair>Analysis>Measure Targeting Accuracy" )
 public class MeasureTargetingAccuracyCommand implements Command {
 
@@ -48,17 +51,6 @@ public class MeasureTargetingAccuracyCommand implements Command {
                 logger.error("Error opening targeting accuracy", e);
             }
         }
-    }
-
-    public static void main( String[] args ) {
-        // final ImageJ ij = new ImageJ();
-        // ij.ui().showUI();
-        MeasureTargetingAccuracyCommand command = new MeasureTargetingAccuracyCommand();
-        command.beforeTargetingXml = new File( "C:\\Users\\meechan\\Documents\\temp\\azumi_data\\before.xml");
-        command.registeredAfterTargetingXml = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\analysis\\after_registered.xml");
-        command.crosshairSettingsJson = new File("C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_new_format_settings.json" );
-        command.crosshairSolutionJson = new File( "C:\\Users\\meechan\\Documents\\temp\\azumi_data\\EM04463_01_solution.json.json" );
-        command.run();
     }
 }
 

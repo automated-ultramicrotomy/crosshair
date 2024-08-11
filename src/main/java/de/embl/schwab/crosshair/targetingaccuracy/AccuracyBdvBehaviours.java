@@ -2,7 +2,6 @@ package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
 import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
-import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij.IJ;
@@ -13,11 +12,20 @@ import org.scijava.ui.behaviour.util.Behaviours;
 
 import static de.embl.schwab.crosshair.utils.BdvUtils.flipCurrentView;
 
+/**
+ * Class to control custom interactions with the BigDataViewer window during the targeting accuracy workflow
+ * For example, clicking to add points or fitting a plane to points
+ */
 public class AccuracyBdvBehaviours {
 
     private final BdvHandle bdvHandle;
     private final PlaneManager planeManager;
 
+    /**
+     * Adds custom behaviours to the BigDataViewer window referenced by bdvHandle
+     * @param bdvHandle bdvHandle of the BigDataViewer window
+     * @param planeManager Crosshair plane manager
+     */
     public AccuracyBdvBehaviours( BdvHandle bdvHandle, PlaneManager planeManager ) {
         this.bdvHandle = bdvHandle;
         this.planeManager = planeManager;
