@@ -271,6 +271,8 @@ class MicrotomeManagerTest {
                      Transform3D holderFrontExpectedTranslation, Transform3D holderFrontExpectedRotation,
                      Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
+        System.out.println("set rotation start " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+
         Microtome microtome = microtomeManager.getMicrotome();
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -324,6 +326,8 @@ class MicrotomeManagerTest {
     void enterExitCuttingMode(double knifeAngle, Point3d expectedCuttingPlaneMin, Point3d expectedCuttingPlaneMax,
                               double expectedCuttingDepthMin, double expectedCuttingDepthMax
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+        System.out.println("exit cutting mode start " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
         // Initialise ultramicrotome with correct angles
