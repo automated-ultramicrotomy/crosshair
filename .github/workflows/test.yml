@@ -52,5 +52,5 @@ jobs:
 
       - name: Build with maven
         env:
-          JAVA_OPTS: "-Xmx2048m"
+          MAVEN_OPTS: "-Xmx2048m"
         run: xvfb-run --auto-servernum mvn -B package --file pom.xml
