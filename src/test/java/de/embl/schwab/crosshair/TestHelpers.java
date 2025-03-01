@@ -33,6 +33,17 @@ public class TestHelpers {
         LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
 
         result.bdvStackSource = BdvFunctions.show(imageSource, 1);
+
+        // There seems to be a slight difference between the initial default bdv orientation from BdvFunctions.show
+        // between Github CI + local running. To avoid any discrepancies, set the initial transform directly here:
+        AffineTransform3D initialTransform = new AffineTransform3D();
+        initialTransform.set(
+                0.47261361983944955, 0.0, 0.0, 112.4425,
+                0.0, 0.47261361983944955, 0.0, 0.9424999999999955,
+                0.0, 0.0, 0.47261361983944955, -188.25276146804035
+        );
+        resetBdv(result.bdvStackSource.getBdvHandle(), initialTransform);
+
         result.initialViewerTransform = result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform();
 
         result.universe = new Image3DUniverse();

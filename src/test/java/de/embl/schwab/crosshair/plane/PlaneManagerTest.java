@@ -277,11 +277,6 @@ class PlaneManagerTest {
         String name = "testPlane";
         planeManager.addPlane(name, normal, point);
 
-        final AffineTransform3D transform = new AffineTransform3D();
-        bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform( transform );
-        System.out.println(initialViewerTransform);
-        System.out.println(transform);
-
         // Update plane to match orientation of current bdv view
         planeManager.updatePlaneCurrentView(name);
         Plane plane = planeManager.getPlane(name);
