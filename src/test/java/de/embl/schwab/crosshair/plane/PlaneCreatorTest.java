@@ -71,6 +71,7 @@ class PlaneCreatorTest {
 
         universe = null;
         bdvStackSource = null;
+        System.gc();
     }
 
     /**

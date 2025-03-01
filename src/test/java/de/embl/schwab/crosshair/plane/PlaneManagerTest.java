@@ -83,6 +83,7 @@ class PlaneManagerTest {
         bdvStackSource = null;
         planeManager = null;
         imageContent = null;
+        System.gc();
     }
 
     @Test
