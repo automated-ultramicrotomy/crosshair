@@ -34,8 +34,10 @@ public class TestHelpers {
 
         result.bdvStackSource = BdvFunctions.show(imageSource, 1);
 
-        // There seems to be a slight difference between the initial default bdv orientation from BdvFunctions.show
-        // between Github CI + local running. To avoid any discrepancies, set the initial transform directly here:
+        // There are slight differences in the default bdv size and transform from BdvFunctions.show between Github CI +
+        // local running. To avoid any discrepancies, set the size and transform directly here:
+        result.bdvStackSource.getBdvHandle().getViewerPanel().setSize(800, 577);
+
         AffineTransform3D initialTransform = new AffineTransform3D();
         initialTransform.set(
                 0.47261361983944955, 0.0, 0.0, 112.4425,
