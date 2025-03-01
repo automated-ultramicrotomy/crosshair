@@ -43,6 +43,7 @@ class MicrotomeManagerTest {
 
     @BeforeAll
     void overallSetup() {
+        System.out.println("overall setup");
         // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
         // more stable
         TestHelpers.BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
@@ -54,6 +55,7 @@ class MicrotomeManagerTest {
 
     @BeforeEach
     void setUp() {
+        System.out.println("setup");
         // add block and target plane for testing - load from example settings file
         planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
 
@@ -77,12 +79,14 @@ class MicrotomeManagerTest {
 
     @AfterEach
     void tearDown() {
+        System.out.println("tear down");
         resetBdv(bdvStackSource.getBdvHandle(), initialViewerTransform);
         reset3DViewer(universe, imageContent);
     }
 
     @AfterAll
     void overallTearDown() {
+        System.out.println("overall tear down");
         universe.close();
         universe.cleanup();
         bdvStackSource.getBdvHandle().close();
