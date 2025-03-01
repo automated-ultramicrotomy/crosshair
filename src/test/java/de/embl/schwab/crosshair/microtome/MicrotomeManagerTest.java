@@ -56,6 +56,8 @@ class MicrotomeManagerTest {
     @BeforeEach
     void setUp() {
         System.out.println("setup");
+        System.out.println("start of setup block " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+
         // add block and target plane for testing - load from example settings file
         planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
 
@@ -75,6 +77,8 @@ class MicrotomeManagerTest {
         microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, "microns");
         initialKnifeAngle = 10;
         initialTiltAngle = 10;
+
+        System.out.println("end of setup block " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
     }
 
     @AfterEach
