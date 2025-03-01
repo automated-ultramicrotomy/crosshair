@@ -389,8 +389,8 @@ class MicrotomeManagerTest {
         microtomeManager.enterCuttingMode();
         microtomeManager.setCuttingDepth(cuttingDepth);
 
-        // have to wait for 1 second to allow the animated bdv movement to finish (otherwise fails in CI)
-        TimeUnit.SECONDS.sleep(1);
+        // have to wait for 2 seconds to allow the animated bdv movement to finish (otherwise fails in CI)
+        TimeUnit.SECONDS.sleep(2);
 
         // Check transform of cutting plane is as expected
         assertionsForContentTransforms(

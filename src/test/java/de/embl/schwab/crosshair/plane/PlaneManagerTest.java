@@ -376,9 +376,9 @@ class PlaneManagerTest {
         assertFalse(checkVectorsParallel(viewPlaneDefinition.get(0), normal));
         assertFalse(planeManager.getPlane(name).isPointOnPlane(viewRealPoint));
 
-        // Move view to named plane - have to wait for 1 second to allow the animated movement to finish
+        // Move view to named plane - have to wait for 2 seconds to allow the animated movement to finish
         planeManager.moveViewToNamedPlane(name);
-        TimeUnit.SECONDS.sleep(1);
+        TimeUnit.SECONDS.sleep(2);
 
         // Check new view matches the plane's orientation - i.e. normals are parallel and view point lies on plane
         viewPlaneDefinition = planeManager.getPlaneDefinitionOfCurrentView();
