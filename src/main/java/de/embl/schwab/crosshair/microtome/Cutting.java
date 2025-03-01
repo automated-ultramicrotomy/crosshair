@@ -12,6 +12,7 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
@@ -214,16 +215,23 @@ public class Cutting {
 
             Vector3d pointToMoveTo = findClosestPointOnPlane(new Vector3d(knifeNormal), knifePointV, currentViewCentreGlobal);
 
-            System.out.println(knifeNormal);
-            System.out.println(knifePointV);
-            System.out.println(currentViewCentreGlobal);
+            System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().state().getViewerTransform());
+            System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getWidth());
+            System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getHeight());
             System.out.println(pointToMoveTo);
 
             double[] pointToMoveToDouble = {pointToMoveTo.getX(), pointToMoveTo.getY(), pointToMoveTo.getZ()};
             moveToPosition(microtome.getBdvStackSource(), pointToMoveToDouble, 0,  0);
+
+            System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().state().getViewerTransform());
+            System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getWidth());
+            System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getHeight());
         }
 
         if (!normalsParallel | !orientationCorrect) {
+            System.out.println(Arrays.toString(knifeNormalDouble));
+            System.out.println(Arrays.toString(edgeVectorDouble));
+
             GeometryUtils.levelCurrentViewNormalandHorizontal(
                     microtome.getBdvStackSource(), knifeNormalDouble, edgeVectorDouble
             );
