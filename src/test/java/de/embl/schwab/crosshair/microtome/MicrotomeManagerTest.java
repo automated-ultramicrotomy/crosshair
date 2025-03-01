@@ -389,7 +389,7 @@ class MicrotomeManagerTest {
         microtomeManager.enterCuttingMode();
         microtomeManager.setCuttingDepth(cuttingDepth);
 
-        // have to wait for 2 seconds to allow the animated bdv movement to finish (otherwise fails in CI)
+        // have to wait for 2 seconds to allow the animated bdv movement to finish
         TimeUnit.SECONDS.sleep(2);
 
         // Check transform of cutting plane is as expected
@@ -400,10 +400,11 @@ class MicrotomeManagerTest {
         );
 
         // Check viewer is now in expected orientation
-        assertTrue(Arrays.equals(
+        assertArrayEquals(
                 bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform().getRowPackedCopy(),
-                expectedBdvTransform
-        ));
+                expectedBdvTransform,
+                0.0001
+        );
     }
 
 }

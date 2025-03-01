@@ -653,7 +653,7 @@ public final class GeometryUtils {
                 .preConcatenate( rotation )
                 .preConcatenate( translateCenterBack ) );
 
-        changeBdvViewerTransform( bdv, viewerTransforms, 0 );
+        changeBdvViewerTransform( bdv, viewerTransforms, 300 );
     }
 
     /**
