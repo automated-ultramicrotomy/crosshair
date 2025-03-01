@@ -49,6 +49,8 @@ public class TestHelpers {
         );
         resetBdv(result.bdvStackSource.getBdvHandle(), initialTransform);
 
+        System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+
         result.initialViewerTransform = result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform();
 
         result.universe = new Image3DUniverse();
@@ -81,5 +83,6 @@ public class TestHelpers {
 
     public static void resetBdv(Bdv bdvHandle, AffineTransform3D initialTransform) {
         bdvHandle.getBdvHandle().getViewerPanel().state().setViewerTransform(initialTransform);
+        System.out.println(bdvHandle.getBdvHandle().getViewerPanel().state().getViewerTransform());
     }
 }
