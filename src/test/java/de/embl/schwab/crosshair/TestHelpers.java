@@ -32,6 +32,13 @@ public class TestHelpers {
         File imageFile = new File(classLoader.getResource("exampleBlock.xml").getFile());
         LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
 
+        // Setup 3D viewer
+        result.universe = new Image3DUniverse();
+        result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
+                Content.VOLUME, 0, 255 );
+        result.universe.show();
+
+        // Setup BigDataViewer
         result.bdvStackSource = BdvFunctions.show(imageSource, 1);
 
         // There are slight differences in the default bdv size and transform from BdvFunctions.show between Github CI +
@@ -54,12 +61,6 @@ public class TestHelpers {
         System.out.println("test setup " + result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         result.initialViewerTransform = initialTransform;
-
-        result.universe = new Image3DUniverse();
-        result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
-                Content.VOLUME, 0, 255 );
-        result.universe.show();
-
         System.out.println("test setup final " + result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         return result;
