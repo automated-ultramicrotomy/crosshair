@@ -94,6 +94,9 @@ class MicrotomeManagerTest {
         universe.close();
         universe.cleanup();
         bdvStackSource.getBdvHandle().close();
+
+        universe = null;
+        bdvStackSource = null;
     }
 
     /**

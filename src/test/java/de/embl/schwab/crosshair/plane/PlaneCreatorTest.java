@@ -68,6 +68,9 @@ class PlaneCreatorTest {
         universe.close();
         universe.cleanup();
         bdvStackSource.getBdvHandle().close();
+
+        universe = null;
+        bdvStackSource = null;
     }
 
     /**
