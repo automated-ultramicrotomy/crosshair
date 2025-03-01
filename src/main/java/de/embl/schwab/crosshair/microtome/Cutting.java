@@ -216,12 +216,14 @@ public class Cutting {
             Vector3d pointToMoveTo = findClosestPointOnPlane(new Vector3d(knifeNormal), knifePointV, currentViewCentreGlobal);
 
             System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().state().getViewerTransform());
+            System.out.println(knifeNormal);
+            System.out.println(knifePointV);
+            System.out.println(currentViewCentreGlobal);
             System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getDisplay().getWidth());
             System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getDisplay().getHeight());
             System.out.println(pointToMoveTo);
 
             double[] pointToMoveToDouble = {pointToMoveTo.getX(), pointToMoveTo.getY(), pointToMoveTo.getZ()};
-            System.out.println(Arrays.toString(pointToMoveToDouble));
             moveToPosition(microtome.getBdvStackSource(), pointToMoveToDouble, 0,  0);
 
             System.out.println(microtome.getBdvStackSource().getBdvHandle().getViewerPanel().state().getViewerTransform());
