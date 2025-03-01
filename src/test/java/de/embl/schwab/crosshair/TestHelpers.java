@@ -65,5 +65,6 @@ public class TestHelpers {
 
     public static void resetBdv(Bdv bdvHandle, AffineTransform3D initialTransform) {
         bdvHandle.getBdvHandle().getViewerPanel().state().setViewerTransform(initialTransform);
+        bdvHandle.getBdvHandle().getViewerPanel().requestRepaint();
     }
 }
