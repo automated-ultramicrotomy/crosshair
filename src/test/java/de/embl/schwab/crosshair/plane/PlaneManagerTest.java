@@ -81,6 +81,8 @@ class PlaneManagerTest {
 
         universe = null;
         bdvStackSource = null;
+        planeManager = null;
+        imageContent = null;
     }
 
     @Test

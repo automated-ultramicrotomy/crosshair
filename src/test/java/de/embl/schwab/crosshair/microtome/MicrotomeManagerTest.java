@@ -97,6 +97,9 @@ class MicrotomeManagerTest {
 
         universe = null;
         bdvStackSource = null;
+        imageContent = null;
+        microtomeManager = null;
+        planeManager = null;
     }
 
     /**
