@@ -49,13 +49,12 @@ public class TestHelpers {
         );
         resetBdv(result.bdvStackSource.getBdvHandle(), initialTransform);
 
-        System.out.println("In test setup");
-        System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
-        System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
-        System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+        System.out.println("test setup " + result.bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
+        System.out.println("test setup " + result.bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
+        System.out.println("test setup " + result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         result.initialViewerTransform = result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform();
-        System.out.println(result.initialViewerTransform);
+        System.out.println("test setup final " +result.initialViewerTransform);
 
         result.universe = new Image3DUniverse();
         result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
@@ -87,8 +86,7 @@ public class TestHelpers {
 
     public static void resetBdv(Bdv bdvHandle, AffineTransform3D initialTransform) {
         bdvHandle.getBdvHandle().getViewerPanel().state().setViewerTransform(initialTransform);
-        System.out.println("In test teardown");
-        System.out.println(initialTransform);
-        System.out.println(bdvHandle.getBdvHandle().getViewerPanel().state().getViewerTransform());
+        System.out.println("test teardown " + initialTransform);
+        System.out.println("test teardown " + bdvHandle.getBdvHandle().getViewerPanel().state().getViewerTransform());
     }
 }

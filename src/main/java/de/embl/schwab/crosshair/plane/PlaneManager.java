@@ -387,11 +387,11 @@ public class PlaneManager {
         final AffineTransform3D transform = new AffineTransform3D();
         bdvHandle.getViewerPanel().state().getViewerTransform( transform );
 
-        System.out.println(transform);
+        System.out.println("global view centre transform " + transform);
 
         double[] centrePointView = getBdvWindowCentre(bdvStackSource);
 
-        System.out.println(Arrays.toString(centrePointView));
+        System.out.println("global view centre point " + Arrays.toString(centrePointView));
         double[] centrePointGlobal = new double[3];
         transform.inverse().apply(centrePointView, centrePointGlobal);
 

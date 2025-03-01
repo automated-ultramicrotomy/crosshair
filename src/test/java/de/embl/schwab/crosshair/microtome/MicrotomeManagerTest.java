@@ -370,10 +370,9 @@ class MicrotomeManagerTest {
     void setCuttingDepth(double cuttingDepth, Transform3D expectedCuttingPlaneTranslation,
                          Transform3D expectedCuttingPlaneRotation, double[] expectedBdvTransform
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration, InterruptedException {
-        System.out.println("in cutting depth test");
-        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
-        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
-        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+        System.out.println("cutting start " + bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
+        System.out.println("cutting start " + bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
+        System.out.println("cutting start " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -391,15 +390,15 @@ class MicrotomeManagerTest {
         ));
 
         // Set cutting depth
-        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+        System.out.println("before enter cutting mode " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.enterCuttingMode();
-        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+        System.out.println("before enter cutting depth " +bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.setCuttingDepth(cuttingDepth);
 
         // have to wait for 2 seconds to allow the animated bdv movement to finish
         TimeUnit.SECONDS.sleep(2);
 
-        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+        System.out.println("after cut set " +bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         // Check transform of cutting plane is as expected
         assertionsForContentTransforms(
