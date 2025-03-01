@@ -53,13 +53,14 @@ public class TestHelpers {
         System.out.println("test setup " + result.bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
         System.out.println("test setup " + result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
-        result.initialViewerTransform = result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform();
-        System.out.println("test setup final " +result.initialViewerTransform);
+        result.initialViewerTransform = initialTransform;
 
         result.universe = new Image3DUniverse();
         result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
                 Content.VOLUME, 0, 255 );
         result.universe.show();
+
+        System.out.println("test setup final " + result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         return result;
     }
