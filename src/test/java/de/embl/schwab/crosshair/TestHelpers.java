@@ -55,7 +55,7 @@ public class TestHelpers {
         System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         result.initialViewerTransform = result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform();
-        System.out.println(initialTransform);
+        System.out.println(result.initialViewerTransform);
 
         result.universe = new Image3DUniverse();
         result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
