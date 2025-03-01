@@ -36,7 +36,10 @@ public class TestHelpers {
 
         // There are slight differences in the default bdv size and transform from BdvFunctions.show between Github CI +
         // local running. To avoid any discrepancies, set the size and transform directly here:
-        result.bdvStackSource.getBdvHandle().getViewerPanel().setSize(800, 577);
+        int width = 800;
+        int height = 577;
+        result.bdvStackSource.getBdvHandle().getViewerPanel().setSize(width, height);
+        result.bdvStackSource.getBdvHandle().getViewerPanel().getDisplay().setSize(width, height);
 
         AffineTransform3D initialTransform = new AffineTransform3D();
         initialTransform.set(
