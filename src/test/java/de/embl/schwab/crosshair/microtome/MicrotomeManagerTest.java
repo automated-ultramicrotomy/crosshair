@@ -385,12 +385,17 @@ class MicrotomeManagerTest {
                 expectedBdvTransform
         ));
 
+        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
+
         // Set cutting depth
         microtomeManager.enterCuttingMode();
+        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.setCuttingDepth(cuttingDepth);
 
         // have to wait for 2 seconds to allow the animated bdv movement to finish
         TimeUnit.SECONDS.sleep(2);
+
+        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         // Check transform of cutting plane is as expected
         assertionsForContentTransforms(
