@@ -39,8 +39,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 8
-        env:
-          JAVA_OPTS: "-Xmx2048m"
         uses: actions/setup-java@v4
         with:
           java-version: '8'
@@ -53,4 +51,6 @@ jobs:
         run: sudo apt-get install xvfb
 
       - name: Build with maven
+        env:
+          JAVA_OPTS: "-Xmx2048m"
         run: xvfb-run --auto-servernum mvn -B package --file pom.xml
