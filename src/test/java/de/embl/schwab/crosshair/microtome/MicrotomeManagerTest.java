@@ -372,6 +372,7 @@ class MicrotomeManagerTest {
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration, InterruptedException {
         System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
         System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
+        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -389,7 +390,9 @@ class MicrotomeManagerTest {
         ));
 
         // Set cutting depth
+        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.enterCuttingMode();
+        System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.setCuttingDepth(cuttingDepth);
 
         // have to wait for 2 seconds to allow the animated bdv movement to finish
