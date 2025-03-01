@@ -370,6 +370,7 @@ class MicrotomeManagerTest {
     void setCuttingDepth(double cuttingDepth, Transform3D expectedCuttingPlaneTranslation,
                          Transform3D expectedCuttingPlaneRotation, double[] expectedBdvTransform
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration, InterruptedException {
+        System.out.println("in cutting depth test");
         System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
         System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
         System.out.println(bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
