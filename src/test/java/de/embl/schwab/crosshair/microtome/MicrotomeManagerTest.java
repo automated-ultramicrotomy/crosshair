@@ -24,6 +24,7 @@ import org.scijava.vecmath.Point3d;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static de.embl.schwab.crosshair.TestHelpers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -368,7 +369,7 @@ class MicrotomeManagerTest {
     @MethodSource("de.embl.schwab.crosshair.microtome.MicrotomeManagerTestProviders#cuttingDepthProvider")
     void setCuttingDepth(double cuttingDepth, Transform3D expectedCuttingPlaneTranslation,
                          Transform3D expectedCuttingPlaneRotation, double[] expectedBdvTransform
-    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration, InterruptedException {
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
         // Initialise ultramicrotome with correct angles
@@ -387,6 +388,9 @@ class MicrotomeManagerTest {
         // Set cutting depth
         microtomeManager.enterCuttingMode();
         microtomeManager.setCuttingDepth(cuttingDepth);
+
+        // have to wait for 1 second to allow the animated bdv movement to finish (otherwise fails in CI)
+        TimeUnit.SECONDS.sleep(1);
 
         // Check transform of cutting plane is as expected
         assertionsForContentTransforms(
