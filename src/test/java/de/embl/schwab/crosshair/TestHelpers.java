@@ -49,6 +49,8 @@ public class TestHelpers {
         );
         resetBdv(result.bdvStackSource.getBdvHandle(), initialTransform);
 
+        System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
+        System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
         System.out.println(result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         result.initialViewerTransform = result.bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform();
