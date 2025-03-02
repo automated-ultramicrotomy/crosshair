@@ -64,7 +64,7 @@ class PlaneManagerTest {
         point = new Vector3d(-188.47561306126704, 15.353222856645068, 621.5211240735744);
         normal = new Vector3d(0.20791169081775954, 0.08525118065879457, 0.9744254538021788);
 
-        planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+//        planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
     }
 
     @AfterEach

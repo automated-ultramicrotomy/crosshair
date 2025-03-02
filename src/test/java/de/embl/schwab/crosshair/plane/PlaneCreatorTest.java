@@ -54,7 +54,7 @@ class PlaneCreatorTest {
 
     @BeforeEach
     void setUp() {
-        planeCreator = new PlaneCreator(universe, imageContent, bdvStackSource);
+//        planeCreator = new PlaneCreator(universe, imageContent, bdvStackSource);
     }
 
     @AfterEach
