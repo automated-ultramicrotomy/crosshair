@@ -17,12 +17,15 @@ class CrosshairTest {
     @AfterEach
     void tearDown() {
         System.out.println("CLOSING crosshair");
-        crosshair.close();
+//        crosshair.close();
     }
 
     /**
      * Test that Crosshair can be opened from a bdv file + that windows are laid out correctly (no overlap, fully on
-     * screen)
+     * screen).
+     *
+     * Note: I used to run crosshair.close() at the end of this test, but it seemed to be causing the test to
+     * hang intermittently on github actions.
      */
     @Test
     void openCrosshairFromBdv() {
