@@ -133,9 +133,13 @@ public class Crosshair {
 	public CrosshairFrame getCrosshairFrame() { return crosshairFrame; }
 
 	public void close() {
+		System.out.println("CLOSING bdv");
 		bdvHandle.close();
+		System.out.println("CLOSING universe");
 		universe.close();
+		System.out.println("CLEANING universe");
 		universe.cleanup();
+		System.out.println("Close window");
 		crosshairFrame.dispatchEvent(
 				new WindowEvent(crosshairFrame, WindowEvent.WINDOW_CLOSING)
 		);
