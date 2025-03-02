@@ -32,8 +32,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Cancel jobs after 30 minutes
-    timeout-minutes: 30
+    # Cancel jobs after 3 minutes
+    timeout-minutes: 3
 
     steps:
       - uses: actions/checkout@v4
