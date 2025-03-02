@@ -33,10 +33,13 @@ public class TestHelpers {
         LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
 
         // Setup 3D viewer
-        result.universe = new Image3DUniverse();
-        result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
-                Content.VOLUME, 0, 255 );
-        result.universe.show();
+        result.universe = null;
+        result.imageContent = null;
+
+//        result.universe = new Image3DUniverse();
+//        result.imageContent = addSourceToUniverse(result.universe, imageSource, 300 * 300 * 300,
+//                Content.VOLUME, 0, 255 );
+//        result.universe.show();
 
         // Setup BigDataViewer
         result.bdvStackSource = BdvFunctions.show(imageSource, 1);
@@ -67,23 +70,23 @@ public class TestHelpers {
     }
 
     public static void reset3DViewer(Image3DUniverse universe, Content imageContent) {
-        // remove all content (apart from image) from 3D viewer
-        List<String> contentsToRemove = new ArrayList<String>();
-        for (Object content: universe.getContents()) {
-            String contentName = ((Content) content).getName();
-            if (!Objects.equals(contentName, imageContent.getName())) {
-                contentsToRemove.add(contentName);
-            }
-        }
-        for (String contentName: contentsToRemove) {
-            universe.removeContent(contentName);
-        }
-
-        // reset image content orientation
-        imageContent.setTransform(new Transform3D());
-
-        // reset 3D viewer view
-        universe.resetView();
+//        // remove all content (apart from image) from 3D viewer
+//        List<String> contentsToRemove = new ArrayList<String>();
+//        for (Object content: universe.getContents()) {
+//            String contentName = ((Content) content).getName();
+//            if (!Objects.equals(contentName, imageContent.getName())) {
+//                contentsToRemove.add(contentName);
+//            }
+//        }
+//        for (String contentName: contentsToRemove) {
+//            universe.removeContent(contentName);
+//        }
+//
+//        // reset image content orientation
+//        imageContent.setTransform(new Transform3D());
+//
+//        // reset 3D viewer view
+//        universe.resetView();
     }
 
     public static void resetBdv(Bdv bdvHandle, AffineTransform3D initialTransform) {
