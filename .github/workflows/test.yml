@@ -51,6 +51,4 @@ jobs:
         run: sudo apt-get install xvfb
 
       - name: Build with maven
-#        env:
-#          MAVEN_OPTS: "-Xmx2048m"
         run: xvfb-run --auto-servernum mvn -B package --file pom.xml

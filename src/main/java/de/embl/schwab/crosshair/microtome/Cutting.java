@@ -12,7 +12,6 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
@@ -214,6 +213,7 @@ public class Cutting {
             Vector3d knifePointV = new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ());
 
             Vector3d pointToMoveTo = findClosestPointOnPlane(new Vector3d(knifeNormal), knifePointV, currentViewCentreGlobal);
+
             double[] pointToMoveToDouble = {pointToMoveTo.getX(), pointToMoveTo.getY(), pointToMoveTo.getZ()};
             moveToPosition(microtome.getBdvStackSource(), pointToMoveToDouble, 0,  0);
         }
