@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.plane;
 
 import bdv.util.BdvStackSource;
+import de.embl.schwab.crosshair.BdvAnd3DViewer;
 import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
@@ -46,7 +47,7 @@ class PlaneManagerTest {
     void overallSetUp() {
         // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
         // more stable
-        TestHelpers.BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
+        BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
         universe = bdvAnd3DViewer.universe;
         bdvStackSource = bdvAnd3DViewer.bdvStackSource;
         imageContent = bdvAnd3DViewer.imageContent;
@@ -64,7 +65,7 @@ class PlaneManagerTest {
         point = new Vector3d(-188.47561306126704, 15.353222856645068, 621.5211240735744);
         normal = new Vector3d(0.20791169081775954, 0.08525118065879457, 0.9744254538021788);
 
-//        planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+        planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
     }
 
     @AfterEach

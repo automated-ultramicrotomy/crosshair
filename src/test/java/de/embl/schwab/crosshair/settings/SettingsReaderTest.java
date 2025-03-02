@@ -2,6 +2,7 @@ package de.embl.schwab.crosshair.settings;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import de.embl.schwab.crosshair.BdvAnd3DViewer;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
@@ -70,7 +71,7 @@ class SettingsReaderTest {
         Settings settings = settingsReader.readSettings( json.getAbsolutePath() );
 
         // initialise planemanager (with no planes) + image content
-        TestHelpers.BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
+        BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
         Image3DUniverse universe = bdvAnd3DViewer.universe;
         Content imageContent = bdvAnd3DViewer.imageContent;
 
@@ -121,9 +122,9 @@ class SettingsReaderTest {
 //            assertArrayEquals(lut, imageSettings.alphaLut);
 //        }
 //
-//        // cleanup bdv and 3D viewer
-//        universe.close();
-//        universe.cleanup();
+        // cleanup bdv and 3D viewer
+        universe.close();
+        universe.cleanup();
         bdvAnd3DViewer.bdvStackSource.getBdvHandle().close();
     }
 }

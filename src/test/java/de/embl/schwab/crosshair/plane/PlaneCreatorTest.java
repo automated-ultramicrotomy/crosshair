@@ -2,6 +2,7 @@ package de.embl.schwab.crosshair.plane;
 
 import bdv.util.BdvStackSource;
 import customnode.CustomMeshNode;
+import de.embl.schwab.crosshair.BdvAnd3DViewer;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
@@ -54,7 +55,7 @@ class PlaneCreatorTest {
 
     @BeforeEach
     void setUp() {
-//        planeCreator = new PlaneCreator(universe, imageContent, bdvStackSource);
+        planeCreator = new PlaneCreator(universe, imageContent, bdvStackSource);
     }
 
     @AfterEach

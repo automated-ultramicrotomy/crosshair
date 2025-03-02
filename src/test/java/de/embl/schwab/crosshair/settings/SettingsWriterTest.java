@@ -1,5 +1,6 @@
 package de.embl.schwab.crosshair.settings;
 
+import de.embl.schwab.crosshair.BdvAnd3DViewer;
 import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
@@ -49,7 +50,7 @@ class SettingsWriterTest {
     void createSettings() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
         // initialise planemanager + image content from example settings file
-        TestHelpers.BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
+        BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
         Image3DUniverse universe = bdvAnd3DViewer.universe;
         Content imageContent = bdvAnd3DViewer.imageContent;
 
@@ -63,9 +64,9 @@ class SettingsWriterTest {
 //        Settings newSettings = settingsWriter.createSettings(planeManager, imageNameToContent);
 //        assertEquals(settings, newSettings);
 //
-//        // cleanup bdv and 3D viewer
-//        universe.close();
-//        universe.cleanup();
+        // cleanup bdv and 3D viewer
+        universe.close();
+        universe.cleanup();
         bdvAnd3DViewer.bdvStackSource.getBdvHandle().close();
     }
 }
