@@ -48,19 +48,20 @@ class SettingsWriterTest {
     void createSettings() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
         // initialise planemanager + image content from example settings file
+        BdvAnd3DViewer.reset();
         Image3DUniverse universe = BdvAnd3DViewer.getUniverse();
         Content imageContent = BdvAnd3DViewer.getImageContent();
 
-//        PlaneManager planeManager = new PlaneManager(bdvAnd3DViewer.bdvStackSource, universe, imageContent);
-//        Map<String, Content> imageNameToContent = new HashMap<>();
-//        imageNameToContent.put(Crosshair.image, imageContent);
-//
-//        new SettingsReader().loadSettings(settings, planeManager, imageNameToContent);
-//
-//        // Create settings from current planemanager / image content state + check same as original settings
-//        Settings newSettings = settingsWriter.createSettings(planeManager, imageNameToContent);
-//        assertEquals(settings, newSettings);
-//
+        PlaneManager planeManager = new PlaneManager(BdvAnd3DViewer.getBdvStackSource(), universe, imageContent);
+        Map<String, Content> imageNameToContent = new HashMap<>();
+        imageNameToContent.put(Crosshair.image, imageContent);
+
+        new SettingsReader().loadSettings(settings, planeManager, imageNameToContent);
+
+        // Create settings from current planemanager / image content state + check same as original settings
+        Settings newSettings = settingsWriter.createSettings(planeManager, imageNameToContent);
+        assertEquals(settings, newSettings);
+
         // cleanup bdv and 3D viewer
         BdvAnd3DViewer.reset();
     }
