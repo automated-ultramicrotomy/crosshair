@@ -1,7 +1,6 @@
 package de.embl.schwab.crosshair;
 
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -13,12 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class CrosshairTest {
 
     private Crosshair crosshair;
-
-    @AfterEach
-    void tearDown() {
-        System.out.println("CLOSING crosshair");
-//        crosshair.close();
-    }
 
     /**
      * Test that Crosshair can be opened from a bdv file + that windows are laid out correctly (no overlap, fully on
@@ -33,9 +26,7 @@ class CrosshairTest {
         File xray = new File(classLoader.getResource("exampleBlock.xml").getFile());
         final LazySpimSource imageSource = new LazySpimSource("raw", xray.getAbsolutePath());
 
-        System.out.println("Opening crosshair");
         crosshair = new Crosshair(imageSource);
-        System.out.println("Done opening crosshair");
 
         // Check successfully created crosshair controls, bdv window + 3D viewer
         assertNotNull(crosshair.getCrosshairFrame());
@@ -43,9 +34,7 @@ class CrosshairTest {
         assertNotNull(crosshair.getUniverse());
 
         // Check all windows on screen + not overlapping
-        System.out.println("Fetching screen size");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        System.out.println("Done fetching screen size");
         Window[] windows = new Window[]{
                 crosshair.getCrosshairFrame(),
                 SwingUtilities.getWindowAncestor(crosshair.getBdvHandle().getViewerPanel()),
@@ -74,8 +63,6 @@ class CrosshairTest {
         // Check windows don't overlap
         assertTrue(xMaxes[0] <= xMins[1], "window 0's right edge overlaps with window 1's left");
         assertTrue(xMaxes[1] <= xMins[2], "window 1's right edge overlaps with window 2's left");
-
-        System.out.println("Done");
     }
 
 }
