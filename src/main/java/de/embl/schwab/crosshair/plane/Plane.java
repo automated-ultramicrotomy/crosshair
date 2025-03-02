@@ -39,7 +39,8 @@ public class Plane {
      * @param mesh 3D custom triangle mesh of plane
      * @param pointsToFitPlaneDisplay points to fit plane display
      */
-    public Plane(PlaneSettings planeSettings, Vector3d centroid, Content mesh, PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
+    public Plane(PlaneSettings planeSettings, Vector3d centroid, Content mesh,
+                 PointsToFitPlaneDisplay pointsToFitPlaneDisplay ) {
         this.name = planeSettings.name;
         this.normal = planeSettings.normal;
         this.point = planeSettings.point;

@@ -8,11 +8,11 @@ import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
 import de.embl.schwab.crosshair.plane.PlaneManager;
-import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionReader;
 import ij.IJ;
@@ -21,18 +21,24 @@ import ij3d.Image3DUniverse;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.registration.ViewTransform;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.ARGBType;
 import org.scijava.java3d.Transform3D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
+import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 import static de.embl.schwab.crosshair.utils.Utils.spaceOutWindows;
 
+/**
+ * Main entry point for interaction with targeting accuracy workflow
+ */
 public class TargetingAccuracy {
+
+    private static final Logger logger = LoggerFactory.getLogger(TargetingAccuracy.class);
 
     public static final String before = "before";
     public static final String after = "after";
@@ -40,7 +46,14 @@ public class TargetingAccuracy {
     public static final String afterBlock = "after block";
     public static final String beforeTarget = "before target";
 
-    public TargetingAccuracy ( File beforeTargetingXml, File registeredAfterTargetingXml,
+    /**
+     * Open targeting accuracy workflow
+     * @param beforeTargetingXml bdv xml file for before targeting image
+     * @param registeredAfterTargetingXml bdv xml file for after targeting image (registered to before image)
+     * @param crosshairSettingsJson Crosshair settings json file used for this targeting run
+     * @param crosshairSolutionJson Crosshair solution json file used for this targeting run
+     */
+    public TargetingAccuracy( File beforeTargetingXml, File registeredAfterTargetingXml,
                                File crosshairSettingsJson, File crosshairSolutionJson ) throws SpimDataException {
 
         final LazySpimSource beforeSource = new LazySpimSource("before", beforeTargetingXml.getAbsolutePath());
@@ -66,11 +79,8 @@ public class TargetingAccuracy {
             Source[] sources = new Source[]{beforeSource, afterSource};
             String[] sourceNames = new String[]{TargetingAccuracy.before, TargetingAccuracy.after};
             for (int i = 0; i < sources.length; i++) {
-                // Set to arbitrary colour
-                ARGBType colour = new ARGBType(ARGBType.rgba(0, 0, 0, 0));
-                Content imageContent = addSourceToUniverse(universe, sources[i], 300 * 300 * 300, Content.VOLUME, colour, 0.7f, 0, 255);
-                // Reset colour to default for 3D viewer
-                imageContent.setColor(null);
+                Content imageContent = addSourceToUniverse(
+                        universe, sources[i], 300 * 300 * 300, Content.VOLUME, 0, 255);
                 imageContent.setLocked(true);
                 imageContent.showPointList(true);
                 universe.getPointListDialog().setVisible(false);
@@ -102,8 +112,15 @@ public class TargetingAccuracy {
             settings.planeNameToSettings.put( Crosshair.target,
                     new BlockPlaneSettings( settings.planeNameToSettings.get( Crosshair.target )) );
 
-            reader.loadSettings( settings, planeManager,
-                    accuracyFrame.getImagesPanel().getImageNameToContent(), accuracyFrame.getOtherPanel() );
+            try {
+                reader.loadSettings( settings, planeManager,
+                        accuracyFrame.getImagesPanel().getImageNameToContent() );
+                if ( !accuracyFrame.getOtherPanel().check3DPointsVisible() ) {
+                    accuracyFrame.getOtherPanel().toggleVisiblity3DPoints();
+                }
+            } catch (MicrotomeManager.IncorrectMicrotomeConfiguration e) {
+                logger.error(e.getMessage(), e);
+            }
 
             spaceOutWindows(accuracyFrame, beforeStackSource.getBdvHandle(), universe);
 

@@ -176,7 +176,7 @@ public class PlaneCreator {
 
         ArrayList<Vector3d> intersectionPoints = GeometryUtils.calculateIntersections(minCoord, maxCoord, planeNormal, planePoint);
 
-        if (intersectionPoints.size() > 0) {
+        if (!intersectionPoints.isEmpty()) {
             // intersections were in local space, we want to display in the global so must account for any transformations
             // of the image
             Transform3D translate = new Transform3D();

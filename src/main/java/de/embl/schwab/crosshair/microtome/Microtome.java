@@ -80,7 +80,8 @@ public class Microtome {
      * @param bdvStackSource BigDataViewer stack source
      * @param imageContent image content displayed in 3D viewer
      */
-    public Microtome (Image3DUniverse universe, PlaneManager planeManager, BdvStackSource bdvStackSource, Content imageContent) {
+    public Microtome(Image3DUniverse universe, PlaneManager planeManager,
+                     BdvStackSource bdvStackSource, Content imageContent) {
         this.universe = universe;
         this.planeManager = planeManager;
         this.bdvStackSource = bdvStackSource;
@@ -95,7 +96,6 @@ public class Microtome {
         currentEdgeVector = new Vector3d(1, 0,0);
 
         knifeTargetAngleThreshold = 0.1;
-
     }
 
     /**
@@ -315,7 +315,7 @@ public class Microtome {
     }
 
     /**
-     * Set knife initial transform
+     * Set initial transform of knife in 3D viewer
      * @param knifeInitialTransform transformation matrix
      */
     void setKnifeInitialTransform(Matrix4d knifeInitialTransform) {
@@ -331,7 +331,7 @@ public class Microtome {
     }
 
     /**
-     * Set microtome object names
+     * Set names of the microtome components in the 3D viewer (e.g. "/arc.stl", "/holder_back.stl"...)
      * @param microtomeObjectNames Array of object names
      */
     void setMicrotomeObjectNames(String[] microtomeObjectNames) {
@@ -339,7 +339,13 @@ public class Microtome {
     }
 
     /**
-     * Set sample rotation angle
+     * Get names of the microtome components in the 3D viewer (e.g. "/arc.stl", "/holder_back.stl"...)
+     * @return Array of object names
+     */
+    String[] getMicrotomeObjectNames() { return microtomeObjectNames; }
+
+    /**
+     * Set sample rotation angle and update orientation in 3D viewer
      * @param rotation sample rotation angle in degrees
      */
     void setRotation(double rotation) {
@@ -348,7 +354,7 @@ public class Microtome {
     }
 
     /**
-     * Set sample tilt angle
+     * Set sample tilt angle and update orientation in 3D viewer
      * @param tilt sample tilt angle in degrees
      */
     void setTilt(double tilt) {
@@ -357,7 +363,7 @@ public class Microtome {
     }
 
     /**
-     * Set knife angle
+     * Set knife angle and update orientation in 3D viewer
      * @param knife knife angle in degrees
      */
     void setKnife(double knife) {
@@ -405,7 +411,8 @@ public class Microtome {
         universe.getContent("/holder_front.stl").setTransform(new Transform3D(holderFrontTransform));
 
         // transform for block, global initial rotate & translate, then global tilt and global rotate
-        Matrix4d blockTiltTransform = GeometryUtils.makeMatrix(tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
+        Matrix4d blockTiltTransform = GeometryUtils.makeMatrix(
+                tilt - initialTiltAngle, tiltAxis, currentArcCentre, translation);
         Matrix4d blockTransform = new Matrix4d(rotationTransform);
         blockTransform.mul(blockTiltTransform);
         blockTransform.mul(initBlockTransform);
@@ -440,7 +447,7 @@ public class Microtome {
     }
 
     /**
-     * Reset the ultramicrotome
+     * Reset the ultramicrotome (internally + in 3D viewer)
      */
     void resetMicrotome () {
         initialBlockTransform.setIdentity();

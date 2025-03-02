@@ -8,9 +8,6 @@ import de.embl.schwab.crosshair.io.serialise.VertexPointAdapter;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.points.VertexPoint;
-import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
-import de.embl.schwab.crosshair.ui.swing.OtherPanel;
-import ij.IJ;
 import ij3d.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +17,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Class to read plane / image settings from .json files
+ */
 public class SettingsReader {
 
     private static final Logger logger = LoggerFactory.getLogger(SettingsReader.class);
 
     public SettingsReader() {}
 
+    /**
+     * Read settings from .json file
+     * @param filePath Path of .json file
+     * @return settings
+     */
     public Settings readSettings(String filePath ) {
         Gson gson = new GsonBuilder().
                 registerTypeAdapter( new TypeToken<Map<String, PlaneSettings>>(){}.getType(), new PlaneSettingsMapDeserializer()).
@@ -53,47 +58,41 @@ public class SettingsReader {
         }
     }
 
-    public void loadSettings( Settings settings, MicrotomeManager microtomeManager, MicrotomePanel microtomePanel,
-                              PlaneManager planeManager, Map<String, Content> imageNameToContent, OtherPanel otherPanel ) {
-        if ( microtomeManager.isMicrotomeModeActive() ) {
-            microtomePanel.exitMicrotomeMode();
-        }
-
-        loadSettings( settings, planeManager, imageNameToContent, otherPanel );
-    }
-
+    /**
+     * Set state of plane manager, displayed objects in 3D viewer etc. from settings
+     * @param settings settings to load
+     * @param planeManager plane manager
+     * @param imageNameToContent map of image name to its displayed content in the 3D viewer
+     */
     public void loadSettings( Settings settings, PlaneManager planeManager,
-                              Map<String, Content> imageNameToContent, OtherPanel otherPanel ) {
+                              Map<String, Content> imageNameToContent
+    ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
-        if ( !planeManager.isTrackingPlane() ) {
-
-            // setup plane settings
-            // make a copy, so not modifying as we loop
-            ArrayList<String> planeNames = new ArrayList<>( planeManager.getPlaneNames() );
-            for ( String planeName : planeNames ) {
-                planeManager.removeNamedPlane(planeName);
-            }
-
-            for ( PlaneSettings planeSettings: settings.planeNameToSettings.values() ) {
-                if ( planeSettings instanceof BlockPlaneSettings) {
-                    planeManager.addBlockPlane( (BlockPlaneSettings) planeSettings );
-                } else {
-                    planeManager.addPlane( planeSettings );
-                }
-            }
-
-            // setup image settings
-            for ( ImageContentSettings imageSettings: settings.imageNameToSettings.values() ) {
-                loadImageSettings( imageNameToContent.get( imageSettings.name ), imageSettings );
-            }
-
-            if ( !otherPanel.check3DPointsVisible() ) {
-                otherPanel.toggleVisiblity3DPoints();
-            }
-        } else {
-            IJ.log("Cant load settings when tracking a plane");
+        if (planeManager.isTrackingPlane()) {
+            throw new MicrotomeManager.IncorrectMicrotomeConfiguration(
+                    "Cant load settings when tracking a plane"
+            );
         }
 
+        // setup plane settings
+        // make a copy, so not modifying as we loop
+        ArrayList<String> planeNames = new ArrayList<>( planeManager.getPlaneNames() );
+        for ( String planeName : planeNames ) {
+            planeManager.removeNamedPlane(planeName);
+        }
+
+        for ( PlaneSettings planeSettings: settings.planeNameToSettings.values() ) {
+            if ( planeSettings instanceof BlockPlaneSettings) {
+                planeManager.addBlockPlane( (BlockPlaneSettings) planeSettings );
+            } else {
+                planeManager.addPlane( planeSettings );
+            }
+        }
+
+        // setup image settings
+        for ( ImageContentSettings imageSettings: settings.imageNameToSettings.values() ) {
+            loadImageSettings( imageNameToContent.get( imageSettings.name ), imageSettings );
+        }
     }
 
 }

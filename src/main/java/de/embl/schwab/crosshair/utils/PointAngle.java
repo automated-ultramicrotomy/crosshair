@@ -2,6 +2,9 @@ package de.embl.schwab.crosshair.utils;
 
 import org.scijava.vecmath.Point3f;
 
+/**
+ * Class to hold a point and an angle
+ */
 public class PointAngle {
     private Point3f point;
     private Double angle;
@@ -11,7 +14,7 @@ public class PointAngle {
         this.angle = angle;
     }
 
-    public Point3f getPoint () {
+    public Point3f getPoint() {
         return point;
     }
 

@@ -1,20 +1,21 @@
 package de.embl.schwab.crosshair.microtome;
 
 import bdv.util.BdvStackSource;
+import de.embl.schwab.crosshair.Crosshair;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.solution.SolutionsCalculator;
-import de.embl.schwab.crosshair.ui.swing.MicrotomePanel;
-import de.embl.schwab.crosshair.ui.swing.VertexAssignmentPanel;
-import ij.IJ;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import net.imglib2.RealPoint;
 
+import java.util.Map;
+
+/**
+ * Main class to manage interaction with the ultramicrotome
+ */
 public class MicrotomeManager {
-
-    private final PlaneManager planeManager;
-    private MicrotomePanel microtomePanel;
-    private VertexAssignmentPanel vertexAssignmentPanel;
 
     private boolean microtomeModeActive;
     private boolean cuttingModeActive;
@@ -23,16 +24,25 @@ public class MicrotomeManager {
     private MicrotomeSetup microtomeSetup;
     private SolutionsCalculator solutions;
     private Cutting cutting;
+    private PlaneManager planeManager;
 
     private String unit;
 
-    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe, Content imageContent, BdvStackSource bdvStackSource, String unit) {
-
-        this.planeManager = planeManager;
+    /**
+     * Create a microtome manager
+     * @param planeManager plane manager
+     * @param universe universe of the 3D viewer
+     * @param imageContent image content displayed in 3D viewer
+     * @param bdvStackSource BigDataViewer stack source
+     * @param unit unit of distance e.g. micrometre
+     */
+    public MicrotomeManager(PlaneManager planeManager, Image3DUniverse universe,
+                            Content imageContent, BdvStackSource bdvStackSource, String unit) {
         microtomeModeActive = false;
         cuttingModeActive = false;
 
         this.microtome = new Microtome(universe, planeManager, bdvStackSource, imageContent);
+        this.planeManager = planeManager;
         this.microtomeSetup = new MicrotomeSetup(microtome);
         this.solutions = new SolutionsCalculator(microtome);
         this.cutting = new Cutting(microtome);
@@ -44,13 +54,11 @@ public class MicrotomeManager {
         return solutions.getSolution( unit );
     }
 
-    public void setMicrotomePanel(MicrotomePanel microtomePanel) {
-        this.microtomePanel = microtomePanel;
-    }
+    public SolutionsCalculator getSolutions() { return solutions; }
 
-    public void setVertexAssignmentPanel (VertexAssignmentPanel vertexAssignmentPanel) {
-        this.vertexAssignmentPanel = vertexAssignmentPanel;
-    }
+    public Microtome getMicrotome() { return microtome; }
+
+    public Cutting getCutting() { return cutting; }
 
     public boolean isCuttingModeActive() {
         return cuttingModeActive;
@@ -58,113 +66,140 @@ public class MicrotomeManager {
 
     public boolean isMicrotomeModeActive() { return microtomeModeActive; }
 
-    public boolean isValidSolution () {
+    public boolean isValidSolution() {
         return solutions.isValidSolution();
     }
 
-    public void enterMicrotomeMode (double initialKnifeAngle, double initialTiltAngle) {
-        if (!microtomeModeActive) {
-            microtomeModeActive = true;
-            microtome.setInitialKnifeAngle(initialKnifeAngle);
-            microtome.setInitialTiltAngle(initialTiltAngle);
-
-            microtomeSetup.initialiseMicrotome();
-        } else {
-            IJ.log("Microtome mode already active");
+    /**
+     * Exception for when the microtome is in the wrong configuration for a specific action. E.g. trying to set the
+     * cutting depth when the cutting mode isn't active.
+     */
+    public static class IncorrectMicrotomeConfiguration extends Exception {
+        public IncorrectMicrotomeConfiguration(String errorMessage) {
+            super(errorMessage);
         }
     }
 
-    public void exitMicrotomeMode (){
+    /**
+     * Enter microtome mode with the given initial angles.
+     * @param initialKnifeAngle initial knife angle (degrees)
+     * @param initialTiltAngle initial tilt angle (degrees)
+     */
+    public void enterMicrotomeMode(double initialKnifeAngle, double initialTiltAngle) throws IncorrectMicrotomeConfiguration {
         if (microtomeModeActive) {
-            microtomeModeActive = false;
-            microtome.resetMicrotome();
-        } else {
-            IJ.log("Microtome mode already active");
+            throw new IncorrectMicrotomeConfiguration("Microtome mode already active");
         }
+
+        if (!allCrosshairPlanesPointsDefined()) {
+            throw new IncorrectMicrotomeConfiguration(
+                    "Some of: target plane, block plane, top left, top right, " +
+                            "bottom left, bottom right aren't defined.");
+        }
+
+        microtomeModeActive = true;
+        microtome.setInitialKnifeAngle(initialKnifeAngle);
+        microtome.setInitialTiltAngle(initialTiltAngle);
+
+        microtomeSetup.initialiseMicrotome();
     }
 
-    public void setKnife (double angleDegrees) {
-        if (microtomeModeActive) {
-            microtome.setKnife(angleDegrees);
-            microtomePanel.setKnifeLabel( angleDegrees );
-            microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
-        } else {
-            IJ.log("Microtome mode inactive");
-        }
-    }
+    /**
+     * Checks that all the required planes (target + block) and points (the 4 assigned block face vertices) are
+     * defined. This means microtome mode could be enabled.
+     * @return whether all the required planes / points exist
+     */
+    public boolean allCrosshairPlanesPointsDefined() {
+        boolean targetExists = planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.target );
+        boolean blockExists = planeManager.checkNamedPlaneExistsAndOrientationIsSet( Crosshair.block );
 
-    public void setTilt (double angleDegrees) {
-        if (microtomeModeActive) {
-            microtome.setTilt(angleDegrees);
-            microtomePanel.setTiltLabel( angleDegrees );
-            microtomePanel.setRotationLabel( microtome.getRotation() );
-            microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
-        } else {
-            IJ.log("Microtome mode inactive");
-        }
-    }
+        boolean allVerticesExist = false;
+        if ( blockExists ) {
+            allVerticesExist = true;
+            Map<VertexPoint, RealPoint> assignedVertices =
+                    planeManager.getVertexDisplay(Crosshair.block ).getAssignedVertices();
 
-    public void setRotation (double angleDegrees) {
-        if (microtomeModeActive) {
-            microtome.setRotation(angleDegrees);
-            microtomePanel.setRotationLabel(angleDegrees);
-            microtomePanel.setTiltLabel( microtome.getTilt() );
-            microtomePanel.setKnifeTargetAngleLabel( microtome.getAngleKnifeTarget() );
-        } else {
-            IJ.log("Microtome mode inactive");
-        }
-    }
-
-
-
-    public void setSolution (double rotationDegrees) {
-        if (microtomeModeActive) {
-            microtomePanel.getRotationAngle().setCurrentValue(rotationDegrees);
-            solutions.setSolutionFromRotation(rotationDegrees);
-
-            // Still set to value, even if not valid solution, so microtome moves / maxes out limit - makes for a smoother transition
-            microtomePanel.getTiltAngle().setCurrentValue( solutions.getSolutionTilt() );
-            microtomePanel.getKnifeAngle().setCurrentValue( solutions.getSolutionKnife() );
-
-            if ( !solutions.isValidSolution() ) {
-                // Display first touch as nothing, and distance as 0
-                microtomePanel.setFirstTouchLabel("");
-                microtomePanel.setDistanceToCutLabel(0);
-            } else {
-                microtomePanel.setFirstTouchLabel( solutions.getSolutionFirstTouchVertexPoint().toString() );
-                microtomePanel.setDistanceToCutLabel( solutions.getDistanceToCut() );
+            for ( VertexPoint vertexPoint: VertexPoint.values() ) {
+                if ( !assignedVertices.containsKey( vertexPoint ) ) {
+                    allVerticesExist = false;
+                    break;
+                }
             }
-        } else {
-            IJ.log("Microtome mode inactive");
         }
+
+        if (targetExists & blockExists & allVerticesExist) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
-    public void enterCuttingMode () {
-        if (microtomeModeActive & !cuttingModeActive) {
-            cutting.initialiseCuttingPlane();
-            cuttingModeActive = true;
-            microtomePanel.setCuttingRange( cutting.getCuttingDepthMin(), cutting.getCuttingDepthMax() );
-        } else {
-            IJ.log("Microtome mode inactive, or cutting mode already active");
+    public void exitMicrotomeMode() throws IncorrectMicrotomeConfiguration {
+        if (!microtomeModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Microtome mode already inactive");
         }
+
+        microtomeModeActive = false;
+        microtome.resetMicrotome();
     }
 
-    public void setCuttingDepth (double cuttingDepth) {
-        if (cuttingModeActive) {
-            cutting.updateCut(cuttingDepth);
-        } else {
-            IJ.log("Cutting mode inactive");
+    public void setKnife(double angleDegrees) throws IncorrectMicrotomeConfiguration {
+        if (!microtomeModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Microtome mode inactive");
         }
+
+        microtome.setKnife(angleDegrees);
     }
 
-    public void exitCuttingMode() {
-        if (cuttingModeActive) {
-            cuttingModeActive = false;
-            cutting.removeCuttingPlane();
-        } else {
-            IJ.log("Cutting mode inactive");
+    public void setTilt(double angleDegrees) throws IncorrectMicrotomeConfiguration {
+        if (!microtomeModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Microtome mode inactive");
         }
+
+        microtome.setTilt(angleDegrees);
     }
 
+    public void setRotation(double angleDegrees) throws IncorrectMicrotomeConfiguration {
+        if (!microtomeModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Microtome mode inactive");
+        }
 
+        microtome.setRotation(angleDegrees);
+    }
+
+    public void setSolution(double rotationDegrees) throws IncorrectMicrotomeConfiguration {
+        if (!microtomeModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Microtome mode inactive");
+        }
+
+        solutions.setSolutionFromRotation(rotationDegrees);
+    }
+
+    public void enterCuttingMode() throws IncorrectMicrotomeConfiguration {
+        if (!microtomeModeActive | cuttingModeActive) {
+            throw new IncorrectMicrotomeConfiguration(
+                    "Microtome mode inactive, or cutting mode already active"
+            );
+        }
+
+        cutting.initialiseCuttingPlane();
+        cuttingModeActive = true;
+    }
+
+    public void setCuttingDepth(double cuttingDepth) throws IncorrectMicrotomeConfiguration {
+        if (!cuttingModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Cutting mode inactive");
+        }
+
+        cutting.updateCut(cuttingDepth);
+    }
+
+    public void exitCuttingMode() throws IncorrectMicrotomeConfiguration {
+        if (!cuttingModeActive) {
+            throw new IncorrectMicrotomeConfiguration("Cutting mode inactive");
+        }
+
+        cuttingModeActive = false;
+        cutting.removeCuttingPlane();
+    }
 }

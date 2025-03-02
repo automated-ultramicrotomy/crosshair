@@ -11,6 +11,9 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Class for main targeting accuracy UI, to hold all the various panels
+ */
 public class TargetingAccuracyFrame extends JFrame {
 
     private final Image3DUniverse universe;
@@ -24,11 +27,20 @@ public class TargetingAccuracyFrame extends JFrame {
     private OtherPanel otherPanel;
     private ImagesPanel imagesPanel;
 
-    // primary image is the one fed to the planemanager to control extent of planes and points in the 3d view.
-    // For accuracy measuring purposes, it should be the block before trimming
+    /**
+     * Create the main targeting accuracy UI
+     * @param universe universe of the 3D viewer
+     * @param imageNametoContent map of image name to its displayed content in the 3D viewer
+     * @param planeManager plane manager
+     * @param bdvHandle bdvHandle of the BigDataViewer window
+     * @param unit distance unit
+     * @param solution solution used for this targeting run
+     */
     public TargetingAccuracyFrame( Image3DUniverse universe, Map<String, Content> imageNametoContent,
                                   PlaneManager planeManager, BdvHandle bdvHandle, String unit, Solution solution  ) {
 
+        // primary image is the one fed to the planemanager to control extent of planes and points in the 3d view.
+        // For accuracy measuring purposes, it should be the block before trimming
         this.universe = universe;
         this.planeManager = planeManager;
         this.bdvHandle = bdvHandle;

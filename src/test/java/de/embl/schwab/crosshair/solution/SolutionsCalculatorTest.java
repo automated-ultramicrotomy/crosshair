@@ -12,6 +12,7 @@ import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
 import de.embl.schwab.crosshair.settings.SettingsReader;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +76,7 @@ class SolutionsCalculatorTest {
         return microtome;
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void setSolutionFromRotation() {
         double solutionRotation = 15.0;
         double initialTiltAngle = 5.0;
@@ -91,7 +92,7 @@ class SolutionsCalculatorTest {
         assertEquals( solutionsCalculator.getSolutionFirstTouchVertexPoint(), VertexPoint.BottomRight );
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void setSolutionFromRotation2() {
         double solutionRotation = -100.0;
         double initialTiltAngle = 5.0;

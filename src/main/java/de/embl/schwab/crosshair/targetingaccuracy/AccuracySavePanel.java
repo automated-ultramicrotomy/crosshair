@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
-import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import de.embl.schwab.crosshair.settings.Settings;
@@ -9,6 +9,8 @@ import de.embl.schwab.crosshair.settings.SettingsWriter;
 import de.embl.schwab.crosshair.ui.swing.*;
 import ij.IJ;
 import net.imglib2.RealPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +21,12 @@ import java.util.ArrayList;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseOpenFilePath;
 import static de.embl.schwab.crosshair.io.IoHelper.chooseSaveFilePath;
 
+/**
+ * Class for UI Panel controlling saving/loading of settings and accuracy measures
+ */
 public class AccuracySavePanel extends CrosshairPanel {
+
+    private static final Logger logger = LoggerFactory.getLogger(AccuracySavePanel.class);
 
     private PlaneManager planeManager;
     private OtherPanel otherPanel;
@@ -31,6 +38,10 @@ public class AccuracySavePanel extends CrosshairPanel {
 
     public AccuracySavePanel() {}
 
+    /**
+     * Initialise panel from settings in main accuracy frame
+     * @param accuracyFrame main accuracy UI
+     */
     public void initialisePanel( TargetingAccuracyFrame accuracyFrame ) {
         this.accuracyFrame = accuracyFrame;
         this.planeManager = accuracyFrame.getPlaneManager();
@@ -118,7 +129,15 @@ public class AccuracySavePanel extends CrosshairPanel {
                 settings.planeNameToSettings.put( TargetingAccuracy.beforeTarget,
                         new BlockPlaneSettings( settings.planeNameToSettings.get( TargetingAccuracy.beforeTarget )) );
             }
-            reader.loadSettings( settings, planeManager, imagesPanel.getImageNameToContent(), otherPanel );
+
+            try {
+                reader.loadSettings( settings, planeManager, imagesPanel.getImageNameToContent() );
+                if ( !otherPanel.check3DPointsVisible() ) {
+                    otherPanel.toggleVisiblity3DPoints();
+                }
+            } catch (MicrotomeManager.IncorrectMicrotomeConfiguration e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 

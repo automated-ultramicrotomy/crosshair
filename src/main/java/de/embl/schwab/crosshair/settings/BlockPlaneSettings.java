@@ -2,7 +2,6 @@ package de.embl.schwab.crosshair.settings;
 
 import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.points.VertexPoint;
-import de.embl.schwab.crosshair.settings.PlaneSettings;
 import net.imglib2.RealPoint;
 import org.scijava.vecmath.Color3f;
 
@@ -10,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to hold all settings related to block planes (e.g. display settings, normal, point...)
+ */
 public class BlockPlaneSettings extends PlaneSettings {
 
     public ArrayList<RealPoint> vertices; // all vertex points placed on the block plane
@@ -40,5 +42,27 @@ public class BlockPlaneSettings extends PlaneSettings {
         this.isVisible = planeSettings.isVisible;
         this.pointsToFitPlane = planeSettings.pointsToFitPlane;
         this.distanceBetweenPlanesThreshold = planeSettings.distanceBetweenPlanesThreshold;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = super.equals(obj);
+        if (!isEqual) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final BlockPlaneSettings other = (BlockPlaneSettings) obj;
+        if (!this.vertices.equals(other.vertices)) {
+            return false;
+        }
+        if (!this.assignedVertices.equals(other.assignedVertices)) {
+            return false;
+        }
+
+        return true;
     }
 }

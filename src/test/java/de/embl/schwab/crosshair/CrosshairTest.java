@@ -1,7 +1,6 @@
 package de.embl.schwab.crosshair;
 
 import de.embl.cba.bdv.utils.sources.LazySpimSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -14,22 +13,19 @@ class CrosshairTest {
 
     private Crosshair crosshair;
 
-    @AfterEach
-    void tearDown() {
-        crosshair.getUniverse().close();
-        crosshair.getBdvHandle().close();
-    }
-
     /**
      * Test that Crosshair can be opened from a bdv file + that windows are laid out correctly (no overlap, fully on
-     * screen)
+     * screen).
+     *
+     * Note: I used to run crosshair.close() at the end of this test, but it seemed to be causing the test to
+     * hang intermittently on github actions.
      */
     @Test
     void openCrosshairFromBdv() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         File xray = new File(classLoader.getResource("exampleBlock.xml").getFile());
-
         final LazySpimSource imageSource = new LazySpimSource("raw", xray.getAbsolutePath());
+
         crosshair = new Crosshair(imageSource);
 
         // Check successfully created crosshair controls, bdv window + 3D viewer

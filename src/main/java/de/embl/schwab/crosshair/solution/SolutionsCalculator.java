@@ -14,6 +14,9 @@ import java.util.Map;
 
 import static java.lang.Math.*;
 
+/**
+ * Class to calculate Crosshair solutions from microtome/plane values.
+ */
 public class SolutionsCalculator {
 
     private Microtome microtome;
@@ -29,6 +32,10 @@ public class SolutionsCalculator {
     private Vector3d solutionFirstTouchPoint;
     private double distanceToCut;
 
+    /**
+     * Create a solutions calculator
+     * @param microtome microtome
+     */
     public SolutionsCalculator( Microtome microtome ) {
         this.microtome = microtome;
         this.planeManager = microtome.getPlaneManager();
@@ -58,19 +65,29 @@ public class SolutionsCalculator {
         return solutionFirstTouchVertexPoint;
     }
 
-    // note this rounds values to 4dp for nicer formatting when saving, don't use these values directly for calculations
+    /**
+     * Get current solution, with nicely formatted values for saving to file. Note - this rounds values to 4dp for
+     * nicer formatting when saving, don't use these values directly for calculations! Use the values from the getters
+     * e.g. getSolutionKnife() for full precision.
+     * @param unit distance unit
+     * @return current solution (with rounding)
+     */
     public Solution getSolution( String unit ) {
         return new Solution( microtome.getInitialKnifeAngle(),
                 microtome.getInitialTiltAngle(), solutionKnife, solutionTilt,
                 solutionRotation, solutionFirstTouchVertexPoint, distanceToCut, unit);
     }
 
-    public void setSolutionFromRotation ( double solutionRotation ) {
+    /**
+     * Update current solution from the given rotation value
+     * @param solutionRotation rotation value for new solution
+     */
+    public void setSolutionFromRotation( double solutionRotation ) {
         calculateRotations( solutionRotation, microtome.getInitialTiltAngle(), microtome.getInitialKnifeAngle(),
                 microtome.getInitialTargetOffset(), microtome.getInitialTargetTilt() );
         Plane targetPlane = planeManager.getPlane( Crosshair.target );
-        calculateDistance( planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices(), targetPlane.getNormal(), targetPlane.getPoint(),
-                solutionKnife );
+        calculateDistance( planeManager.getVertexDisplay( Crosshair.block ).getAssignedVertices(),
+                targetPlane.getNormal(), targetPlane.getPoint(), solutionKnife );
         checkSolutionValid();
     }
 

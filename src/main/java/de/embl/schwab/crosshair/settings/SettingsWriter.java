@@ -13,12 +13,21 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to write plane / image settings to .json files
+ */
 public class SettingsWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(SettingsWriter.class);
 
     public SettingsWriter() { }
 
+    /**
+     * Create settings from state of planemanager + displayed image content
+     * @param planeManager plane manager
+     * @param imageNameToContent map of image name to its displayed content in the 3D viewer
+     * @return settings
+     */
     public Settings createSettings(PlaneManager planeManager, Map<String, Content> imageNameToContent ) {
         Settings settings = new Settings();
 
@@ -54,6 +63,11 @@ public class SettingsWriter {
         return settings;
     }
 
+    /**
+     * Write settings to .json file
+     * @param settings settings to write
+     * @param filePath path to .json file
+     */
     public void writeSettings( Settings settings, String filePath ) {
         try {
             FileWriter fileWriter = new FileWriter(filePath);
