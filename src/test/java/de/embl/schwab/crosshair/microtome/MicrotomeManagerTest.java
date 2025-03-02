@@ -40,7 +40,6 @@ class MicrotomeManagerTest {
 
     @BeforeAll
     void overallSetup() {
-        System.out.println("overall setup");
         // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
         // more stable
         universe = BdvAnd3DViewer.getUniverse();
@@ -51,8 +50,6 @@ class MicrotomeManagerTest {
     @BeforeEach
     void setUp() {
         BdvAnd3DViewer.reset();
-        System.out.println("setup");
-        System.out.println("start of setup block " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         // add block and target plane for testing - load from example settings file
         planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
@@ -73,8 +70,6 @@ class MicrotomeManagerTest {
         microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, "microns");
         initialKnifeAngle = 10;
         initialTiltAngle = 10;
-
-        System.out.println("end of setup block " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
     }
 
     /**
@@ -260,8 +255,6 @@ class MicrotomeManagerTest {
                      Transform3D holderFrontExpectedTranslation, Transform3D holderFrontExpectedRotation,
                      Transform3D imageExpectedTranslation, Transform3D imageExpectedRotation) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
-        System.out.println("set rotation start " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
-
         Microtome microtome = microtomeManager.getMicrotome();
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -315,7 +308,6 @@ class MicrotomeManagerTest {
     void enterExitCuttingMode(double knifeAngle, Point3d expectedCuttingPlaneMin, Point3d expectedCuttingPlaneMax,
                               double expectedCuttingDepthMin, double expectedCuttingDepthMax
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration {
-        System.out.println("exit cutting mode start " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -363,9 +355,6 @@ class MicrotomeManagerTest {
     void setCuttingDepth(double cuttingDepth, Transform3D expectedCuttingPlaneTranslation,
                          Transform3D expectedCuttingPlaneRotation, double[] expectedBdvTransform
     ) throws MicrotomeManager.IncorrectMicrotomeConfiguration, InterruptedException {
-        System.out.println("cutting start " + bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
-        System.out.println("cutting start " + bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
-        System.out.println("cutting start " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         microtomeManager.enterMicrotomeMode(initialKnifeAngle, initialTiltAngle);
 
@@ -383,15 +372,11 @@ class MicrotomeManagerTest {
         ));
 
         // Set cutting depth
-        System.out.println("before enter cutting mode " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.enterCuttingMode();
-        System.out.println("before enter cutting depth " +bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
         microtomeManager.setCuttingDepth(cuttingDepth);
 
         // have to wait for 2 seconds to allow the animated bdv movement to finish
         TimeUnit.SECONDS.sleep(2);
-
-        System.out.println("after cut set " +bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
 
         // Check transform of cutting plane is as expected
         assertionsForContentTransforms(

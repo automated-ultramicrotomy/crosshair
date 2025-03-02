@@ -214,27 +214,11 @@ public class Cutting {
             Vector3d knifePointV = new Vector3d(knifePoint.getX(), knifePoint.getY(), knifePoint.getZ());
 
             Vector3d pointToMoveTo = findClosestPointOnPlane(new Vector3d(knifeNormal), knifePointV, currentViewCentreGlobal);
-
-            System.out.println("Before position move " + microtome.getBdvStackSource().getBdvHandle().getViewerPanel().state().getViewerTransform());
-            System.out.println("Before position move " + knifeNormal);
-            System.out.println("Before position move " + knifePointV);
-            System.out.println("Before position move " + currentViewCentreGlobal);
-            System.out.println("Before position move " + microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getDisplay().getWidth());
-            System.out.println("Before position move " + microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getDisplay().getHeight());
-            System.out.println("Before position move " + pointToMoveTo);
-
             double[] pointToMoveToDouble = {pointToMoveTo.getX(), pointToMoveTo.getY(), pointToMoveTo.getZ()};
             moveToPosition(microtome.getBdvStackSource(), pointToMoveToDouble, 0,  0);
-
-            System.out.println("After position move " + microtome.getBdvStackSource().getBdvHandle().getViewerPanel().state().getViewerTransform());
-            System.out.println("After position move " + microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getWidth());
-            System.out.println("After position move " + microtome.getBdvStackSource().getBdvHandle().getViewerPanel().getHeight());
         }
 
         if (!normalsParallel | !orientationCorrect) {
-            System.out.println("Before level " + Arrays.toString(knifeNormalDouble));
-            System.out.println("Before level " + Arrays.toString(edgeVectorDouble));
-
             GeometryUtils.levelCurrentViewNormalandHorizontal(
                     microtome.getBdvStackSource(), knifeNormalDouble, edgeVectorDouble
             );

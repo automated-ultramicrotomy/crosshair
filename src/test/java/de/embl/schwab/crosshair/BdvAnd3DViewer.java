@@ -15,6 +15,17 @@ import java.util.Objects;
 
 import static de.embl.schwab.crosshair.utils.BdvUtils.addSourceToUniverse;
 
+/**
+ * Test helper class to initiate a BigDataViewer + 3D viewer window displaying a test image.
+ *
+ * Note: this uses static fields to ensure that the same Bdv/3D window can be re-used across all the tests. This speeds
+ * up the tests (as initiating the viewers is quite slow) + also avoids heap errors when run via github actions. Even
+ * when running all the relevant close methods e.g. universe.close(), universe.cleanup(),
+ * bdvStackSource.getBdvHandle().close() some references still seem to remain open, which eventually causes a
+ * heap/memory error if multiple windows are opened sequentially on github actions. Re-using a single window is a
+ * workaround for this - but it would be good to find the underlying cause at some point + report the issue to these
+ * external libraries.
+ */
 public class BdvAnd3DViewer {
     private static BdvStackSource bdvStackSource;
     private static AffineTransform3D initialViewerTransform;
@@ -49,6 +60,10 @@ public class BdvAnd3DViewer {
         return imageContent;
     }
 
+    /**
+     * Reset Bdv + 3D viewer to their initial state i.e. reset any applied transforms, remove any additional meshes
+     * to only leave the test image.
+     */
     public static void reset() {
         if (universe != null & imageContent != null) {
             reset3DViewer();
@@ -60,7 +75,6 @@ public class BdvAnd3DViewer {
     }
 
     private static void createBdvAnd3DViewer() {
-        System.out.println("CREATING NEW BDV + 3D viewer");
         ClassLoader classLoader = BdvAnd3DViewer.class.getClassLoader();
         File imageFile = new File(classLoader.getResource("exampleBlock.xml").getFile());
         LazySpimSource imageSource = new LazySpimSource("raw", imageFile.getAbsolutePath());
@@ -88,10 +102,6 @@ public class BdvAnd3DViewer {
                 0.0, 0.0, 0.47261361983944955, -188.25276146804035
         );
         resetBdv();
-
-        System.out.println("test setup " + bdvStackSource.getBdvHandle().getViewerPanel().getWidth());
-        System.out.println("test setup " + bdvStackSource.getBdvHandle().getViewerPanel().getHeight());
-        System.out.println("test setup " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
     }
 
     private static void reset3DViewer() {
@@ -116,7 +126,5 @@ public class BdvAnd3DViewer {
 
     private static void resetBdv() {
         bdvStackSource.getBdvHandle().getViewerPanel().state().setViewerTransform(initialViewerTransform);
-        System.out.println("test teardown " + initialViewerTransform);
-        System.out.println("test teardown " + bdvStackSource.getBdvHandle().getViewerPanel().state().getViewerTransform());
     }
 }
