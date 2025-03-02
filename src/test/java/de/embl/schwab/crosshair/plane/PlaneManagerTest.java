@@ -2,7 +2,6 @@ package de.embl.schwab.crosshair.plane;
 
 import bdv.util.BdvStackSource;
 import de.embl.schwab.crosshair.BdvAnd3DViewer;
-import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.overlays.PointOverlay2d;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static de.embl.schwab.crosshair.TestHelpers.*;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.checkVectorsParallel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -47,11 +45,10 @@ class PlaneManagerTest {
     void overallSetUp() {
         // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
         // more stable
-        BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
-        universe = bdvAnd3DViewer.universe;
-        bdvStackSource = bdvAnd3DViewer.bdvStackSource;
-        imageContent = bdvAnd3DViewer.imageContent;
-        initialViewerTransform = bdvAnd3DViewer.initialViewerTransform;
+        universe = BdvAnd3DViewer.getUniverse();
+        bdvStackSource = BdvAnd3DViewer.getBdvStackSource();
+        imageContent = BdvAnd3DViewer.getImageContent();
+        initialViewerTransform = BdvAnd3DViewer.getInitialViewerTransform();
 
         min = new Point3d();
         imageContent.getMin(min);
@@ -61,6 +58,8 @@ class PlaneManagerTest {
 
     @BeforeEach
     void setUp() {
+        BdvAnd3DViewer.reset();
+
         // Example point and normal for testing
         point = new Vector3d(-188.47561306126704, 15.353222856645068, 621.5211240735744);
         normal = new Vector3d(0.20791169081775954, 0.08525118065879457, 0.9744254538021788);
@@ -68,22 +67,21 @@ class PlaneManagerTest {
         planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
     }
 
-    @AfterEach
-    void tearDown() {
-        resetBdv(bdvStackSource.getBdvHandle(), initialViewerTransform);
-        reset3DViewer(universe, imageContent);
-    }
+//    @AfterEach
+//    void tearDown() {
+//        BdvAnd3DViewer.reset();
+//    }
 
     @AfterAll
     void overallTearDown() {
-        universe.close();
-        universe.cleanup();
-        bdvStackSource.getBdvHandle().close();
-
-        universe = null;
-        bdvStackSource = null;
-        planeManager = null;
-        imageContent = null;
+//        universe.close();
+//        universe.cleanup();
+//        bdvStackSource.getBdvHandle().close();
+//
+//        universe = null;
+//        bdvStackSource = null;
+//        planeManager = null;
+//        imageContent = null;
     }
 
     @Test

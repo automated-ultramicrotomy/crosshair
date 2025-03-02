@@ -2,7 +2,6 @@ package de.embl.schwab.crosshair.settings;
 
 import de.embl.schwab.crosshair.BdvAnd3DViewer;
 import de.embl.schwab.crosshair.Crosshair;
-import de.embl.schwab.crosshair.TestHelpers;
 import de.embl.schwab.crosshair.microtome.MicrotomeManager;
 import de.embl.schwab.crosshair.plane.PlaneManager;
 import ij3d.Content;
@@ -16,7 +15,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.embl.schwab.crosshair.TestHelpers.createBdvAnd3DViewer;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SettingsWriterTest {
@@ -50,9 +48,8 @@ class SettingsWriterTest {
     void createSettings() throws MicrotomeManager.IncorrectMicrotomeConfiguration {
 
         // initialise planemanager + image content from example settings file
-        BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
-        Image3DUniverse universe = bdvAnd3DViewer.universe;
-        Content imageContent = bdvAnd3DViewer.imageContent;
+        Image3DUniverse universe = BdvAnd3DViewer.getUniverse();
+        Content imageContent = BdvAnd3DViewer.getImageContent();
 
 //        PlaneManager planeManager = new PlaneManager(bdvAnd3DViewer.bdvStackSource, universe, imageContent);
 //        Map<String, Content> imageNameToContent = new HashMap<>();
@@ -65,8 +62,6 @@ class SettingsWriterTest {
 //        assertEquals(settings, newSettings);
 //
         // cleanup bdv and 3D viewer
-        universe.close();
-        universe.cleanup();
-        bdvAnd3DViewer.bdvStackSource.getBdvHandle().close();
+        BdvAnd3DViewer.reset();
     }
 }

@@ -1,5 +1,6 @@
 package de.embl.schwab.crosshair.plane;
 
+import bdv.util.Bdv;
 import bdv.util.BdvStackSource;
 import customnode.CustomMeshNode;
 import de.embl.schwab.crosshair.BdvAnd3DViewer;
@@ -21,7 +22,6 @@ import org.scijava.vecmath.Vector3d;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static de.embl.schwab.crosshair.TestHelpers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -41,11 +41,10 @@ class PlaneCreatorTest {
     void overallSetup() {
         // Keep same 3D viewer and bigdataviewer open for all tests in class - this speeds up the tests + makes them
         // more stable
-        BdvAnd3DViewer bdvAnd3DViewer = createBdvAnd3DViewer();
-        universe = bdvAnd3DViewer.universe;
-        bdvStackSource = bdvAnd3DViewer.bdvStackSource;
-        imageContent = bdvAnd3DViewer.imageContent;
-        initialViewerTransform = bdvAnd3DViewer.initialViewerTransform;
+        universe = BdvAnd3DViewer.getUniverse();
+        bdvStackSource = BdvAnd3DViewer.getBdvStackSource();
+        imageContent = BdvAnd3DViewer.getImageContent();
+        initialViewerTransform = BdvAnd3DViewer.getInitialViewerTransform();
 
         min = new Point3d();
         imageContent.getMin(min);
@@ -55,23 +54,23 @@ class PlaneCreatorTest {
 
     @BeforeEach
     void setUp() {
+        BdvAnd3DViewer.reset();
         planeCreator = new PlaneCreator(universe, imageContent, bdvStackSource);
     }
 
-    @AfterEach
-    void tearDown() {
-        resetBdv(bdvStackSource.getBdvHandle(), initialViewerTransform);
-        reset3DViewer(universe, imageContent);
-    }
+//    @AfterEach
+//    void tearDown() {
+//        BdvAnd3DViewer.reset();
+//    }
 
     @AfterAll
     void overallTearDown() {
-        universe.close();
-        universe.cleanup();
-        bdvStackSource.getBdvHandle().close();
-
-        universe = null;
-        bdvStackSource = null;
+//        universe.close();
+//        universe.cleanup();
+//        bdvStackSource.getBdvHandle().close();
+//
+//        universe = null;
+//        bdvStackSource = null;
     }
 
     /**
