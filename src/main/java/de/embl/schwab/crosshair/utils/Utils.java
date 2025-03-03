@@ -3,14 +3,13 @@ package de.embl.schwab.crosshair.utils;
 import bdv.util.BdvHandle;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import org.scijava.vecmath.Point3d;
+import org.jogamp.vecmath.Point3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Utils {

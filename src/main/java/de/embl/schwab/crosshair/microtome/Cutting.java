@@ -8,8 +8,8 @@ import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.RealPoint;
-import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.*;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.*;
 
 import java.util.ArrayList;
 import java.util.Map;

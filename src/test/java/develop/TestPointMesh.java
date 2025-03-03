@@ -2,8 +2,8 @@ package develop;
 
 import customnode.CustomPointMesh;
 import ij3d.Image3DUniverse;
-import org.scijava.vecmath.Color3f;
-import org.scijava.vecmath.Point3f;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Point3f;
 
 import java.util.ArrayList;
 

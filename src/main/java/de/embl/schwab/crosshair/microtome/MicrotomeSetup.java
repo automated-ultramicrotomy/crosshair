@@ -11,14 +11,14 @@ import ij3d.*;
 import net.imglib2.RealPoint;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.*;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.scijava.java3d.PolygonAttributes;
+import org.jogamp.java3d.PolygonAttributes;
 
 import static java.lang.Math.abs;
 

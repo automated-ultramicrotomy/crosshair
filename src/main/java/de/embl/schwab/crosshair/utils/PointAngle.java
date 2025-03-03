@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.utils;
 
-import org.scijava.vecmath.Point3f;
+import org.jogamp.vecmath.Point3f;
 
 /**
  * Class to hold a point and an angle

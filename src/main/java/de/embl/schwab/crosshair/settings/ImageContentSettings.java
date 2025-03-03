@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair.settings;
 
-import org.scijava.vecmath.Color3f;
+import org.jogamp.vecmath.Color3f;
 
 import java.util.Arrays;
 import java.util.Objects;

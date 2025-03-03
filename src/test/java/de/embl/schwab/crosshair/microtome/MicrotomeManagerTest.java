@@ -18,8 +18,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.Point3d;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Point3d;
 
 import java.io.File;
 import java.util.*;

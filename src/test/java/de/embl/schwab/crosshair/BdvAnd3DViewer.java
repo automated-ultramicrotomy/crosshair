@@ -6,7 +6,7 @@ import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.realtransform.AffineTransform3D;
-import org.scijava.java3d.Transform3D;
+import org.jogamp.java3d.Transform3D;
 
 import java.io.File;
 import java.util.ArrayList;

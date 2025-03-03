@@ -4,7 +4,7 @@ import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.points.VertexDisplay;
 import de.embl.schwab.crosshair.settings.BlockPlaneSettings;
 import ij3d.Content;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Class to represent the block face (block plane)

@@ -2,8 +2,8 @@ package de.embl.schwab.crosshair.microtome;
 
 import de.embl.schwab.crosshair.points.VertexPoint;
 import org.junit.jupiter.params.provider.Arguments;
-import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.Point3d;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Point3d;
 
 import java.util.stream.Stream;
 
