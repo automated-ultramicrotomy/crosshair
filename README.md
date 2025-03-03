@@ -32,3 +32,7 @@ If you use Crosshair in your work, please cite our [paper on eLife](https://elif
 
 If you find a problem with Crosshair, please let us know!  
 Go to the [issue tracker](https://github.com/automated-ultramicrotomy/crosshair/issues) and click the green `New issue` button at the top right. Write a short title and description for your issue, along with information about what type of computer you were using (Windows / mac etc.). Then click the `Submit new issue` button. 
+
+## Developer docs
+
+Some brief information about [how to release new versions](RELEASES.md) and [keep dependencies up to date](RENOVATE.md) is also provided in the repository.
