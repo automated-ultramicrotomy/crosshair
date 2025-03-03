@@ -21,7 +21,7 @@ import ij3d.Image3DUniverse;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.registration.ViewTransform;
 import net.imglib2.realtransform.AffineTransform3D;
-import org.scijava.java3d.Transform3D;
+import org.jogamp.java3d.Transform3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

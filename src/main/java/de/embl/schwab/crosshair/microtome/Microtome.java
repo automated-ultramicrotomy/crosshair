@@ -6,9 +6,9 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.Matrix4d;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Class to represent the current state of the ultramicrotome

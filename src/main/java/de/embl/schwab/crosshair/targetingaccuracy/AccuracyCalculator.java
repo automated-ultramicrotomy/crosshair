@@ -7,7 +7,7 @@ import de.embl.schwab.crosshair.solution.Solution;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

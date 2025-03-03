@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.utils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3d;
 
 import java.util.List;
 import java.util.stream.Stream;

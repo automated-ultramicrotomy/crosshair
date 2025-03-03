@@ -9,11 +9,11 @@ import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.Color3f;
-import org.scijava.vecmath.Point3d;
-import org.scijava.vecmath.Point3f;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector3d;
 
 import java.util.ArrayList;
 

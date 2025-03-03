@@ -3,7 +3,7 @@ package de.embl.schwab.crosshair.settings;
 import de.embl.schwab.crosshair.plane.BlockPlane;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import net.imglib2.RealPoint;
-import org.scijava.vecmath.Color3f;
+import org.jogamp.vecmath.Color3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;

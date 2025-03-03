@@ -9,10 +9,10 @@ import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
 import org.apache.commons.math3.util.Precision;
-import org.scijava.vecmath.AxisAngle4d;
-import org.scijava.vecmath.Matrix4d;
-import org.scijava.vecmath.Point3f;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.AxisAngle4d;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector3d;
 
 import java.util.*;
 import java.util.stream.DoubleStream;

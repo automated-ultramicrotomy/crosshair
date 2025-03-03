@@ -4,9 +4,10 @@ import de.embl.schwab.crosshair.points.PointsToFitPlaneDisplay;
 import de.embl.schwab.crosshair.settings.PlaneSettings;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import ij3d.Content;
+import ij3d.Utils;
 import net.imglib2.RealPoint;
-import org.scijava.vecmath.Color3f;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Vector3d;
 
 import java.awt.*;
 
@@ -90,7 +91,7 @@ public class Plane {
     }
 
     public void setColor( Color color ) {
-        this.color = new Color3f(color);
+        this.color = Utils.toColor3f(color);
         if ( mesh != null ) {
             // make copy of colour to assign (using original interferes with changing colour later)
             mesh.setColor( this.color );

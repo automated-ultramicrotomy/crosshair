@@ -7,7 +7,7 @@ import de.embl.schwab.crosshair.plane.PlaneManager;
 import de.embl.schwab.crosshair.points.VertexPoint;
 import de.embl.schwab.crosshair.utils.GeometryUtils;
 import net.imglib2.RealPoint;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3d;
 
 import java.util.ArrayList;
 import java.util.Map;

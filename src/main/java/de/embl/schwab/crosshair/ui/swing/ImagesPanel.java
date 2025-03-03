@@ -5,7 +5,7 @@ import bdv.util.BoundedValueDouble;
 import de.embl.schwab.crosshair.Crosshair;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import org.scijava.vecmath.Color3f;
+import ij3d.Utils;
 
 import javax.swing.*;
 import java.awt.MouseInfo;
@@ -74,7 +74,7 @@ public class ImagesPanel extends CrosshairPanel {
 
             if (colour == null) return;
             Content imageContent = imageNameToContent.get( imageName );
-            imageContent.setColor( new Color3f(colour) );
+            imageContent.setColor( Utils.toColor3f(colour) );
         });
 
         panel.add(colorButton);

@@ -2,7 +2,7 @@ package de.embl.schwab.crosshair.io;
 
 import customnode.CustomMesh;
 import customnode.CustomTriangleMesh;
-import org.scijava.vecmath.Point3f;
+import org.jogamp.vecmath.Point3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

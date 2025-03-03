@@ -1,8 +1,8 @@
 package de.embl.schwab.crosshair.legacy;
 
 import net.imglib2.RealPoint;
-import org.scijava.vecmath.Color3f;
-import org.scijava.vecmath.Vector3d;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Vector3d;
 
 import java.util.ArrayList;
 import java.util.HashMap;
