@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>crosshair</artifactId>
 	<url>https://github.com/K-Meech/crosshair</url>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<name>Crosshair</name>
 	<description>Assisted 3D targeting via an ultramicrotome</description>
 	<inceptionYear>2020</inceptionYear>
