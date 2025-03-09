@@ -101,10 +101,6 @@
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
-			<artifactId>bigdataviewer-vistools</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer_fiji</artifactId>
 		</dependency>
 		<dependency>
