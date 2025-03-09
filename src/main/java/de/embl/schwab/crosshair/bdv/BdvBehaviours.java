@@ -79,7 +79,7 @@ public class BdvBehaviours {
 
     private void addPlaneTrackingListener() {
         // When tracking a plane, changing the orientation of the BDV window should update the plane orientation
-        bdvHandle.getViewerPanel().addTransformListener(new bdv.viewer.TransformListener<AffineTransform3D>() {
+        bdvHandle.getViewerPanel().transformListeners().add(new bdv.viewer.TransformListener<AffineTransform3D>() {
             @Override
             public void transformChanged(AffineTransform3D affineTransform3D) {
                 if ( planeManager.isTrackingPlane() ) {
