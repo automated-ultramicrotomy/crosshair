@@ -78,9 +78,8 @@
 		<license.copyrightOwners>EMBL</license.copyrightOwners>
 		<enforcer.skip>true</enforcer.skip>
 
-<!--		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>-->
-<!--		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>-->
 		<imagej-utils.version>0.6.4</imagej-utils.version>
+		<mobie-io.version>4.0.1</mobie-io.version>
 	</properties>
 
 	<repositories>
@@ -121,6 +120,11 @@
 			<groupId>de.embl.cba</groupId>
 			<artifactId>imagej-utils</artifactId>
 			<version>${imagej-utils.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.embl.mobie</groupId>
+			<artifactId>mobie-io</artifactId>
+			<version>${mobie-io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

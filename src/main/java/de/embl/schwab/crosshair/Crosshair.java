@@ -11,6 +11,7 @@ import ij3d.Image3DUniverse;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import ij.ImagePlus;
+import org.embl.mobie.io.imagedata.N5ImageData;
 
 import java.awt.event.WindowEvent;
 
@@ -30,6 +31,7 @@ public class Crosshair {
 	private final int min = 0;
 	private final int max = 255;
 	private final float transparency = 0.7f;
+	private final int maxNumberVoxels = 300 * 300 * 300;
 
 	private BdvHandle bdvHandle; // bdvHandle of the BigDataViewer window
 	private Image3DUniverse universe; // universe of the 3D viewer
@@ -47,7 +49,29 @@ public class Crosshair {
 
 		BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
 		Image3DUniverse universe = new Image3DUniverse();
-		Content imageContent = addSourceToUniverse(universe, imageSource, 300 * 300 * 300,
+		Content imageContent = addSourceToUniverse(universe, imageSource, maxNumberVoxels,
+				Content.VOLUME, min, max );
+		universe.show();
+
+		String unit = imageSource.getVoxelDimensions().unit();
+		initialiseCrosshair(bdvStackSource, universe, imageContent, unit);
+	}
+
+	/**
+	 * Open Crosshair from ImageData (normally an ome-zarr file)
+	 * @param imageData image data of ome-zarr file
+	 */
+	public Crosshair(N5ImageData<?> imageData) {
+
+		BdvStackSource bdvStackSource = BdvFunctions.show(
+				imageData.getSourcesAndConverters(),
+				imageData.getNumTimepoints(),
+				imageData.getBdvOptions()
+		);
+		Source<?> imageSource = imageData.getSourcesAndConverters().get(0).getSpimSource();
+
+		Image3DUniverse universe = new Image3DUniverse();
+		Content imageContent = addSourceToUniverse(universe, imageSource, maxNumberVoxels,
 				Content.VOLUME, min, max );
 		universe.show();
 

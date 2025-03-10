@@ -1,0 +1,1 @@
+{"path":"s1","axes":[{"type":"space","name":"x","unit":"microns"},{"type":"space","name":"y","unit":"microns"},{"type":"space","name":"z","unit":"microns"}],"coordinateTransformations":[{"scale":[12.256084923076925,12.208745124132417,12.208745124132417],"type":"scale"},{"translation":[3.064021230769231,3.052186281033104,3.052186281033104],"type":"translation"}]}
