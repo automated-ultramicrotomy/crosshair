@@ -131,14 +131,14 @@ public class BdvUtils {
             int max )
     {
         final Integer level = Utils.getLevel( source, maxNumVoxels );
-        logVoxelSpacing( source, getVoxelSpacings( source ).get( level ) );
-
         if ( level == null )
         {
-            logger.warn( "Image is too large to be displayed in 3D." );
-            return null;
+            throw new UnsupportedOperationException(
+                    "Image is too large to be displayed in 3D - for hdf5/n5/zarr, try adding a lower resolution level."
+            );
         }
 
+        logVoxelSpacing( source, getVoxelSpacings( source ).get( level ) );
         final ImagePlus wrap = getImagePlus( source, min, max, level );
         return universe.addContent( wrap, displayType );
     }
