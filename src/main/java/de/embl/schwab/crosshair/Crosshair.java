@@ -26,6 +26,7 @@ public class Crosshair {
 	public static final String target = "target";
 	public static final String block = "block";
 	public static final String image = "image";
+	private static final String DISABLE_WARNING_KEY = "aws.java.v1.disableDeprecationAnnouncement";
 
 	// TODO - make generic? Not just 8 bit
 	private final int min = 0;
@@ -63,12 +64,22 @@ public class Crosshair {
 	 */
 	public Crosshair(N5ImageData<?> imageData) {
 
+		// Disable the warning for deprecated AWS SDK for Java 1.x
+		// see https://github.com/automated-ultramicrotomy/crosshair/issues/50
+		final String initialDisableWarningValue = System.getProperty(DISABLE_WARNING_KEY);
+		if (initialDisableWarningValue == null)
+			System.setProperty(DISABLE_WARNING_KEY, "true");
+
 		BdvStackSource bdvStackSource = BdvFunctions.show(
 				imageData.getSourcesAndConverters(),
 				imageData.getNumTimepoints(),
 				imageData.getBdvOptions()
 		);
 		Source<?> imageSource = imageData.getSourcesAndConverters().get(0).getSpimSource();
+
+		if (initialDisableWarningValue == null) {
+			System.clearProperty(DISABLE_WARNING_KEY);
+		}
 
 		Image3DUniverse universe = new Image3DUniverse();
 		Content imageContent = addSourceToUniverse(universe, imageSource, maxNumberVoxels,
