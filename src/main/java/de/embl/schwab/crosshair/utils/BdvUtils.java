@@ -112,15 +112,6 @@ public class BdvUtils {
 
     }
 
-    public static void logVoxelSpacing( Source< ? > source, int level )
-    {
-        double[] voxelSpacing = getVoxelSpacings( source ).get( level );
-        String message = "3D View: Fetching source " + source.getName() + "at resolution " +
-                Arrays.stream( voxelSpacing ).mapToObj( x -> "" + x).collect(Collectors.joining( ", " )) +
-                " " + source.getVoxelDimensions().unit();
-        logger.info(message);
-    }
-
     /**
      * Based on addSourceToUniverse from imagej-utils UniverseUtils, modifying it to
      * only add the image source to the 3D viewer - no transparency / colour adjustments.
@@ -151,6 +142,15 @@ public class BdvUtils {
         logVoxelSpacing( source, level );
         final ImagePlus wrap = getImagePlus( source, min, max, level );
         return universe.addContent( wrap, displayType );
+    }
+
+    private static void logVoxelSpacing( Source< ? > source, int level )
+    {
+        double[] voxelSpacing = getVoxelSpacings( source ).get( level );
+        String message = "3D View: Fetching source " + source.getName() + "at resolution " +
+                Arrays.stream( voxelSpacing ).mapToObj( x -> "" + x).collect(Collectors.joining( ", " )) +
+                " " + source.getVoxelDimensions().unit();
+        logger.info(message);
     }
 
     private static < R extends RealType< R > > ImagePlus getImagePlus( Source< ? > source, int min, int max, Integer level )
