@@ -20,11 +20,12 @@ import org.apache.commons.math3.util.Precision;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import static de.embl.cba.bdv.utils.BdvUtils.*;
 import static de.embl.cba.tables.Utils.getVoxelSpacings;
-import static de.embl.cba.tables.ij3d.UniverseUtils.logVoxelSpacing;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.findPerpendicularVector;
 
 public class BdvUtils {
@@ -111,6 +112,15 @@ public class BdvUtils {
 
     }
 
+    public static void logVoxelSpacing( Source< ? > source, int level )
+    {
+        double[] voxelSpacing = getVoxelSpacings( source ).get( level );
+        String message = "3D View: Fetching source " + source.getName() + "at resolution " +
+                Arrays.stream( voxelSpacing ).mapToObj( x -> "" + x).collect(Collectors.joining( ", " )) +
+                " " + source.getVoxelDimensions().unit();
+        logger.info(message);
+    }
+
     /**
      * Based on addSourceToUniverse from imagej-utils UniverseUtils, modifying it to
      * only add the image source to the 3D viewer - no transparency / colour adjustments.
@@ -138,7 +148,7 @@ public class BdvUtils {
             );
         }
 
-        logVoxelSpacing( source, getVoxelSpacings( source ).get( level ) );
+        logVoxelSpacing( source, level );
         final ImagePlus wrap = getImagePlus( source, min, max, level );
         return universe.addContent( wrap, displayType );
     }
