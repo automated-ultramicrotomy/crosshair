@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.ui.command;
 import bdv.cache.SharedQueue;
 import de.embl.schwab.crosshair.Crosshair;
 import org.embl.mobie.io.imagedata.N5ImageData;
+import org.embl.mobie.io.util.S3Utils;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -43,6 +44,8 @@ public class OpenCrosshairFromOmeZarrRemote implements Command {
         if (s3AccessKey != null && s3SecretKey != null) {
             s3AccessAndSecretKey = new String[]{s3AccessKey, s3SecretKey};
         }
+
+        S3Utils.setS3AccessAndSecretKey( s3AccessAndSecretKey );
 
         N5ImageData< ? > imageData = new N5ImageData<>(
                 zarrURI,

@@ -3,6 +3,7 @@ package de.embl.schwab.crosshair.utils;
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.Source;
+import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.cba.tables.Utils;
 import de.embl.cba.util.CopyUtils;
 import ij.ImagePlus;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import static de.embl.cba.bdv.utils.BdvUtils.*;
@@ -135,7 +135,8 @@ public class BdvUtils {
         if ( level == null )
         {
             throw new UnsupportedOperationException(
-                    "Image is too large to be displayed in 3D - for hdf5/n5/zarr, try adding a lower resolution level."
+                    "Image is too large to be displayed in 3D - for hdf5/n5/zarr, try adding a lower resolution level" +
+                            " with less than " + maxNumVoxels + " total voxels."
             );
         }
 
@@ -148,15 +149,21 @@ public class BdvUtils {
     {
         double[] voxelSpacing = getVoxelSpacings( source ).get( level );
         String message = "3D View: Fetching source " + source.getName() + "at resolution " +
-                Arrays.stream( voxelSpacing ).mapToObj( x -> "" + x).collect(Collectors.joining( ", " )) +
-                " " + source.getVoxelDimensions().unit();
+                Arrays.toString( voxelSpacing ) + " " + source.getVoxelDimensions().unit();
         logger.info(message);
     }
 
     private static < R extends RealType< R > > ImagePlus getImagePlus( Source< ? > source, int min, int max, Integer level )
     {
-        RandomAccessibleInterval< ? extends RealType< ? > > rai
-                = de.embl.cba.bdv.utils.BdvUtils.getRealTypeNonVolatileRandomAccessibleInterval( source, 0, level );
+        // Currently, loading bdv xml is done via LazySpimSource - this errors when source.getSource(0, level) is used -
+        // hence the different implementation. Ideally, bdv loading should be updated so that it can also use
+        // source.getSource(0, level) with no issues
+        RandomAccessibleInterval<?> rai;
+        if (source instanceof LazySpimSource) {
+            rai = de.embl.cba.bdv.utils.BdvUtils.getRealTypeNonVolatileRandomAccessibleInterval(source, 0, level);
+        } else {
+            rai = source.getSource(0, level);
+        }
 
         rai = CopyUtils.copyVolumeRaiMultiThreaded( ( RandomAccessibleInterval ) rai, Prefs.getThreads() -1  ); // TODO: make multi-threading configurable.
 
