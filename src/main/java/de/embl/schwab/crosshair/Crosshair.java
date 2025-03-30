@@ -11,6 +11,8 @@ import ij3d.Image3DUniverse;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import ij.ImagePlus;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.volatiles.VolatileUnsignedShortType;
 import org.embl.mobie.io.imagedata.N5ImageData;
 
 import java.awt.event.WindowEvent;
@@ -28,11 +30,11 @@ public class Crosshair {
 	public static final String image = "image";
 	private static final String DISABLE_WARNING_KEY = "aws.java.v1.disableDeprecationAnnouncement";
 
-	// TODO - make generic? Not just 8 bit
-	private final int min = 0;
-	private final int max = 255;
 	private final float transparency = 0.7f;
 	private final int maxNumberVoxels = 300 * 300 * 300;
+
+	private int min = 0; // min contrast limit
+	private int max = 255; // max contrast limit
 
 	private BdvHandle bdvHandle; // bdvHandle of the BigDataViewer window
 	private Image3DUniverse universe; // universe of the 3D viewer
@@ -47,6 +49,8 @@ public class Crosshair {
 	 * @param imageSource image source
 	 */
 	public Crosshair(Source<Object> imageSource) {
+
+		setContrastLimits(imageSource);
 
 		BdvStackSource bdvStackSource = BdvFunctions.show(imageSource, 1);
 		Image3DUniverse universe = new Image3DUniverse();
@@ -76,6 +80,7 @@ public class Crosshair {
 				imageData.getBdvOptions()
 		);
 		Source<?> imageSource = imageData.getSourcesAndConverters().get(0).getSpimSource();
+		setContrastLimits(imageSource);
 
 		if (initialDisableWarningValue == null) {
 			System.clearProperty(DISABLE_WARNING_KEY);
@@ -110,6 +115,18 @@ public class Crosshair {
 				.sourceTransform(pw, ph, pd));
 
 		initialiseCrosshair(bdvStackSource, universe, imageContent, unit);
+	}
+
+	private void setContrastLimits( Source<?> imageSource ) {
+		Object voxelType = imageSource.getType();
+		if (voxelType instanceof UnsignedShortType || voxelType instanceof VolatileUnsignedShortType) {
+			min = 0;
+			max = 65535;
+		} else {
+			// default to 8-bit limits for everything else
+			min = 0;
+			max = 255;
+		}
 	}
 
 	private void initialiseCrosshair(BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent, String unit) {
