@@ -31,7 +31,7 @@ public class Crosshair {
 	private static final String DISABLE_WARNING_KEY = "aws.java.v1.disableDeprecationAnnouncement";
 
 	private final float transparency = 0.7f;
-	private final int maxNumberVoxels = 300 * 300 * 300;
+	private final int maxNumberVoxels = 400 * 400 * 400;
 
 	private int min = 0; // min contrast limit
 	private int max = 255; // max contrast limit
