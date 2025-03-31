@@ -6,7 +6,7 @@ import de.embl.schwab.crosshair.ui.command.OpenCrosshairFromBdvXmlCommand;
 import javax.swing.*;
 import java.io.File;
 
-public class OpenExampleBlock {
+public class OpenExampleBdvXmlBlock {
 
     public void open() {
 
@@ -26,6 +26,6 @@ public class OpenExampleBlock {
 
     public static void main( String[] args )
     {
-        new OpenExampleBlock().open();
+        new OpenExampleBdvXmlBlock().open();
     }
 }

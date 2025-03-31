@@ -32,7 +32,7 @@ public class OpenCrosshairFromOmeZarrLocal implements Command {
     public void openPathInCrosshair() {
         N5ImageData< ? > imageData = new N5ImageData<>(
                 omeZarrFilePath,
-                new SharedQueue( Math.max( 1, Runtime.getRuntime().availableProcessors() / 2 ) )
+                new SharedQueue( Runtime.getRuntime().availableProcessors() - 1, 6)
         );
         new Crosshair(imageData);
     }

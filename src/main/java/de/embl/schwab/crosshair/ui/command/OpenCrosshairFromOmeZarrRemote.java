@@ -49,7 +49,7 @@ public class OpenCrosshairFromOmeZarrRemote implements Command {
 
         N5ImageData< ? > imageData = new N5ImageData<>(
                 zarrURI,
-                new SharedQueue( Math.max( 1, Runtime.getRuntime().availableProcessors() / 2 ) ),
+                new SharedQueue( Runtime.getRuntime().availableProcessors() - 1, 6),
                 s3AccessAndSecretKey
         );
         new Crosshair(imageData);

@@ -119,7 +119,7 @@ public class Crosshair {
 
 	private void setContrastLimits( Source<?> imageSource ) {
 		Object voxelType = imageSource.getType();
-		if (voxelType instanceof UnsignedShortType || voxelType instanceof VolatileUnsignedShortType) {
+		if (voxelType instanceof UnsignedShortType) {
 			min = 0;
 			max = 65535;
 		} else {
