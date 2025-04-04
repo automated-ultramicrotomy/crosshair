@@ -34,8 +34,10 @@ public class SettingsFormatConverter {
     private Map<String, PlaneSettings> makePlaneSettings( OldFormatSettings oldSettings ) {
         Map<String, PlaneSettings> planeSettings = new HashMap<>();
 
-        PlaneSettings targetSettings = new PlaneSettings();
-        BlockPlaneSettings blockSettings = new BlockPlaneSettings();
+        // Default to using 'microns' as the unit - this will set distanceBetweenPlanesThreshold to the default
+        // with no conversion
+        PlaneSettings targetSettings = new PlaneSettings("microns");
+        BlockPlaneSettings blockSettings = new BlockPlaneSettings("microns");
 
         targetSettings.name = Crosshair.target;
         blockSettings.name = Crosshair.block;

@@ -31,7 +31,8 @@ public class Plane {
     private transient Content mesh; // the 3d custom triangle mesh representing the plane
     private transient PointsToFitPlaneDisplay pointsToFitPlaneDisplay;
 
-    private double distanceBetweenPlanesThreshold = 1E-10; // distance used to be 'on' plane
+    // distance used to be 'on' plane - in the units of the input image e.g. microns
+    private double distanceBetweenPlanesThreshold;
 
     /**
      * Create a plane
@@ -51,6 +52,7 @@ public class Plane {
         this.isVisible = planeSettings.isVisible;
         this.mesh = mesh;
         this.color = planeSettings.color;
+        this.distanceBetweenPlanesThreshold = planeSettings.distanceBetweenPlanesThreshold;
 
         this.pointsToFitPlaneDisplay = pointsToFitPlaneDisplay;
     }
@@ -151,7 +153,16 @@ public class Plane {
         double[] position = new double[3];
         point.localize( position );
 
-        double distanceToPlane = GeometryUtils.distanceFromPointToPlane( new Vector3d( position ),
+        return isPointOnPlane( new Vector3d( position ) );
+    }
+
+    /**
+     * Check if the given point is on the plane
+     * @param point a 3D point
+     * @return whether the point is on the plane
+     */
+    public boolean isPointOnPlane( Vector3d point ) {
+        double distanceToPlane = GeometryUtils.distanceFromPointToPlane( point,
                 getNormal(), getPoint() );
 
         // units may want to be more or less strict

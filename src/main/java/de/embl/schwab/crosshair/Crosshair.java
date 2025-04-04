@@ -12,7 +12,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import ij.ImagePlus;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.volatiles.VolatileUnsignedShortType;
 import org.embl.mobie.io.imagedata.N5ImageData;
 
 import java.awt.event.WindowEvent;
@@ -148,7 +147,7 @@ public class Crosshair {
 		// Still places so (0,0) of image == (0,0) in global coordinate system, just bounding box is wrapped tight to
 		// only regions of the image > 0
 
-		planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+		planeManager = new PlaneManager(bdvStackSource, universe, imageContent, unit);
 
 		microtomeManager = new MicrotomeManager(planeManager, universe, imageContent, bdvStackSource, unit);
 		new BdvBehaviours(bdvHandle, planeManager, microtomeManager);

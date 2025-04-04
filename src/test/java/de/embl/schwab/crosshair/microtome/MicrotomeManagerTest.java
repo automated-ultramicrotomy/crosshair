@@ -52,7 +52,7 @@ class MicrotomeManagerTest {
         BdvAnd3DViewer.reset();
 
         // add block and target plane for testing - load from example settings file
-        planeManager = new PlaneManager(bdvStackSource, universe, imageContent);
+        planeManager = new PlaneManager(bdvStackSource, universe, imageContent, "microns");
 
         ClassLoader classLoader = this.getClass().getClassLoader();
         File settingsFile = new File(classLoader.getResource("exampleBlock.json").getFile());

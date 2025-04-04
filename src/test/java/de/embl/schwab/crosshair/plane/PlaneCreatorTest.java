@@ -122,7 +122,7 @@ class PlaneCreatorTest {
     void createPlane(Vector3d point, Vector3d normal, Vector3d expectedCentroid) {
 
         // Create matching plane settings
-        PlaneSettings planeSettings = new PlaneSettings();
+        PlaneSettings planeSettings = new PlaneSettings("microns");
         planeSettings.name = "testPlane";
         planeSettings.point = point;
         planeSettings.normal = normal;
@@ -141,7 +141,7 @@ class PlaneCreatorTest {
     void createBlockPlane(Vector3d point, Vector3d normal, Vector3d expectedCentroid) {
 
         // Create matching block plane settings
-        BlockPlaneSettings blockPlaneSettings = new BlockPlaneSettings();
+        BlockPlaneSettings blockPlaneSettings = new BlockPlaneSettings("microns");
         blockPlaneSettings.name = "testBlockPlane";
         blockPlaneSettings.point = point;
         blockPlaneSettings.normal = normal;
@@ -160,7 +160,7 @@ class PlaneCreatorTest {
     void updatePlaneOrientation() {
 
         // Create a plane for the initial orientation
-        PlaneSettings planeSettings = new PlaneSettings();
+        PlaneSettings planeSettings = new PlaneSettings("microns");
         planeSettings.name = "testPlane";
         planeSettings.point = new Vector3d(1248.2709228163537, 78.08437737298017, 116.87559032668315);
         planeSettings.normal = new Vector3d(-0.39675171761579714, -0.014019244058793784, -0.9178189011809109);

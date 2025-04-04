@@ -17,8 +17,12 @@ public class BlockPlaneSettings extends PlaneSettings {
     public ArrayList<RealPoint> vertices; // all vertex points placed on the block plane
     public Map<VertexPoint, RealPoint> assignedVertices; // the subset of assigned vertices e.g. top left, top right...
 
-    public BlockPlaneSettings() {
-        super();
+    /**
+     * Create block plane settings with default values
+     * @param unit unit of distance used by the input image to Crosshair e.g. microns
+     */
+    public BlockPlaneSettings(String unit) {
+        super( unit );
         this.color = new Color3f(0, 0, 1);
         this.vertices = new ArrayList<>();
         this.assignedVertices = new HashMap<>();
@@ -31,6 +35,10 @@ public class BlockPlaneSettings extends PlaneSettings {
     }
 
     public BlockPlaneSettings( PlaneSettings planeSettings ) {
+
+        // call the parent constructor with an arbitrary unit ('microns') - the setting this affects
+        // (distanceBetweenPlanesThreshold) will be overwritten below anyway
+        super("microns");
         this.vertices = new ArrayList<>();
         this.assignedVertices = new HashMap<>();
 

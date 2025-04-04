@@ -92,7 +92,9 @@ public class TargetingAccuracy {
 
             // we use the before image content to define the extent of the planes. The before x-ray should be the largest,
             // and so give an extent that covers both comfortably
-            PlaneManager planeManager = new PlaneManager(beforeStackSource, universe, imageNameToContent.get( TargetingAccuracy.before ));
+            PlaneManager planeManager = new PlaneManager(
+                    beforeStackSource, universe, imageNameToContent.get( TargetingAccuracy.before ), beforeUnit
+            );
             new AccuracyBdvBehaviours( beforeStackSource.getBdvHandle(), planeManager );
 
             Solution solution = new SolutionReader().readSolution( crosshairSolutionJson.getAbsolutePath() );

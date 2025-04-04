@@ -73,7 +73,7 @@ class SettingsReaderTest {
         Image3DUniverse universe = BdvAnd3DViewer.getUniverse();
         Content imageContent = BdvAnd3DViewer.getImageContent();
 
-        PlaneManager planeManager = new PlaneManager(BdvAnd3DViewer.getBdvStackSource(), universe, imageContent);
+        PlaneManager planeManager = new PlaneManager(BdvAnd3DViewer.getBdvStackSource(), universe, imageContent, "microns");
         assertTrue(planeManager.getPlaneNames().isEmpty());
 
         Map<String, Content> imageNameToContent = new HashMap<>();

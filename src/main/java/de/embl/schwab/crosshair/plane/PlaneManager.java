@@ -45,8 +45,7 @@ public class PlaneManager {
     private final Image3DUniverse universe;
 
     private final Color3f alignedPlaneColour = new Color3f(1, 0, 0);
-    // TODO - make this threshold user definable - makes sense for microns, but possibly not for other units
-    private final double distanceBetweenPlanesThreshold = 1E-10;
+    private String unit;
 
     /**
      * Create a plane manager
@@ -55,8 +54,9 @@ public class PlaneManager {
      * @param imageContent image content displayed in 3D viewer (This image content is used to define the
      *                     extent of planes (only shown within bounds of that image) and where points are shown
      *                     (again attached to that image))
+     * @param unit unit of distance used by the input image e.g. micrometre
      */
-    public PlaneManager( BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent ) {
+    public PlaneManager( BdvStackSource bdvStackSource, Image3DUniverse universe, Content imageContent, String unit ) {
         planeNameToPlane = new HashMap<>();
 
         this.bdvStackSource = bdvStackSource;
@@ -64,6 +64,7 @@ public class PlaneManager {
                 Bdv.options().addTo( bdvStackSource ) );
         this.bdvHandle = bdvStackSource.getBdvHandle();
         this.universe = universe;
+        this.unit = unit;
 
         this.planeCreator = new PlaneCreator( universe, imageContent, bdvStackSource );
     }
@@ -163,7 +164,7 @@ public class PlaneManager {
      * @param planePoint plane point
      */
     public void addPlane( String planeName, Vector3d planeNormal, Vector3d planePoint ) {
-        PlaneSettings planeSettings = new PlaneSettings();
+        PlaneSettings planeSettings = new PlaneSettings(unit);
         planeSettings.name = planeName;
         planeSettings.normal = planeNormal;
         planeSettings.point = planePoint;
@@ -176,7 +177,7 @@ public class PlaneManager {
      * @param planeName name of plane
      */
     public void addPlane( String planeName ) {
-        PlaneSettings settings = new PlaneSettings();
+        PlaneSettings settings = new PlaneSettings(unit);
         settings.name = planeName;
 
         addPlane( settings );
@@ -207,7 +208,7 @@ public class PlaneManager {
      * @param planePoint plane point
      */
     public void addBlockPlane( String planeName, Vector3d planeNormal, Vector3d planePoint ) {
-        BlockPlaneSettings settings = new BlockPlaneSettings();
+        BlockPlaneSettings settings = new BlockPlaneSettings(unit);
         settings.name = planeName;
         settings.normal = planeNormal;
         settings.point = planePoint;
@@ -220,7 +221,7 @@ public class PlaneManager {
      * @param planeName plane name
      */
     public void addBlockPlane( String planeName ) {
-        BlockPlaneSettings settings = new BlockPlaneSettings();
+        BlockPlaneSettings settings = new BlockPlaneSettings(unit);
         settings.name = planeName;
 
         addBlockPlane( settings );
@@ -397,7 +398,7 @@ public class PlaneManager {
      * Move BigDataViewer window view to match the named plane
      * @param name plane name
      */
-    public void moveViewToNamedPlane (String name) {
+    public void moveViewToNamedPlane(String name) {
         // check if you're already at the plane
         ArrayList<Vector3d> planeDefinition = getPlaneDefinitionOfCurrentView();
         Vector3d currentPlaneNormal = planeDefinition.get(0);
@@ -405,12 +406,7 @@ public class PlaneManager {
 
         Plane plane = planeNameToPlane.get( name );
         boolean normalsParallel = GeometryUtils.checkVectorsParallel( plane.getNormal(), currentPlaneNormal );
-        double distanceToPlane = GeometryUtils.distanceFromPointToPlane( currentPlanePoint,
-                plane.getNormal(), plane.getPoint() );
-
-        // units may want to be more or less strict
-        // necessary due to double precision, will very rarely get exactly the same value
-        boolean pointInPlane = distanceToPlane < distanceBetweenPlanesThreshold;
+        boolean pointInPlane = plane.isPointOnPlane(currentPlanePoint);
 
         if (normalsParallel & pointInPlane) {
             IJ.log("Already at that plane");

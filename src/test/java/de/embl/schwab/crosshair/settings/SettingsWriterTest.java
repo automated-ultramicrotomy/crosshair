@@ -52,7 +52,7 @@ class SettingsWriterTest {
         Image3DUniverse universe = BdvAnd3DViewer.getUniverse();
         Content imageContent = BdvAnd3DViewer.getImageContent();
 
-        PlaneManager planeManager = new PlaneManager(BdvAnd3DViewer.getBdvStackSource(), universe, imageContent);
+        PlaneManager planeManager = new PlaneManager(BdvAnd3DViewer.getBdvStackSource(), universe, imageContent, "microns");
         Map<String, Content> imageNameToContent = new HashMap<>();
         imageNameToContent.put(Crosshair.image, imageContent);
 

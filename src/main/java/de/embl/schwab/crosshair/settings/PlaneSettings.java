@@ -1,6 +1,7 @@
 package de.embl.schwab.crosshair.settings;
 
 import de.embl.schwab.crosshair.plane.Plane;
+import net.imagej.units.DefaultUnitService;
 import net.imglib2.RealPoint;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3d;
@@ -22,14 +23,19 @@ public class PlaneSettings {
     public boolean isVisible;
 
     public ArrayList<RealPoint> pointsToFitPlane; // points used to fit this plane
-    public double distanceBetweenPlanesThreshold;  // distance used to be 'on' plane
+    // distance used to be 'on' plane (in the units of the input image e.g. microns)
+    public double distanceBetweenPlanesThreshold;
 
-    public PlaneSettings() {
+    /**
+     * Create plane settings with default values
+     * @param unit unit of distance used by the input image to Crosshair e.g. microns
+     */
+    public PlaneSettings( String unit ) {
         this.color = new Color3f(0, 1, 0);
         this.transparency = 0.7f;
         this.isVisible = true;
         this.pointsToFitPlane = new ArrayList<>();
-        this.distanceBetweenPlanesThreshold = 1E-10;
+        this.distanceBetweenPlanesThreshold = getDefaultDistanceBetweenPlanesThreshold(unit);
     }
 
     public PlaneSettings( Plane plane ) {
@@ -41,6 +47,19 @@ public class PlaneSettings {
         this.isVisible = plane.isVisible();
         this.pointsToFitPlane = plane.getPointsToFitPlaneDisplay().getPointsToFitPlane();
         this.distanceBetweenPlanesThreshold = plane.getDistanceBetweenPlanesThreshold();
+    }
+
+    private double getDefaultDistanceBetweenPlanesThreshold(String unit) {
+        double defaultDistanceMicrons = 1E-10;
+
+        // Convert the default micron distance into the unit used for the input image.
+        // This is necessary as say you have two identical images, one using microns (e.g. 1 micron voxel size) and
+        // one nanometres (e.g. 1000 nm voxel size). Without conversion a distance threshold of 0.1 would be much
+        // stricter for the nm image (0.1nm) than for the micron image (0.1 microns) even though their voxels are the
+        // exact same size.
+
+        DefaultUnitService unitService = new DefaultUnitService();
+        return unitService.value(defaultDistanceMicrons, "microns", unit);
     }
 
     @Override
