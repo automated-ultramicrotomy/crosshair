@@ -30,7 +30,7 @@
 
 ## Making a release on github
 
-- Once all the relevant changes are on `master`, go the the `releases` tab on github.
+- Once all the relevant changes are on `main`, go the the `releases` tab on github.
 
 - Click `Draft a new release`, then under `choose a tag` type in the same version you put in the `pom.xml`. Also set the release title as this version.
 
