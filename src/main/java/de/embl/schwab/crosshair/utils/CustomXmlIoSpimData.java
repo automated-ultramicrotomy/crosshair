@@ -52,8 +52,13 @@ public class CustomXmlIoSpimData extends XmlIoAbstractSpimData< SequenceDescript
         super(SpimData.class, new XmlIoSequenceDescription(), new XmlIoViewRegistrations());
     }
 
-    // NOTE we still need to pass the xml filename here, so that bdv can determine the relative
-    // paths for local files.
+    /**
+     * Load 'SpimData' from an input stream. NOTE we still need to pass the xml filename here, so that bdv can
+     * determine the relative paths for local files.
+     * @param in input stream
+     * @param xmlFilename xml filename
+     * @return SpimData instance
+     */
     public SpimData loadFromStream(InputStream in, String xmlFilename) throws SpimDataException {
         final SAXBuilder sax = new SAXBuilder();
         Document doc;

@@ -28,8 +28,9 @@
  *
  */
 
-package de.embl.schwab.crosshair.utils;
+package de.embl.schwab.crosshair.ui.swing;
 
+import de.embl.schwab.crosshair.utils.BdvPopupMenus;
 import org.scijava.ui.behaviour.ClickBehaviour;
 
 import javax.swing.*;
@@ -37,6 +38,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Class for right-click popup menu
+ */
 public class PopupMenu
 {
     private JPopupMenu popup;

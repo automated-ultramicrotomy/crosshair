@@ -179,6 +179,141 @@ public class BdvUtils {
         return universe.addContent( wrap, displayType );
     }
 
+    public static AffineTransform3D quaternionToAffineTransform3D( double[] rotationQuaternion )
+    {
+        double[][] rotationMatrix = new double[ 3 ][ 3 ];
+        LinAlgHelpers.quaternionToR( rotationQuaternion, rotationMatrix );
+        return matrixAsAffineTransform3D( rotationMatrix );
+    }
+
+    public static AffineTransform3D matrixAsAffineTransform3D( double[][] rotationMatrix )
+    {
+        final AffineTransform3D rotation = new AffineTransform3D();
+        for ( int row = 0; row < 3; ++row )
+            for ( int col = 0; col < 3; ++ col)
+                rotation.set( rotationMatrix[ row ][ col ], row, col);
+        return rotation;
+    }
+
+    /**
+     * Get the coordinates of the BigDataViewer window centre
+     * @param bdv Bdv window
+     * @return [x, y] centre position
+     */
+    public static double[] getBdvWindowCentre( Bdv bdv )
+    {
+        int[] bdvWindowDimensions = new int[ 3 ];
+        bdvWindowDimensions[ 0 ] = bdv.getBdvHandle().getViewerPanel().getWidth();
+        bdvWindowDimensions[ 1 ] = bdv.getBdvHandle().getViewerPanel().getHeight();
+
+        double[] centerBdvWindowTranslation = new double[ 3 ];
+        for( int d = 0; d < 3; ++d )
+        {
+            centerBdvWindowTranslation[ d ] = + bdvWindowDimensions[ d ] / 2.0;
+        }
+        return centerBdvWindowTranslation;
+    }
+
+    /**
+     * Change the transform of a BigDataViewer window
+     * @param bdv Bdv window
+     * @param transforms list of transforms to move to
+     * @param duration animation duration (in milliseconds?) of movement from one transform to another
+     */
+    public static void changeBdvViewerTransform(
+            Bdv bdv,
+            ArrayList< AffineTransform3D > transforms,
+            long duration)
+    {
+
+        AffineTransform3D currentTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentTransform );
+
+        ArrayList< SimilarityTransformAnimator > animators = new ArrayList<>(  );
+
+        final SimilarityTransformAnimator firstAnimator =
+                new SimilarityTransformAnimator(
+                        currentTransform.copy(),
+                        transforms.get( 0 ).copy(),
+                        0 ,
+                        0,
+                        duration );
+
+        animators.add( firstAnimator );
+
+        for ( int i = 1; i < transforms.size(); i++ )
+        {
+            final SimilarityTransformAnimator animator =
+                    new SimilarityTransformAnimator(
+                            transforms.get( i - 1 ).copy(),
+                            transforms.get( i ).copy(),
+                            0 ,
+                            0,
+                            duration );
+
+            animators.add( animator );
+        }
+
+
+        AbstractTransformAnimator transformAnimator = new ConcatenatedTransformAnimator( duration, animators );
+
+        bdv.getBdvHandle().getViewerPanel().setTransformAnimator( transformAnimator );
+    }
+
+    /**
+     * Move BigDataViewer window to a new position
+     * @param bdv Bdv window
+     * @param xyz [x, y, z] position to move to
+     * @param t timepoint to move to
+     * @param durationMillis animation duration (in milliseconds) of movement to new position
+     */
+    public static void moveToPosition( Bdv bdv, double[] xyz, int t, long durationMillis )
+    {
+        if ( t != bdv.getBdvHandle().getViewerPanel().state().getCurrentTimepoint() )
+        {
+            bdv.getBdvHandle().getViewerPanel().state().setCurrentTimepoint( t );
+            durationMillis = 0; // otherwise there can be hickups when changing both the viewer transform and the timepoint
+        }
+
+        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
+
+        AffineTransform3D newViewerTransform = currentViewerTransform.copy();
+
+        // ViewerTransform
+        // applyInverse: coordinates in viewer => coordinates in image
+        // apply: coordinates in image => coordinates in viewer
+
+        final double[] locationOfTargetCoordinatesInCurrentViewer = new double[ 3 ];
+        currentViewerTransform.apply( xyz, locationOfTargetCoordinatesInCurrentViewer );
+
+        for ( int d = 0; d < 3; d++ )
+        {
+            locationOfTargetCoordinatesInCurrentViewer[ d ] *= -1;
+        }
+
+        newViewerTransform.translate( locationOfTargetCoordinatesInCurrentViewer );
+
+        newViewerTransform.translate( getBdvDisplayCentre( bdv ) );
+
+        if ( durationMillis <= 0 )
+        {
+            bdv.getBdvHandle().getViewerPanel().state().setViewerTransform(  newViewerTransform );
+        }
+        else
+        {
+            final SimilarityTransformAnimator similarityTransformAnimator =
+                    new SimilarityTransformAnimator(
+                            currentViewerTransform,
+                            newViewerTransform,
+                            0,
+                            0,
+                            durationMillis );
+
+            bdv.getBdvHandle().getViewerPanel().setTransformAnimator( similarityTransformAnimator );
+        }
+    }
+
     private static < R extends RealType< R > > ImagePlus getImagePlus( Source< ? > source, int min, int max, Integer level )
     {
         RandomAccessibleInterval< ? extends RealType< ? > > rai
@@ -201,7 +336,17 @@ public class BdvUtils {
         return wrap;
     }
 
-    public static void logVoxelSpacing( Source< ? > source, double[] voxelSpacings )
+    private static RandomAccessibleInterval< ? extends RealType< ? > >
+    getRealTypeNonVolatileRandomAccessibleInterval( Source source, int t, int level )
+    {
+        if ( source instanceof LazySpimSource ) {
+            return ((LazySpimSource) source).getNonVolatileSource(t, level);
+        } else {
+            throw new UnsupportedOperationException("Unsupported source type");
+        }
+    }
+
+    private static void logVoxelSpacing( Source< ? > source, double[] voxelSpacings )
     {
         String message = "3D View: Fetching source " + source.getName() + " at resolution " +
                 Arrays.stream( voxelSpacings ).mapToObj( x -> "" + x ).collect( Collectors.joining( " ," ) ) +
@@ -209,17 +354,17 @@ public class BdvUtils {
         logger.info(message);
     }
 
-    public static ArrayList< double[] > getVoxelSpacings( Source< ? > labelsSource )
+    private static ArrayList< double[] > getVoxelSpacings( Source< ? > labelsSource )
     {
         final ArrayList< double[] > voxelSpacings = new ArrayList<>();
         final int numMipmapLevels = labelsSource.getNumMipmapLevels();
         for ( int level = 0; level < numMipmapLevels; ++level )
-            voxelSpacings.add( BdvUtils.getCalibration( labelsSource, level ) );
+            voxelSpacings.add( getCalibration( labelsSource, level ) );
 
         return voxelSpacings;
     }
 
-    public static double[] getCalibration( Source source, int level )
+    private static double[] getCalibration( Source source, int level )
     {
         final AffineTransform3D sourceTransform = new AffineTransform3D();
         source.getSourceTransform( 0, level, sourceTransform );
@@ -228,7 +373,7 @@ public class BdvUtils {
         return calibration;
     }
 
-    public static double[] getScale( AffineTransform3D sourceTransform )
+    private static double[] getScale( AffineTransform3D sourceTransform )
     {
         // https://math.stackexchange.com/questions/237369/given-this-transformation-matrix-how-do-i-decompose-it-into-translation-rotati
 
@@ -246,7 +391,7 @@ public class BdvUtils {
         return calibration;
     }
 
-    public static < R extends RealType< R > & NativeType< R > >
+    private static < R extends RealType< R > & NativeType< R > >
     RandomAccessibleInterval< R > copyVolumeRaiMultiThreaded( RandomAccessibleInterval< R > volume, int numThreads ) {
         final int dimensionX = ( int ) volume.dimension( 0 );
         final int dimensionY = ( int ) volume.dimension( 1 );
@@ -308,7 +453,7 @@ public class BdvUtils {
         }
     }
 
-    public static Integer getLevel( Source< ? > source, long maxNumVoxels )
+    private static Integer getLevel( Source< ? > source, long maxNumVoxels )
     {
         final ArrayList< double[] > voxelSpacings = getVoxelSpacings( source );
 
@@ -322,7 +467,7 @@ public class BdvUtils {
         return null;
     }
 
-    public static double[] getCurrentViewNormalVector( Bdv bdv )
+    private static double[] getCurrentViewNormalVector( Bdv bdv )
     {
         AffineTransform3D currentViewerTransform = new AffineTransform3D();
         bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
@@ -353,37 +498,7 @@ public class BdvUtils {
         return currentNormalVector;
     }
 
-    public static AffineTransform3D quaternionToAffineTransform3D( double[] rotationQuaternion )
-    {
-        double[][] rotationMatrix = new double[ 3 ][ 3 ];
-        LinAlgHelpers.quaternionToR( rotationQuaternion, rotationMatrix );
-        return matrixAsAffineTransform3D( rotationMatrix );
-    }
-
-    public static AffineTransform3D matrixAsAffineTransform3D( double[][] rotationMatrix )
-    {
-        final AffineTransform3D rotation = new AffineTransform3D();
-        for ( int row = 0; row < 3; ++row )
-            for ( int col = 0; col < 3; ++ col)
-                rotation.set( rotationMatrix[ row ][ col ], row, col);
-        return rotation;
-    }
-
-    public static double[] getBdvWindowCentre( Bdv bdv )
-    {
-        int[] bdvWindowDimensions = new int[ 3 ];
-        bdvWindowDimensions[ 0 ] = bdv.getBdvHandle().getViewerPanel().getWidth();
-        bdvWindowDimensions[ 1 ] = bdv.getBdvHandle().getViewerPanel().getHeight();
-
-        double[] centerBdvWindowTranslation = new double[ 3 ];
-        for( int d = 0; d < 3; ++d )
-        {
-            centerBdvWindowTranslation[ d ] = + bdvWindowDimensions[ d ] / 2.0;
-        }
-        return centerBdvWindowTranslation;
-    }
-
-    public static double[] getBdvWindowCenter( Bdv bdv )
+    private static double[] getBdvDisplayCentre(Bdv bdv )
     {
         final double[] centre = new double[ 3 ];
 
@@ -391,105 +506,6 @@ public class BdvUtils {
         centre[ 1 ] = bdv.getBdvHandle().getViewerPanel().getDisplay().getHeight() / 2.0;
 
         return centre;
-    }
-
-    public static void changeBdvViewerTransform(
-            Bdv bdv,
-            ArrayList< AffineTransform3D > transforms,
-            long duration)
-    {
-
-        AffineTransform3D currentTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentTransform );
-
-        ArrayList< SimilarityTransformAnimator > animators = new ArrayList<>(  );
-
-        final SimilarityTransformAnimator firstAnimator =
-                new SimilarityTransformAnimator(
-                        currentTransform.copy(),
-                        transforms.get( 0 ).copy(),
-                        0 ,
-                        0,
-                        duration );
-
-        animators.add( firstAnimator );
-
-        for ( int i = 1; i < transforms.size(); i++ )
-        {
-            final SimilarityTransformAnimator animator =
-                    new SimilarityTransformAnimator(
-                            transforms.get( i - 1 ).copy(),
-                            transforms.get( i ).copy(),
-                            0 ,
-                            0,
-                            duration );
-
-            animators.add( animator );
-        }
-
-
-        AbstractTransformAnimator transformAnimator = new ConcatenatedTransformAnimator( duration, animators );
-
-        bdv.getBdvHandle().getViewerPanel().setTransformAnimator( transformAnimator );
-        //bdv.getBdvHandle().getViewerPanel().transformChanged( currentTransform.copy() );
-
-    }
-
-    public static void moveToPosition( Bdv bdv, double[] xyz, int t, long durationMillis )
-    {
-        if ( t != bdv.getBdvHandle().getViewerPanel().state().getCurrentTimepoint() )
-        {
-            bdv.getBdvHandle().getViewerPanel().state().setCurrentTimepoint( t );
-            durationMillis = 0; // otherwise there can be hickups when changing both the viewer transform and the timepoint
-        }
-
-        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
-
-        AffineTransform3D newViewerTransform = currentViewerTransform.copy();
-
-        // ViewerTransform
-        // applyInverse: coordinates in viewer => coordinates in image
-        // apply: coordinates in image => coordinates in viewer
-
-        final double[] locationOfTargetCoordinatesInCurrentViewer = new double[ 3 ];
-        currentViewerTransform.apply( xyz, locationOfTargetCoordinatesInCurrentViewer );
-
-        for ( int d = 0; d < 3; d++ )
-        {
-            locationOfTargetCoordinatesInCurrentViewer[ d ] *= -1;
-        }
-
-        newViewerTransform.translate( locationOfTargetCoordinatesInCurrentViewer );
-
-        newViewerTransform.translate( getBdvWindowCenter( bdv ) );
-
-        if ( durationMillis <= 0 )
-        {
-            bdv.getBdvHandle().getViewerPanel().state().setViewerTransform(  newViewerTransform );
-        }
-        else
-        {
-            final SimilarityTransformAnimator similarityTransformAnimator =
-                    new SimilarityTransformAnimator(
-                            currentViewerTransform,
-                            newViewerTransform,
-                            0,
-                            0,
-                            durationMillis );
-
-            bdv.getBdvHandle().getViewerPanel().setTransformAnimator( similarityTransformAnimator );
-        }
-    }
-
-    public static RandomAccessibleInterval< ? extends RealType< ? > >
-    getRealTypeNonVolatileRandomAccessibleInterval( Source source, int t, int level )
-    {
-        if ( source instanceof LazySpimSource ) {
-            return ((LazySpimSource) source).getNonVolatileSource(t, level);
-        } else {
-            throw new UnsupportedOperationException("Unsupported source type");
-        }
     }
 
 }

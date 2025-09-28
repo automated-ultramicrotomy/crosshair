@@ -31,6 +31,7 @@
 package de.embl.schwab.crosshair.utils;
 
 import bdv.util.BdvHandle;
+import de.embl.schwab.crosshair.ui.swing.PopupMenu;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -39,6 +40,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Class to manage BigDataViewer popup menus (right click menu)
+ */
 public abstract class BdvPopupMenus
 {
     private static ConcurrentHashMap< BdvHandle, PopupMenu > bdvToPopup = new ConcurrentHashMap<>();
