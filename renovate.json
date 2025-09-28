@@ -7,11 +7,5 @@
     ":label(renovate)",
     ":maintainLockFilesMonthly",
     "group:all"
-  ],
-  "packageRules": [
-    {
-      "matchPackageNames": ["de.embl.cba:imagej-utils"],
-      "enabled": false
-    }
   ]
 }
