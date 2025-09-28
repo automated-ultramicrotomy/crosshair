@@ -23,8 +23,8 @@ import org.jogamp.vecmath.Vector3d;
 
 import java.util.*;
 
-import static de.embl.cba.bdv.utils.BdvUtils.getBdvWindowCentre;
-import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
+import static de.embl.schwab.crosshair.utils.BdvUtils.getBdvWindowCentre;
+import static de.embl.schwab.crosshair.utils.BdvUtils.moveToPosition;
 
 /**
  * Class to manage all current planes

@@ -77,10 +77,6 @@
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>EMBL</license.copyrightOwners>
 		<enforcer.skip>true</enforcer.skip>
-
-<!--		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>-->
-<!--		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>-->
-		<imagej-utils.version>0.6.4</imagej-utils.version>
 	</properties>
 
 	<repositories>
@@ -104,6 +100,10 @@
 			<artifactId>bigdataviewer_fiji</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>3D_Viewer</artifactId>
 		</dependency>
@@ -116,11 +116,6 @@
 			<groupId>org.jogamp.jogl</groupId>
 			<artifactId>jogl-all</artifactId>
 			<classifier>${scijava.natives.classifier.jogl}</classifier>
-		</dependency>
-		<dependency>
-			<groupId>de.embl.cba</groupId>
-			<artifactId>imagej-utils</artifactId>
-			<version>${imagej-utils.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -140,6 +135,16 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
 			<scope>test</scope>
 		</dependency>
     </dependencies>

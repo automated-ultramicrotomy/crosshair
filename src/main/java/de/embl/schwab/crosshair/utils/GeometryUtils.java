@@ -17,7 +17,7 @@ import org.jogamp.vecmath.Vector3d;
 import java.util.*;
 import java.util.stream.DoubleStream;
 
-import static de.embl.cba.bdv.utils.BdvUtils.*;
+import static de.embl.schwab.crosshair.utils.BdvUtils.*;
 import static de.embl.schwab.crosshair.utils.Utils.findIndexOfMaxMin;
 import static java.lang.Math.*;
 

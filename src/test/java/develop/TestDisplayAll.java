@@ -1,7 +1,5 @@
 package develop;
 
-import static de.embl.cba.tables.ij3d.UniverseUtils.addSourceToUniverse;
-
 public class TestDisplayAll {
 
     public static void main( String[] args ) {

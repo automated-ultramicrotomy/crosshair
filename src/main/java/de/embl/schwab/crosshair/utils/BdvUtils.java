@@ -1,30 +1,66 @@
+/*
+ * A number of functions in this file are modified from the imagej-utils repository -
+ * https://github.com/embl-cba/imagej-utils - released under a BSD 2-Clause license given below:
+ *
+ * Copyright (c) 2018 - 2024, EMBL
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 package de.embl.schwab.crosshair.utils;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.Bdv;
 import bdv.viewer.Source;
-import de.embl.cba.tables.Utils;
-import de.embl.cba.util.CopyUtils;
+import bdv.viewer.animate.AbstractTransformAnimator;
+import bdv.viewer.animate.SimilarityTransformAnimator;
 import ij.ImagePlus;
 import ij.Prefs;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.*;
 import net.imglib2.converter.RealUnsignedByteConverter;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.view.Views;
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.LoggerFactory;
-
+import net.imglib2.type.NativeType;
+import net.imglib2.img.AbstractImg;
+import net.imglib2.util.Intervals;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.cell.CellImgFactory;
+import net.imglib2.util.Util;
+import net.imglib2.algorithm.util.Grids;
 import java.util.ArrayList;
 import java.util.stream.DoubleStream;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import static de.embl.cba.bdv.utils.BdvUtils.*;
-import static de.embl.cba.tables.Utils.getVoxelSpacings;
-import static de.embl.cba.tables.ij3d.UniverseUtils.logVoxelSpacing;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.findPerpendicularVector;
 
 public class BdvUtils {
@@ -130,7 +166,7 @@ public class BdvUtils {
             int min,
             int max )
     {
-        final Integer level = Utils.getLevel( source, maxNumVoxels );
+        final Integer level = getLevel( source, maxNumVoxels );
         logVoxelSpacing( source, getVoxelSpacings( source ).get( level ) );
 
         if ( level == null )
@@ -143,12 +179,147 @@ public class BdvUtils {
         return universe.addContent( wrap, displayType );
     }
 
+    public static AffineTransform3D quaternionToAffineTransform3D( double[] rotationQuaternion )
+    {
+        double[][] rotationMatrix = new double[ 3 ][ 3 ];
+        LinAlgHelpers.quaternionToR( rotationQuaternion, rotationMatrix );
+        return matrixAsAffineTransform3D( rotationMatrix );
+    }
+
+    public static AffineTransform3D matrixAsAffineTransform3D( double[][] rotationMatrix )
+    {
+        final AffineTransform3D rotation = new AffineTransform3D();
+        for ( int row = 0; row < 3; ++row )
+            for ( int col = 0; col < 3; ++ col)
+                rotation.set( rotationMatrix[ row ][ col ], row, col);
+        return rotation;
+    }
+
+    /**
+     * Get the coordinates of the BigDataViewer window centre
+     * @param bdv Bdv window
+     * @return [x, y] centre position
+     */
+    public static double[] getBdvWindowCentre( Bdv bdv )
+    {
+        int[] bdvWindowDimensions = new int[ 3 ];
+        bdvWindowDimensions[ 0 ] = bdv.getBdvHandle().getViewerPanel().getWidth();
+        bdvWindowDimensions[ 1 ] = bdv.getBdvHandle().getViewerPanel().getHeight();
+
+        double[] centerBdvWindowTranslation = new double[ 3 ];
+        for( int d = 0; d < 3; ++d )
+        {
+            centerBdvWindowTranslation[ d ] = + bdvWindowDimensions[ d ] / 2.0;
+        }
+        return centerBdvWindowTranslation;
+    }
+
+    /**
+     * Change the transform of a BigDataViewer window
+     * @param bdv Bdv window
+     * @param transforms list of transforms to move to
+     * @param duration animation duration (in milliseconds?) of movement from one transform to another
+     */
+    public static void changeBdvViewerTransform(
+            Bdv bdv,
+            ArrayList< AffineTransform3D > transforms,
+            long duration)
+    {
+
+        AffineTransform3D currentTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentTransform );
+
+        ArrayList< SimilarityTransformAnimator > animators = new ArrayList<>(  );
+
+        final SimilarityTransformAnimator firstAnimator =
+                new SimilarityTransformAnimator(
+                        currentTransform.copy(),
+                        transforms.get( 0 ).copy(),
+                        0 ,
+                        0,
+                        duration );
+
+        animators.add( firstAnimator );
+
+        for ( int i = 1; i < transforms.size(); i++ )
+        {
+            final SimilarityTransformAnimator animator =
+                    new SimilarityTransformAnimator(
+                            transforms.get( i - 1 ).copy(),
+                            transforms.get( i ).copy(),
+                            0 ,
+                            0,
+                            duration );
+
+            animators.add( animator );
+        }
+
+
+        AbstractTransformAnimator transformAnimator = new ConcatenatedTransformAnimator( duration, animators );
+
+        bdv.getBdvHandle().getViewerPanel().setTransformAnimator( transformAnimator );
+    }
+
+    /**
+     * Move BigDataViewer window to a new position
+     * @param bdv Bdv window
+     * @param xyz [x, y, z] position to move to
+     * @param t timepoint to move to
+     * @param durationMillis animation duration (in milliseconds) of movement to new position
+     */
+    public static void moveToPosition( Bdv bdv, double[] xyz, int t, long durationMillis )
+    {
+        if ( t != bdv.getBdvHandle().getViewerPanel().state().getCurrentTimepoint() )
+        {
+            bdv.getBdvHandle().getViewerPanel().state().setCurrentTimepoint( t );
+            durationMillis = 0; // otherwise there can be hickups when changing both the viewer transform and the timepoint
+        }
+
+        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
+
+        AffineTransform3D newViewerTransform = currentViewerTransform.copy();
+
+        // ViewerTransform
+        // applyInverse: coordinates in viewer => coordinates in image
+        // apply: coordinates in image => coordinates in viewer
+
+        final double[] locationOfTargetCoordinatesInCurrentViewer = new double[ 3 ];
+        currentViewerTransform.apply( xyz, locationOfTargetCoordinatesInCurrentViewer );
+
+        for ( int d = 0; d < 3; d++ )
+        {
+            locationOfTargetCoordinatesInCurrentViewer[ d ] *= -1;
+        }
+
+        newViewerTransform.translate( locationOfTargetCoordinatesInCurrentViewer );
+
+        newViewerTransform.translate( getBdvDisplayCentre( bdv ) );
+
+        if ( durationMillis <= 0 )
+        {
+            bdv.getBdvHandle().getViewerPanel().state().setViewerTransform(  newViewerTransform );
+        }
+        else
+        {
+            final SimilarityTransformAnimator similarityTransformAnimator =
+                    new SimilarityTransformAnimator(
+                            currentViewerTransform,
+                            newViewerTransform,
+                            0,
+                            0,
+                            durationMillis );
+
+            bdv.getBdvHandle().getViewerPanel().setTransformAnimator( similarityTransformAnimator );
+        }
+    }
+
     private static < R extends RealType< R > > ImagePlus getImagePlus( Source< ? > source, int min, int max, Integer level )
     {
         RandomAccessibleInterval< ? extends RealType< ? > > rai
-                = de.embl.cba.bdv.utils.BdvUtils.getRealTypeNonVolatileRandomAccessibleInterval( source, 0, level );
+                = getRealTypeNonVolatileRandomAccessibleInterval( source, 0, level );
 
-        rai = CopyUtils.copyVolumeRaiMultiThreaded( ( RandomAccessibleInterval ) rai, Prefs.getThreads() -1  ); // TODO: make multi-threading configurable.
+        rai = copyVolumeRaiMultiThreaded( ( RandomAccessibleInterval ) rai, Prefs.getThreads() -1  ); // TODO: make multi-threading configurable.
 
         rai = Views.permute( Views.addDimension( rai, 0, 0 ), 2, 3 );
 
@@ -164,4 +335,177 @@ public class BdvUtils {
 
         return wrap;
     }
+
+    private static RandomAccessibleInterval< ? extends RealType< ? > >
+    getRealTypeNonVolatileRandomAccessibleInterval( Source source, int t, int level )
+    {
+        if ( source instanceof LazySpimSource ) {
+            return ((LazySpimSource) source).getNonVolatileSource(t, level);
+        } else {
+            throw new UnsupportedOperationException("Unsupported source type");
+        }
+    }
+
+    private static void logVoxelSpacing( Source< ? > source, double[] voxelSpacings )
+    {
+        String message = "3D View: Fetching source " + source.getName() + " at resolution " +
+                Arrays.stream( voxelSpacings ).mapToObj( x -> "" + x ).collect( Collectors.joining( " ," ) ) +
+                " micrometer...";
+        logger.info(message);
+    }
+
+    private static ArrayList< double[] > getVoxelSpacings( Source< ? > labelsSource )
+    {
+        final ArrayList< double[] > voxelSpacings = new ArrayList<>();
+        final int numMipmapLevels = labelsSource.getNumMipmapLevels();
+        for ( int level = 0; level < numMipmapLevels; ++level )
+            voxelSpacings.add( getCalibration( labelsSource, level ) );
+
+        return voxelSpacings;
+    }
+
+    private static double[] getCalibration( Source source, int level )
+    {
+        final AffineTransform3D sourceTransform = new AffineTransform3D();
+        source.getSourceTransform( 0, level, sourceTransform );
+
+        final double[] calibration = getScale( sourceTransform );
+        return calibration;
+    }
+
+    private static double[] getScale( AffineTransform3D sourceTransform )
+    {
+        // https://math.stackexchange.com/questions/237369/given-this-transformation-matrix-how-do-i-decompose-it-into-translation-rotati
+
+        final double[] calibration = new double[ 3 ];
+        for ( int d = 0; d < 3; ++d )
+        {
+            final double[] vector = new double[ 3 ];
+            for ( int i = 0; i < 3 ; i++ )
+            {
+                vector[ i ] = sourceTransform.get( d, i );
+            }
+
+            calibration[ d ] = LinAlgHelpers.length( vector );
+        }
+        return calibration;
+    }
+
+    private static < R extends RealType< R > & NativeType< R > >
+    RandomAccessibleInterval< R > copyVolumeRaiMultiThreaded( RandomAccessibleInterval< R > volume, int numThreads ) {
+        final int dimensionX = ( int ) volume.dimension( 0 );
+        final int dimensionY = ( int ) volume.dimension( 1 );
+        final int dimensionZ = ( int ) volume.dimension( 2 );
+
+        final long numElements =
+                AbstractImg.numElements( Intervals.dimensionsAsLongArray( volume ) );
+
+        RandomAccessibleInterval< R > copy;
+
+        if ( numElements < Integer.MAX_VALUE - 1 )
+        {
+            copy = new ArrayImgFactory( Util.getTypeFromInterval( volume ) ).create( volume );
+        }
+        else
+        {
+            int cellSizeZ = (int) ( ( Integer.MAX_VALUE - 1 )
+                    / ( volume.dimension( 0  ) * volume.dimension( 1 ) ) );
+
+            final int[] cellSize = {
+                    dimensionX,
+                    dimensionY,
+                    cellSizeZ };
+
+            copy = new CellImgFactory( Util.getTypeFromInterval( volume ), cellSize ).create( volume );
+        }
+
+        final int[] blockSize = {
+                dimensionX,
+                dimensionY,
+                ( int ) Math.ceil( 1.0 * dimensionZ / numThreads ) };
+
+        Grids.collectAllContainedIntervals(
+                        Intervals.dimensionsAsLongArray( volume ) , blockSize )
+                .parallelStream().forEach(
+                        interval -> copy( volume, Views.interval( copy, interval )));
+
+        return copy;
+    }
+
+    private static < T extends Type< T >> void copy(final RandomAccessible< T > source,
+                                                    final IterableInterval< T > target )
+    {
+        // create a cursor that automatically localizes itself on every move
+        Cursor< T > targetCursor = target.localizingCursor();
+        RandomAccess< T > sourceRandomAccess = source.randomAccess();
+
+        // iterate over the input cursor
+        while ( targetCursor.hasNext() )
+        {
+            // move input cursor forward
+            targetCursor.fwd();
+
+            // set the output cursor to the position of the input cursor
+            sourceRandomAccess.setPosition( targetCursor );
+
+            // set the value of this pixel of the output image, every Type supports T.set( T type )
+            targetCursor.get().set( sourceRandomAccess.get() );
+        }
+    }
+
+    private static Integer getLevel( Source< ? > source, long maxNumVoxels )
+    {
+        final ArrayList< double[] > voxelSpacings = getVoxelSpacings( source );
+
+        for ( int level = 0; level < voxelSpacings.size(); level++ )
+        {
+            final long numElements = Intervals.numElements( source.getSource( 0, level ) );
+
+            if ( numElements <= maxNumVoxels )
+                return level;
+        }
+        return null;
+    }
+
+    private static double[] getCurrentViewNormalVector( Bdv bdv )
+    {
+        AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdv.getBdvHandle().getViewerPanel().state().getViewerTransform( currentViewerTransform );
+
+        final double[] viewerC = new double[]{ 0, 0, 0 };
+        final double[] viewerX = new double[]{ 1, 0, 0 };
+        final double[] viewerY = new double[]{ 0, 1, 0 };
+
+        final double[] dataC = new double[ 3 ];
+        final double[] dataX = new double[ 3 ];
+        final double[] dataY = new double[ 3 ];
+
+        final double[] dataV1 = new double[ 3 ];
+        final double[] dataV2 = new double[ 3 ];
+        final double[] currentNormalVector = new double[ 3 ];
+
+        currentViewerTransform.inverse().apply( viewerC, dataC );
+        currentViewerTransform.inverse().apply( viewerX, dataX );
+        currentViewerTransform.inverse().apply( viewerY, dataY );
+
+        LinAlgHelpers.subtract( dataX, dataC, dataV1 );
+        LinAlgHelpers.subtract( dataY, dataC, dataV2 );
+
+        LinAlgHelpers.cross( dataV1, dataV2, currentNormalVector );
+
+        LinAlgHelpers.normalize( currentNormalVector );
+
+        return currentNormalVector;
+    }
+
+    private static double[] getBdvDisplayCentre(Bdv bdv )
+    {
+        final double[] centre = new double[ 3 ];
+
+        centre[ 0 ] = bdv.getBdvHandle().getViewerPanel().getDisplay().getWidth() / 2.0;
+        centre[ 1 ] = bdv.getBdvHandle().getViewerPanel().getDisplay().getHeight() / 2.0;
+
+        return centre;
+    }
+
 }
