@@ -56,15 +56,10 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.util.Util;
 import net.imglib2.algorithm.util.Grids;
-import mpicbg.spim.data.SpimData;
-import mpicbg.spim.data.SpimDataException;
-
 import java.util.ArrayList;
 import java.util.stream.DoubleStream;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import java.io.InputStream;
-import java.io.IOException;
 
 import static de.embl.schwab.crosshair.utils.GeometryUtils.findPerpendicularVector;
 
@@ -487,65 +482,14 @@ public class BdvUtils {
         }
     }
 
-    public static SpimData openSpimData( String path )
-    {
-        System.out.println("hi");
-        return null;
-//        try
-//        {
-
-//            InputStream stream = FileAndUrlUtils.getInputStream( path );
-//            SpimData spimData = new CustomXmlIoSpimData().loadFromStream( stream, path );
-//            return spimData;
-//        }
-//        catch (SpimDataException | IOException e )
-//        {
-//            System.out.println( path );
-//            e.printStackTrace();
-//            return null;
-//        }
-    }
-
-    /**
-     * Recursively go through the wrapped sources until the actual source is found.
-     *
-     * @param source
-     * @param t
-     * @param level
-     * @return
-     */
     public static RandomAccessibleInterval< ? extends RealType< ? > >
     getRealTypeNonVolatileRandomAccessibleInterval( Source source, int t, int level )
     {
-        System.out.println("hi");
-        return null;
-//        if ( source instanceof TransformedSource )
-//            return getRealTypeNonVolatileRandomAccessibleInterval(
-//                    ( ( TransformedSource ) source ).getWrappedSource(), t, level );
-//
-//        if ( source instanceof ARGBConvertedRealSource )
-//            return getRealTypeNonVolatileRandomAccessibleInterval(
-//                    ( ( ARGBConvertedRealSource ) source ).getWrappedSource(), t, level );
-//
-//        if ( source instanceof ModifiableRandomAccessibleIntervalSource4D )
-//            return ( ( ModifiableRandomAccessibleIntervalSource4D ) source ).getRawSource( t, level );
-//
-//        if ( source instanceof ImagePlusFileSource )
-//            return getRealTypeNonVolatileRandomAccessibleInterval(
-//                    ( ( ImagePlusFileSource ) source ).getWrappedSource(), t, level );
-//
-//        if ( source instanceof LazySpimSource )
-//        {
-//            return ( ( LazySpimSource ) source ).getNonVolatileSource( t, level );
-//        }
-//        else if ( source instanceof VolatileSpimSource )
-//        {
-//            throw new UnsupportedOperationException( source.getName() + " is of type VolatileSpimSource; cannot get nonVolatile access" );
-//        }
-//        else
-//        {
-//            return source.getSource( t, 0 );
-//        }
+        if ( source instanceof LazySpimSource ) {
+            return ((LazySpimSource) source).getNonVolatileSource(t, level);
+        } else {
+            throw new UnsupportedOperationException("Unsupported source type");
+        }
     }
 
 }

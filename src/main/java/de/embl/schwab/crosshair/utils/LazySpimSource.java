@@ -36,18 +36,27 @@ import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimData;
+import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.generic.sequence.BasicMultiResolutionImgLoader;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.NumericType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LazySpimSource< T extends NumericType< T > > implements Source< T >
 {
+    private static final Logger logger = LoggerFactory.getLogger(LazySpimSource.class);
+
     private final String path;
     private final String name;
     private Source< T > source;
@@ -87,10 +96,25 @@ public class LazySpimSource< T extends NumericType< T > > implements Source< T >
 
     private void initSpimData()
     {
-        spimData = BdvUtils.openSpimData( path );
+        spimData = openSpimData( path );
         converterSetups = new ArrayList<>();
         sources = new ArrayList<>();
         BigDataViewer.initSetups( spimData, converterSetups, sources );
+    }
+
+    private SpimData openSpimData( String path )
+    {
+        try
+        {
+            InputStream stream = new FileInputStream( new File( path ) );
+            SpimData spimData = new CustomXmlIoSpimData().loadFromStream( stream, path );
+            return spimData;
+        }
+        catch (SpimDataException | IOException e )
+        {
+            logger.error("Couldn't load data from path", e);
+            return null;
+        }
     }
 
     public RandomAccessibleInterval< T > getNonVolatileSource( int t, int level )
