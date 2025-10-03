@@ -11,7 +11,7 @@ on:
     paths:
       - 'src/**'
       - 'pom.xml'
-      - '.github/**'
+      - '.github/workflows/**'
 
   push:
     branches:
@@ -19,7 +19,7 @@ on:
     paths:
       - 'src/**'
       - 'pom.xml'
-      - '.github/**'
+      - '.github/workflows/**'
 
 # Prevent multiple runs of the same workflow on the same branch at the same time
 # e.g. if new commits pushed to a PR, will cancel any current runs before starting

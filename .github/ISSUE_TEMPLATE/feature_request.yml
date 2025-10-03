@@ -1,0 +1,13 @@
+---
+name: Feature
+description: Suggest a new feature for Crosshair
+labels: enhancement
+
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        Describe the new feature. What would need to be changed / added to Crosshair? Why would it be a useful addition?
+    validations:
+      required: true
