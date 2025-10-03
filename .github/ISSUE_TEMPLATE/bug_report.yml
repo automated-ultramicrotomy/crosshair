@@ -1,0 +1,48 @@
+---
+name: Bug
+description: Report a bug / error with Crosshair
+labels: bug
+
+body:
+  - type: markdown
+    attributes:
+      value: Please fill out the sections below to describe the issue.
+
+  - type: textarea
+    attributes:
+      label: Operating System
+      description: Which operating system are you using? Windows / Mac / Linux
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Fiji type
+      description: Is your Fiji from the 'latest' or 'stable' update site? (if known)
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Fiji version
+      description:  |
+        Copy `!ui.showDialog(app.getApp("Fiji").getPOM().getParentVersion())` into the Fiji search bar and press enter. 
+        Put the printed version number below.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: Describe the bug / issue. If any errors appear in Fiji, please copy them here.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce the error
+      description: |
+        If possible, provide a list of steps to reproduce the bug in Crosshair. For example, add a target plane, 
+        click the 'GOTO' button...
+    validations:
+      required: false
