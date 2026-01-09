@@ -2,7 +2,7 @@ package de.embl.schwab.crosshair;
 
 import bdv.util.BdvFunctions;
 import bdv.util.BdvStackSource;
-import de.embl.cba.bdv.utils.sources.LazySpimSource;
+import de.embl.schwab.crosshair.utils.LazySpimSource;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 import net.imglib2.realtransform.AffineTransform3D;

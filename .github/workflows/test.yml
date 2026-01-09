@@ -3,7 +3,7 @@ name: test
 on:
   pull_request:
     branches:
-      - master
+      - main
       - dev
 
     # Only run if src, pom or github actions files change
@@ -11,15 +11,15 @@ on:
     paths:
       - 'src/**'
       - 'pom.xml'
-      - '.github/**'
+      - '.github/workflows/**'
 
   push:
     branches:
-      - master
+      - main
     paths:
       - 'src/**'
       - 'pom.xml'
-      - '.github/**'
+      - '.github/workflows/**'
 
 # Prevent multiple runs of the same workflow on the same branch at the same time
 # e.g. if new commits pushed to a PR, will cancel any current runs before starting

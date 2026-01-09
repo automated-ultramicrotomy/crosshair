@@ -14,7 +14,7 @@ import org.jogamp.vecmath.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static de.embl.cba.bdv.utils.BdvUtils.moveToPosition;
+import static de.embl.schwab.crosshair.utils.BdvUtils.moveToPosition;
 import static de.embl.schwab.crosshair.utils.GeometryUtils.findClosestPointOnPlane;
 import static java.lang.Math.*;
 

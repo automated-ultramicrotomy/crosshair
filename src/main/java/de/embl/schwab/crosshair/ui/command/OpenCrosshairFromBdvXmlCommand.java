@@ -1,7 +1,7 @@
 package de.embl.schwab.crosshair.ui.command;
 
-import de.embl.cba.bdv.utils.sources.LazySpimSource;
 import de.embl.schwab.crosshair.Crosshair;
+import de.embl.schwab.crosshair.utils.LazySpimSource;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import javax.swing.*;

@@ -1,9 +1,9 @@
 package de.embl.schwab.crosshair.targetingaccuracy;
 
 import bdv.util.BdvHandle;
-import de.embl.cba.bdv.utils.popup.BdvPopupMenus;
 import de.embl.schwab.crosshair.plane.Plane;
 import de.embl.schwab.crosshair.plane.PlaneManager;
+import de.embl.schwab.crosshair.utils.BdvPopupMenus;
 import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;

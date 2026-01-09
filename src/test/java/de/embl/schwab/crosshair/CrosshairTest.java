@@ -1,6 +1,6 @@
 package de.embl.schwab.crosshair;
 
-import de.embl.cba.bdv.utils.sources.LazySpimSource;
+import de.embl.schwab.crosshair.utils.LazySpimSource;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
