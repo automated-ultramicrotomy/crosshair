@@ -5,7 +5,12 @@
     ":assignAndReview(K-Meech)",
     ":disableDependencyDashboard",
     ":label(renovate)",
-    ":maintainLockFilesMonthly",
-    "group:all"
-  ]
+    ":maintainLockFilesMonthly"
+    ],
+    "packageRules": [
+      {
+        "matchManagers": ["github-actions"],
+        "groupName": "github actions"
+      }
+    ]
 }
